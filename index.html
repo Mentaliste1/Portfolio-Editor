@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>SaaS Portfolio Studio | Master Edition V12</title>
+    <!-- ═══ AJOUT AUTH — SDK Supabase, chargé avant tout autre script ═══ -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&family=Playfair+Display:ital,wght@0,700;1,700&family=Plus+Jakarta+Sans:wght@400;600;800&family=Space+Grotesk:wght@400;700&family=Cinzel:wght@600;800&family=Bebas+Neue&family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300&family=Josefin+Sans:wght@300;400;600;700&family=Raleway:wght@300;400;700;900&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
     <style>
@@ -197,7 +199,6 @@ body{display:flex;height:100dvh;width:100vw;overflow:hidden;background:var(--ui-
     display:flex;justify-content:space-between;align-items:center;
     gap:8px;
     position:relative;
-    overflow:hidden;
     background:var(--ui-panel);
     min-height:48px;
 }
@@ -2122,24 +2123,73 @@ radial-gradient(circle at 50% 50%,rgba(255,183,77,.06) 0%,transparent 50%);}
 
 /* Base commune à tous les thèmes photo */
 [class*="theme-ph_"]{
-    background-size:cover!important;
-    background-position:center!important;
-    background-repeat:no-repeat!important;
     position:relative;
     color:#f1f5f9;
+    background:none!important;
+    overflow-x:hidden;
+    overflow-y:auto;
 }
-/* Overlay sombre pour lisibilité */
+/* Couche 1 : l'image de fond, animable SANS toucher au texte.
+   Légèrement plus grande que le conteneur (108%, centrée) pour que
+   les animations de zoom/pulse ne laissent jamais voir de bord vide,
+   sans avoir besoin d'overflow:hidden sur le parent (qui bloquerait
+   le scroll vertical du portfolio). background-size:cover comble déjà
+   le zoom horizontal de bgSlowZoom ; cette marge couvre le transform
+   scale() de bgPulseScale. */
 [class*="theme-ph_"]::before{
     content:'';
-    position:absolute;inset:0;
-    background:linear-gradient(180deg,rgba(0,0,0,.55) 0%,rgba(0,0,0,.65) 100%);
+    position:absolute;
+    top:-4%;left:-4%;
+    width:108%;height:108%;
+    background-size:cover;
+    background-position:center;
+    background-repeat:no-repeat;
     z-index:0;pointer-events:none;
+    will-change:transform,background-position,filter,opacity;
 }
-[class*="theme-ph_"] .pf-container{position:relative;z-index:1;}
+/* Couche 2 : overlay sombre pour lisibilité, jamais animé */
+[class*="theme-ph_"]::after{
+    content:'';
+    position:absolute;inset:0;
+    background:linear-gradient(160deg,rgba(0,0,0,.6) 0%,rgba(0,0,0,.72) 100%);
+    z-index:1;pointer-events:none;
+}
+/* Couche 3 : le contenu, toujours net et fixe */
+[class*="theme-ph_"] .pf-container{position:relative;z-index:2;}
+
+/* HERO — layout correct sur les thèmes photo */
+[class*="theme-ph_"] .pf-hero{
+    flex-direction:row!important;
+    align-items:center!important;
+    gap:40px!important;
+    padding:60px 0 40px!important;
+}
+[class*="theme-ph_"] .pf-hero-content{flex:1.3!important;}
+
+/* PHOTO PROFIL — taille normale, arrondie */
+[class*="theme-ph_"] .pf-hero-img-wrap{
+    flex:0 0 200px!important;
+    width:200px!important;
+    height:200px!important;
+    max-width:200px!important;
+    max-height:200px!important;
+}
+[class*="theme-ph_"] .pf-profile-img{
+    width:200px!important;
+    height:200px!important;
+    max-width:200px!important;
+    max-height:200px!important;
+    object-fit:cover!important;
+    border-radius:50%!important;
+    border:3px solid rgba(255,255,255,.35)!important;
+    box-shadow:0 8px 32px rgba(0,0,0,.4)!important;
+}
+
 /* Textes lisibles */
-[class*="theme-ph_"] .pf-bio{color:#e2e8f0!important;opacity:.92;}
+[class*="theme-ph_"] .pf-name{color:#fff!important;-webkit-text-fill-color:#fff!important;}
+[class*="theme-ph_"] .pf-bio{color:#e2e8f0!important;opacity:.92!important;}
 [class*="theme-ph_"] .pf-section-title,[class*="theme-ph_"] .pf-section-sub-title{color:#fff!important;}
-[class*="theme-ph_"] .pf-role{color:#e2e8f0!important;letter-spacing:2px;}
+[class*="theme-ph_"] .pf-role{color:rgba(255,255,255,.75)!important;letter-spacing:2px;}
 /* Cartes glassmorphism */
 [class*="theme-ph_"] .pf-project-card{
     background:rgba(10,10,20,.5)!important;
@@ -2164,84 +2214,86 @@ radial-gradient(circle at 50% 50%,rgba(255,183,77,.06) 0%,transparent 50%);}
     background:rgba(10,10,20,.5)!important;
     backdrop-filter:blur(10px)!important;
     border:1px solid rgba(255,255,255,.1)!important;
+    border-radius:12px!important;
+}
+/* Mobile */
+@media(max-width:768px){
+    [class*="theme-ph_"]{background-attachment:scroll!important;}
+    [class*="theme-ph_"] .pf-hero{flex-direction:column!important;text-align:center!important;}
+    [class*="theme-ph_"] .pf-hero-img-wrap{flex:0 0 140px!important;width:140px!important;height:140px!important;max-width:140px!important;max-height:140px!important;}
+    [class*="theme-ph_"] .pf-profile-img{width:140px!important;height:140px!important;max-width:140px!important;max-height:140px!important;}
 }
 
 /* ── NATURE ── */
-.theme-ph_forest{background-image:url('https://images.unsplash.com/photo-1448375240586-882707db888b?w=1400&q=70');}
-.theme-ph_autumn{background-image:url('https://images.unsplash.com/photo-1507371341162-763b5e419408?w=1400&q=70');}
-.theme-ph_mountain{background-image:url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1400&q=70');}
-.theme-ph_beach{background-image:url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1400&q=70');}
-.theme-ph_desert{background-image:url('https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?w=1400&q=70');}
-.theme-ph_waterfall{background-image:url('https://images.unsplash.com/photo-1432405972618-c60b0225b8f9?w=1400&q=70');}
-.theme-ph_cherry{background-image:url('https://images.unsplash.com/photo-1522383225653-ed111181a951?w=1400&q=70');}
-.theme-ph_lavender{background-image:url('https://images.unsplash.com/photo-1499002238440-d264edd596ec?w=1400&q=70');}
-.theme-ph_jungle{background-image:url('https://images.unsplash.com/photo-1536147116438-62679a5e01f2?w=1400&q=70');}
-.theme-ph_sunset{background-image:url('https://images.unsplash.com/photo-1495616811223-4d98c6e9c869?w=1400&q=70');}
+.theme-ph_forest::before{background-image:url('https://images.unsplash.com/photo-1448375240586-882707db888b?w=1400&q=70');}
+.theme-ph_autumn::before{background-image:url('https://images.unsplash.com/photo-1507371341162-763b5e419408?w=1400&q=70');}
+.theme-ph_mountain::before{background-image:url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1400&q=70');}
+.theme-ph_beach::before{background-image:url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1400&q=70');}
+.theme-ph_desert::before{background-image:url('https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?w=1400&q=70');}
+.theme-ph_waterfall::before{background-image:url('https://images.unsplash.com/photo-1432405972618-c60b0225b8f9?w=1400&q=70');}
+.theme-ph_cherry::before{background-image:url('https://images.unsplash.com/photo-1522383225653-ed111181a951?w=1400&q=70');}
+.theme-ph_lavender::before{background-image:url('https://images.unsplash.com/photo-1499002238440-d264edd596ec?w=1400&q=70');}
+.theme-ph_jungle::before{background-image:url('https://images.unsplash.com/photo-1536147116438-62679a5e01f2?w=1400&q=70');}
+.theme-ph_sunset::before{background-image:url('https://images.unsplash.com/photo-1495616811223-4d98c6e9c869?w=1400&q=70');}
 
 /* ── COSMOS ── */
-.theme-ph_galaxy{background-image:url('https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=1400&q=70');}
-.theme-ph_nebula{background-image:url('https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=1400&q=70');}
-.theme-ph_aurora{background-image:url('https://images.unsplash.com/photo-1483347756197-71ef80e95f73?w=1400&q=70');}
-.theme-ph_stars{background-image:url('https://images.unsplash.com/photo-1444703686981-a3abbc4d4fe3?w=1400&q=70');}
-.theme-ph_earth{background-image:url('https://images.unsplash.com/photo-1614728263952-84ea256f9679?w=1400&q=70');}
+.theme-ph_galaxy::before{background-image:url('https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=1400&q=70');}
+.theme-ph_nebula::before{background-image:url('https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=1400&q=70');}
+.theme-ph_aurora::before{background-image:url('https://images.unsplash.com/photo-1483347756197-71ef80e95f73?w=1400&q=70');}
+.theme-ph_stars::before{background-image:url('https://images.unsplash.com/photo-1444703686981-a3abbc4d4fe3?w=1400&q=70');}
+.theme-ph_earth::before{background-image:url('https://images.unsplash.com/photo-1614728263952-84ea256f9679?w=1400&q=70');}
 
 /* ── EAU ── */
-.theme-ph_ocean{background-image:url('https://images.unsplash.com/photo-1505118380757-91f5f5632de0?w=1400&q=70');}
-.theme-ph_waves{background-image:url('https://images.unsplash.com/photo-1505142468610-359e7d316be0?w=1400&q=70');}
-.theme-ph_underwater{background-image:url('https://images.unsplash.com/photo-1551244072-5d12893278ab?w=1400&q=70');}
-.theme-ph_lake{background-image:url('https://images.unsplash.com/photo-1439405326854-014607f694d7?w=1400&q=70');}
-.theme-ph_rain{background-image:url('https://images.unsplash.com/photo-1428592953211-077101b2021b?w=1400&q=70');}
+.theme-ph_ocean::before{background-image:url('https://images.unsplash.com/photo-1505118380757-91f5f5632de0?w=1400&q=70');}
+.theme-ph_waves::before{background-image:url('https://images.unsplash.com/photo-1505142468610-359e7d316be0?w=1400&q=70');}
+.theme-ph_underwater::before{background-image:url('https://images.unsplash.com/photo-1551244072-5d12893278ab?w=1400&q=70');}
+.theme-ph_lake::before{background-image:url('https://images.unsplash.com/photo-1439405326854-014607f694d7?w=1400&q=70');}
+.theme-ph_rain::before{background-image:url('https://images.unsplash.com/photo-1428592953211-077101b2021b?w=1400&q=70');}
 
 /* ── URBAIN ── */
-.theme-ph_city_night{background-image:url('https://images.unsplash.com/photo-1480714378408-67cf0d13bc1f?w=1400&q=70');}
-.theme-ph_neon{background-image:url('https://images.unsplash.com/photo-1542219550-37153d387c27?w=1400&q=70');}
-.theme-ph_bridge{background-image:url('https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=1400&q=70');}
-.theme-ph_architecture{background-image:url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1400&q=70');}
-.theme-ph_street{background-image:url('https://images.unsplash.com/photo-1519501025264-65ba15a82390?w=1400&q=70');}
+.theme-ph_city_night::before{background-image:url('https://images.unsplash.com/photo-1480714378408-67cf0d13bc1f?w=1400&q=70');}
+.theme-ph_neon::before{background-image:url('https://images.unsplash.com/photo-1542219550-37153d387c27?w=1400&q=70');}
+.theme-ph_bridge::before{background-image:url('https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=1400&q=70');}
+.theme-ph_architecture::before{background-image:url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1400&q=70');}
+.theme-ph_street::before{background-image:url('https://images.unsplash.com/photo-1519501025264-65ba15a82390?w=1400&q=70');}
 
 /* ── ANIMAUX ── */
-.theme-ph_wolf{background-image:url('https://images.unsplash.com/photo-1564466809058-bf4114d55352?w=1400&q=70');}
-.theme-ph_eagle{background-image:url('https://images.unsplash.com/photo-1611689342806-0863700ce1e4?w=1400&q=70');}
-.theme-ph_cat{background-image:url('https://images.unsplash.com/photo-1518791841217-8f162f1e1131?w=1400&q=70');}
-.theme-ph_horse{background-image:url('https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?w=1400&q=70');}
-.theme-ph_lion{background-image:url('https://images.unsplash.com/photo-1546182990-dffeafbe841d?w=1400&q=70');}
+.theme-ph_wolf::before{background-image:url('https://images.unsplash.com/photo-1564466809058-bf4114d55352?w=1400&q=70');}
+.theme-ph_eagle::before{background-image:url('https://images.unsplash.com/photo-1611689342806-0863700ce1e4?w=1400&q=70');}
+.theme-ph_cat::before{background-image:url('https://images.unsplash.com/photo-1518791841217-8f162f1e1131?w=1400&q=70');}
+.theme-ph_horse::before{background-image:url('https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?w=1400&q=70');}
+.theme-ph_lion::before{background-image:url('https://images.unsplash.com/photo-1546182990-dffeafbe841d?w=1400&q=70');}
 
 /* ── BUSINESS ── */
-.theme-ph_office{background-image:url('https://images.unsplash.com/photo-1497366216548-37526070297c?w=1400&q=70');}
-.theme-ph_meeting{background-image:url('https://images.unsplash.com/photo-1552664730-d307ca884978?w=1400&q=70');}
-.theme-ph_laptop{background-image:url('https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=1400&q=70');}
-.theme-ph_coffee{background-image:url('https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=1400&q=70');}
-.theme-ph_library{background-image:url('https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=1400&q=70');}
-.theme-ph_studio{background-image:url('https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=1400&q=70');}
-.theme-ph_minimal{background-image:url('https://images.unsplash.com/photo-1497215728101-856f4ea42174?w=1400&q=70');}
-.theme-ph_tech{background-image:url('https://images.unsplash.com/photo-1518770660439-4636190af475?w=1400&q=70');}
-.theme-ph_design{background-image:url('https://images.unsplash.com/photo-1561070791-2526d30994b5?w=1400&q=70');}
-.theme-ph_podcast{background-image:url('https://images.unsplash.com/photo-1478737270197-e3e3e42a5e0e?w=1400&q=70');}
+.theme-ph_office::before{background-image:url('https://images.unsplash.com/photo-1497366216548-37526070297c?w=1400&q=70');}
+.theme-ph_meeting::before{background-image:url('https://images.unsplash.com/photo-1552664730-d307ca884978?w=1400&q=70');}
+.theme-ph_laptop::before{background-image:url('https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=1400&q=70');}
+.theme-ph_coffee::before{background-image:url('https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=1400&q=70');}
+.theme-ph_library::before{background-image:url('https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=1400&q=70');}
+.theme-ph_studio::before{background-image:url('https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=1400&q=70');}
+.theme-ph_minimal::before{background-image:url('https://images.unsplash.com/photo-1497215728101-856f4ea42174?w=1400&q=70');}
+.theme-ph_tech::before{background-image:url('https://images.unsplash.com/photo-1518770660439-4636190af475?w=1400&q=70');}
+.theme-ph_design::before{background-image:url('https://images.unsplash.com/photo-1561070791-2526d30994b5?w=1400&q=70');}
+.theme-ph_podcast::before{background-image:url('https://images.unsplash.com/photo-1478737270197-e3e3e42a5e0e?w=1400&q=70');}
 
 /* ── LIFESTYLE / ABSTRACT ── */
-.theme-ph_marble{background-image:url('https://images.unsplash.com/photo-1517842645767-c639042777db?w=1400&q=70');}
-.theme-ph_bokeh{background-image:url('https://images.unsplash.com/photo-1556155092-490a1ba16284?w=1400&q=70');}
-.theme-ph_abstract_geo{background-image:url('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1400&q=70');}
-.theme-ph_smoke{background-image:url('https://images.unsplash.com/photo-1534447677768-be436bb09401?w=1400&q=70');}
-.theme-ph_ink{background-image:url('https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=1400&q=70');}
-.theme-ph_neon_art{background-image:url('https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1400&q=70');}
-.theme-ph_gradient{background-image:url('https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=1400&q=70');}
-.theme-ph_texture{background-image:url('https://images.unsplash.com/photo-1557804506-669a67965ba0?w=1400&q=70');}
-.theme-ph_particles{background-image:url('https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?w=1400&q=70');}
-.theme-ph_uiux{background-image:url('https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=1400&q=70');}
+.theme-ph_marble::before{background-image:url('https://images.unsplash.com/photo-1517842645767-c639042777db?w=1400&q=70');}
+.theme-ph_bokeh::before{background-image:url('https://images.unsplash.com/photo-1556155092-490a1ba16284?w=1400&q=70');}
+.theme-ph_abstract_geo::before{background-image:url('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1400&q=70');}
+.theme-ph_smoke::before{background-image:url('https://images.unsplash.com/photo-1534447677768-be436bb09401?w=1400&q=70');}
+.theme-ph_ink::before{background-image:url('https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=1400&q=70');}
+.theme-ph_neon_art::before{background-image:url('https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1400&q=70');}
+.theme-ph_gradient::before{background-image:url('https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=1400&q=70');}
+.theme-ph_texture::before{background-image:url('https://images.unsplash.com/photo-1557804506-669a67965ba0?w=1400&q=70');}
+.theme-ph_particles::before{background-image:url('https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?w=1400&q=70');}
+.theme-ph_uiux::before{background-image:url('https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=1400&q=70');}
 
 /* ── THÈMES ANIMÉS (fond qui bouge légèrement) ── */
 /* Animation subtile de zoom/pan pour les thèmes cosmos et abstract */
 @keyframes bgSlowZoom{0%{background-size:100%}100%{background-size:110%}}
 @keyframes bgSlowPan{0%{background-position:center}50%{background-position:60% 40%}100%{background-position:center}}
-.theme-ph_galaxy,.theme-ph_nebula,.theme-ph_aurora,.theme-ph_stars,
-.theme-ph_bokeh,.theme-ph_particles,.theme-ph_gradient,.theme-ph_smoke{
-    animation:bgSlowZoom 12s ease-in-out infinite alternate;
-}
-.theme-ph_ocean,.theme-ph_waves,.theme-ph_waterfall,.theme-ph_lake,
-.theme-ph_beach,.theme-ph_forest,.theme-ph_jungle{
-    animation:bgSlowPan 15s ease-in-out infinite;
-}
+/* Animation par défaut retirée — contrôle via le bouton 🎬 */
+
 
 /* Mobile: désactiver background-attachment fixed pour perf */
 @media(max-width:768px){
@@ -2266,37 +2318,90 @@ radial-gradient(circle at 50% 50%,rgba(255,183,77,.06) 0%,transparent 50%);}
 .pf-footer-email:hover{opacity:1;text-decoration:underline;}
 .pf-footer-sep{opacity:.3;margin:0 4px;}
 
+/* Signature discrète Mental Studio — présente sur chaque portfolio exporté */
+.pf-editor-signature{
+    text-align:center;
+    padding:14px 20px 22px;
+    font-size:10.5px;
+    color:inherit;
+    opacity:.4;
+    letter-spacing:.2px;
+    transition:opacity .3s ease;
+}
+.pf-editor-signature:hover{opacity:.7;}
+.pf-editor-signature-brand{
+    font-weight:700;
+    background:linear-gradient(135deg,#6366f1,#a78bfa);
+    -webkit-background-clip:text;
+    background-clip:text;
+    -webkit-text-fill-color:transparent;
+}
+
 /* ── NAVIGATION MULTI-PAGES ─────────────────────── */
+/* ── MULTI-PAGES NAV ── */
 .pf-multipage-nav{
-    position:sticky;top:0;z-index:50;
-    display:flex;align-items:center;justify-content:center;
-    gap:4px;padding:10px 16px;
-    background:rgba(255,255,255,.88);
-    backdrop-filter:blur(16px);
-    border-bottom:1px solid rgba(0,0,0,.06);
-    flex-wrap:wrap;
-    margin:0 0 24px 0;
+    position:sticky;top:0;z-index:100;
+    display:flex;align-items:center;justify-content:flex-end;
+    padding:10px 20px;
+    background:transparent;
 }
-[class*="theme-ph_"] .pf-multipage-nav,
-.theme-noir .pf-multipage-nav,.theme-luxury .pf-multipage-nav,
-.theme-cyber .pf-multipage-nav,.theme-editorial .pf-multipage-nav{
-    background:rgba(8,8,18,.8);
-    border-bottom-color:rgba(255,255,255,.08);
+/* Bouton hamburger 3D */
+#pf-hamburger-btn{
+    width:44px;height:44px;border-radius:50%;
+    background:linear-gradient(145deg,rgba(255,255,255,.18),rgba(255,255,255,.06));
+    border:1px solid rgba(255,255,255,.22);
+    box-shadow:0 4px 16px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.2);
+    cursor:pointer;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+    transition:all .25s cubic-bezier(.34,1.56,.64,1);
+    backdrop-filter:blur(10px);
+    flex-shrink:0;
 }
-.pf-mpnav-link{
-    padding:6px 16px;border-radius:100px;
-    font-size:11px;font-weight:700;letter-spacing:.3px;
-    color:inherit;text-decoration:none;
-    transition:all .2s;opacity:.6;cursor:pointer;
-    border:none;background:transparent;font-family:inherit;
+#pf-hamburger-btn:hover{
+    transform:scale(1.1);
+    box-shadow:0 6px 24px rgba(99,102,241,.35),inset 0 1px 0 rgba(255,255,255,.25);
+    background:linear-gradient(145deg,rgba(99,102,241,.3),rgba(168,85,247,.2));
 }
-.pf-mpnav-link:hover{opacity:1;background:rgba(99,102,241,.12);color:#6366f1;}
-.pf-mpnav-link.active{opacity:1;background:rgba(99,102,241,.15);color:#6366f1;}
+#pf-hamburger-btn span{
+    width:16px;height:2px;
+    background:#fff;border-radius:1px;
+    transition:all .25s ease;
+    display:block;
+}
+/* Menu déroulant */
+#pf-hamburger-menu{
+    position:absolute;top:calc(100% + 6px);right:20px;
+    min-width:190px;
+    background:rgba(10,12,28,.92);
+    backdrop-filter:blur(20px);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:16px;
+    box-shadow:0 16px 48px rgba(0,0,0,.4);
+    overflow:hidden;
+    z-index:200;
+    transform-origin:top right;
+    animation:menuDropIn .2s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes menuDropIn{from{opacity:0;transform:scale(.9) translateY(-8px);}to{opacity:1;transform:scale(1) translateY(0);}}
+#pf-hamburger-menu a{
+    display:flex;align-items:center;gap:10px;
+    padding:11px 16px;
+    color:#e2e8f0;font-size:12px;font-weight:600;
+    text-decoration:none;
+    transition:background .15s;
+    border-bottom:1px solid rgba(255,255,255,.05);
+}
+#pf-hamburger-menu a:last-child{border-bottom:none;}
+#pf-hamburger-menu a:hover{background:rgba(99,102,241,.2);color:#fff;}
+#pf-hamburger-menu a i{font-size:15px;color:#818cf8;flex-shrink:0;}
+
+/* Section isolée en mode multi-pages */
+.pf-section-page{display:block;}
+.pf-section-page.hidden{display:none;}
 
 @media(max-width:768px){
     .pf-footer{margin-top:40px;padding:20px 16px;flex-direction:column;gap:10px;font-size:11px;}
-    .pf-multipage-nav{gap:2px;padding:8px 10px;}
-    .pf-mpnav-link{padding:5px 10px;font-size:10px;}
+    #pf-hamburger-btn{width:40px;height:40px;}
 }
 
 
@@ -2418,6 +2523,298 @@ radial-gradient(circle at 50% 50%,rgba(255,183,77,.06) 0%,transparent 50%);}
 /* ── CADRE PROFIL CUSTOM ─────────────────────────── */
 .pf-profile-img{transition:border .3s ease;}
 
+
+/* ── MINI MENU ANIMATION BG THÈMES PHOTO ─────── */
+#ph-anim-picker{
+    position:fixed;
+    bottom:80px;right:16px;
+    z-index:9800;
+    display:none;
+    flex-direction:column;
+    align-items:flex-end;
+    gap:6px;
+}
+#ph-anim-trigger{
+    width:40px;height:40px;border-radius:50%;
+    background:rgba(99,102,241,.85);color:#fff;
+    border:none;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    font-size:18px;
+    box-shadow:0 4px 16px rgba(99,102,241,.4);
+    backdrop-filter:blur(8px);
+    transition:all .25s cubic-bezier(.34,1.56,.64,1);
+}
+#ph-anim-trigger:hover{transform:scale(1.1);background:rgba(99,102,241,1);}
+#ph-anim-dropdown{
+    display:none;
+    background:rgba(10,12,28,.95);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:14px;
+    overflow:hidden;
+    box-shadow:0 12px 40px rgba(0,0,0,.4);
+    backdrop-filter:blur(16px);
+    min-width:180px;
+    animation:menuDropIn .2s cubic-bezier(.34,1.56,.64,1);
+}
+.ph-anim-opt{
+    display:flex;align-items:center;gap:10px;
+    padding:10px 14px;
+    color:#e2e8f0;font-size:11px;font-weight:600;
+    cursor:pointer;border:none;background:none;width:100%;
+    text-align:left;transition:background .15s;
+    border-bottom:1px solid rgba(255,255,255,.05);
+}
+.ph-anim-opt:last-child{border-bottom:none;}
+.ph-anim-opt:hover{background:rgba(99,102,241,.2);}
+.ph-anim-opt.active{color:#818cf8;background:rgba(99,102,241,.15);}
+
+
+/* ── KEYFRAMES ANIMATIONS FOND PHOTO ─────────── */
+@keyframes bgSlowZoom{0%{background-size:100% 100%;}100%{background-size:115% 115%;}}
+@keyframes bgSlowPan{0%{background-position:center center;}25%{background-position:55% 45%;}50%{background-position:45% 55%;}75%{background-position:55% 55%;}100%{background-position:center center;}}
+@keyframes bgBlurAnim{0%,100%{filter:brightness(.9);}50%{filter:brightness(1.05);}}
+@keyframes bgShake{0%,100%{background-position:center;}20%{background-position:51% 50%;}40%{background-position:49% 51%;}60%{background-position:51% 49%;}80%{background-position:49% 50%;}}
+/* 5 nouvelles animations de fond photo */
+@keyframes bgTilt{0%,100%{transform:rotate(0deg) scale(1.03);}50%{transform:rotate(.6deg) scale(1.03);}}
+@keyframes bgColorWave{0%,100%{filter:saturate(1) hue-rotate(0deg);}50%{filter:saturate(1.25) hue-rotate(8deg);}}
+@keyframes bgDiagonalDrift{0%{background-position:40% 40%;}50%{background-position:60% 60%;}100%{background-position:40% 40%;}}
+@keyframes bgBreathe{0%,100%{filter:contrast(1) brightness(1);transform:scale(1.02);}50%{filter:contrast(1.12) brightness(1.06);transform:scale(1.05);}}
+@keyframes bgParallaxFloat{0%,100%{background-position:center 45%;}50%{background-position:center 55%;}}
+
+
+/* ── CLASSES ANIMATION FOND (appliquées via JS sur #portfolio-viewport) ── */
+.ph-anim-none::before{animation:none!important;}
+.ph-anim-slowzoom::before{animation:bgSlowZoom 14s ease-in-out infinite alternate!important;}
+.ph-anim-slowpan::before{animation:bgSlowPan 18s ease-in-out infinite!important;}
+.ph-anim-pulse::before{animation:bgPulseScale 5s ease-in-out infinite!important;}
+.ph-anim-blur::before{animation:bgBlurAnim 6s ease-in-out infinite!important;}
+.ph-anim-shake::before{animation:bgShake 8s ease-in-out infinite!important;}
+.ph-anim-tilt::before{animation:bgTilt 9s ease-in-out infinite!important;}
+.ph-anim-colorwave::before{animation:bgColorWave 10s ease-in-out infinite!important;}
+.ph-anim-diagonal::before{animation:bgDiagonalDrift 16s ease-in-out infinite!important;}
+.ph-anim-breathe::before{animation:bgBreathe 7s ease-in-out infinite!important;}
+.ph-anim-parallax::before{animation:bgParallaxFloat 12s ease-in-out infinite!important;}
+@keyframes bgPulseScale{0%,100%{transform:scale(1);filter:brightness(.95);}50%{transform:scale(1.04);filter:brightness(1.1);}}
+
+
+/* ── ANIMATIONS FOND CUSTOM BUILDER — ciblent ::before uniquement ── */
+.custom-bganim-none.has-custom-bg::before{animation:none!important;}
+.custom-bganim-slowzoom.has-custom-bg::before{animation:bgSlowZoom 14s ease-in-out infinite alternate!important;}
+.custom-bganim-slowpan.has-custom-bg::before{animation:bgSlowPan 18s ease-in-out infinite!important;}
+.custom-bganim-pulse.has-custom-bg::before{animation:bgPulseScale 5s ease-in-out infinite!important;}
+.custom-bganim-gradient.has-custom-bg::before{animation:bgSlowZoom 10s ease-in-out infinite alternate,bgHueShift 8s linear infinite!important;}
+@keyframes bgHueShift{0%{filter:hue-rotate(0deg);}100%{filter:hue-rotate(360deg);}}
+
+/* ═══════════════════════════════════════════════════
+   AJOUT AUTH — Écran de connexion Google + Menu compte
+   Zéro modification du CSS existant au-dessus de ce bloc
+   ═══════════════════════════════════════════════════ */
+#auth-screen {
+  position        : fixed;
+  inset           : 0;
+  z-index         : 99999;
+  background      : linear-gradient(135deg, #0a0a14 0%, #111128 50%, #0a0a14 100%);
+  display         : flex;
+  align-items     : center;
+  justify-content : center;
+  padding         : 20px;
+}
+#auth-card {
+  background      : rgba(255,255,255,0.04);
+  border          : 1px solid rgba(255,255,255,0.09);
+  border-radius   : 24px;
+  padding         : 44px 40px;
+  width           : 100%;
+  max-width       : 420px;
+  text-align      : center;
+  backdrop-filter : blur(24px);
+  animation       : authIn 0.45s cubic-bezier(.22,.68,0,1.2);
+}
+@keyframes authIn {
+  from { opacity:0; transform:translateY(24px) scale(.97); }
+  to   { opacity:1; transform:translateY(0)    scale(1);   }
+}
+#btn-google-signin {
+  display         : flex;
+  align-items     : center;
+  justify-content : center;
+  gap             : 12px;
+  width           : 100%;
+  padding         : 14px 20px;
+  background      : #ffffff;
+  border          : 1.5px solid #e2e8f0;
+  border-radius   : 12px;
+  font-size       : 14px;
+  font-weight     : 600;
+  color           : #1a1a2e;
+  cursor          : pointer;
+  transition      : all 0.2s;
+  font-family     : 'DM Sans', sans-serif;
+}
+#btn-google-signin:hover {
+  background      : #f5f8ff;
+  box-shadow      : 0 6px 24px rgba(99,102,241,0.18);
+  transform       : translateY(-2px);
+}
+#btn-google-signin:active  { transform:translateY(0); }
+#btn-google-signin:disabled{ opacity:0.6; cursor:not-allowed; transform:none; }
+#auth-loading {
+  margin-top      : 14px;
+  font-size       : 13px;
+  color           : rgba(255,255,255,0.45);
+  display         : flex;
+  align-items     : center;
+  justify-content : center;
+  gap             : 8px;
+}
+.auth-spinner {
+  width           : 16px;
+  height          : 16px;
+  border          : 2px solid rgba(255,255,255,0.15);
+  border-top-color: #818cf8;
+  border-radius   : 50%;
+  animation       : authSpin .7s linear infinite;
+  display         : inline-block;
+}
+@keyframes authSpin { to { transform:rotate(360deg); } }
+#auth-error {
+  display         : none;
+  align-items     : center;
+  gap             : 8px;
+  background      : rgba(239,68,68,0.1);
+  border          : 1px solid rgba(239,68,68,0.25);
+  border-radius   : 10px;
+  padding         : 11px 14px;
+  margin-top      : 14px;
+  font-size       : 13px;
+  color           : #f87171;
+  text-align      : left;
+}
+#auth-popup-blocked { margin-top:12px; font-size:13px; color:rgba(255,255,255,0.4); }
+#auth-popup-blocked a { color:#818cf8; font-weight:600; text-decoration:none; }
+#auth-terms { margin-top:22px; font-size:11px; color:rgba(255,255,255,0.25); line-height:1.6; }
+#auth-terms a { color:rgba(255,255,255,0.4); }
+
+.account-menu-item {
+  display         : flex;
+  align-items     : center;
+  gap             : 10px;
+  width           : 100%;
+  padding         : 10px 16px;
+  background      : transparent;
+  border          : none;
+  color           : var(--ui-text, #e8e8f0);
+  font-size       : 13px;
+  font-family     : 'DM Sans', sans-serif;
+  cursor          : pointer;
+  text-align      : left;
+  transition      : background 0.15s, color 0.15s;
+}
+.account-menu-item:hover { background:var(--ui-surface, #16161f); color:var(--ui-accent, #6366f1); }
+#guest-google-signin-btn:hover {
+  background:linear-gradient(135deg,#818cf8,#a5b4fc)!important;
+  color:#fff!important;
+  box-shadow:0 0 20px rgba(129,140,248,.55),0 4px 14px rgba(99,102,241,.35);
+  transform:translateY(-1px);
+}
+.account-menu-section-label {
+  padding         : 10px 16px 4px;
+  font-size       : 10px;
+  font-weight     : 700;
+  text-transform  : uppercase;
+  letter-spacing  : 1px;
+  color           : var(--ui-muted, #7a7a9a);
+}
+
+#payment-history-modal {
+  display:none; position:fixed; inset:0; background:rgba(0,0,0,0.75);
+  z-index:99998; align-items:center; justify-content:center; padding:20px;
+}
+#payment-history-modal.open { display:flex; }
+#payment-history-card {
+  background:var(--ui-panel, #1e1e2e); border:1px solid var(--ui-border, #2a2a3a);
+  border-radius:20px; width:100%; max-width:580px; max-height:80vh;
+  overflow:hidden; display:flex; flex-direction:column; animation:authIn .3s ease;
+}
+#payment-history-card .ph-head {
+  padding:20px 24px; font-size:16px; font-weight:700; color:var(--ui-text, #e8e8f0);
+  border-bottom:1px solid var(--ui-border, #2a2a3a); display:flex;
+  align-items:center; justify-content:space-between;
+}
+#payment-history-card .ph-close {
+  background:transparent; border:none; cursor:pointer; color:var(--ui-muted,#7a7a9a);
+  font-size:20px; width:32px; height:32px; border-radius:8px;
+  display:flex; align-items:center; justify-content:center; transition:.15s;
+}
+#payment-history-card .ph-close:hover { background:var(--ui-surface,#16161f); color:var(--ui-text,#e8e8f0); }
+#payment-history-card .ph-body { overflow-y:auto; padding:16px; }
+#payment-history-card .ph-empty { text-align:center; padding:40px 20px; color:var(--ui-muted,#7a7a9a); font-size:13px; }
+.ph-row {
+  display:grid; grid-template-columns:1fr 90px 100px 80px; gap:8px;
+  padding:10px 12px; border-radius:8px; font-size:12px; align-items:center;
+  color:var(--ui-text, #e8e8f0);
+}
+.ph-row:nth-child(even) { background:var(--ui-surface, #16161f); }
+.ph-head-row {
+  font-weight:700; font-size:11px; color:var(--ui-muted, #7a7a9a) !important;
+  border-bottom:1px solid var(--ui-border, #2a2a3a); margin-bottom:6px;
+}
+.s-paid    { color:#10b981; font-weight:700; }
+.s-pending { color:#f59e0b; font-weight:700; }
+.s-failed  { color:#ef4444; font-weight:700; }
+
+#saved-portfolios-modal {
+  display:none; position:fixed; inset:0; background:rgba(0,0,0,0.75);
+  z-index:99998; align-items:center; justify-content:center; padding:20px;
+}
+#saved-portfolios-modal.open { display:flex; }
+#saved-portfolios-card {
+  background:var(--ui-panel,#1e1e2e); border:1px solid var(--ui-border,#2a2a3a);
+  border-radius:20px; width:100%; max-width:520px; max-height:80vh;
+  overflow:hidden; display:flex; flex-direction:column; animation:authIn .3s ease;
+}
+.sp-item {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:12px 16px; border-radius:10px; margin-bottom:6px;
+  background:var(--ui-surface,#16161f); border:1px solid var(--ui-border,#2a2a3a);
+}
+.sp-item-name { font-size:13px; font-weight:600; color:var(--ui-text,#e8e8f0); }
+.sp-item-date { font-size:11px; color:var(--ui-muted,#7a7a9a); }
+.sp-load-btn {
+  background:var(--ui-accent,#6366f1); color:#fff; border:none;
+  padding:7px 14px; border-radius:8px; font-size:12px; font-weight:600;
+  cursor:pointer; transition:.15s;
+}
+.sp-load-btn:hover { opacity:.85; }
+
+#sync-indicator {
+  display:flex; align-items:center; gap:5px; font-size:11px;
+  color:var(--ui-muted, #7a7a9a); padding:4px 10px; border-radius:20px;
+  background:var(--ui-surface, #16161f); border:1px solid var(--ui-border, #2a2a3a);
+  transition:opacity .2s;
+}
+#sync-dot { width:7px; height:7px; border-radius:50%; background:#10b981; transition:background .3s; }
+#sync-dot.syncing { background:#f59e0b; animation:authSpin 1s linear infinite; }
+#sync-dot.error   { background:#ef4444; }
+/* ═══ RESPONSIVE — bouton compte unique, PC et mobile ═══
+   Le bouton compte est désormais le point d'entrée unique
+   pour tout (thème, export, publier, hébergement, compte
+   Google, historique), aussi bien sur PC que sur mobile.
+   Seule sa taille est ajustée pour rester confortable
+   au doigt sur petit écran. */
+@media(max-width:768px){
+    #account-avatar-btn{padding:3px!important;}
+    #account-avatar-img,#account-guest-icon{width:34px!important;height:34px!important;}
+    #account-guest-icon{font-size:30px!important;}
+    #account-avatar-img{border-width:2px!important;}
+    #account-menu{
+        right:-8px!important;
+        min-width:calc(100vw - 24px)!important;
+        max-width:320px!important;
+    }
+}
+/* ═══ FIN AJOUT AUTH — CSS ═══ */
+
 </style>
 </head>
 <body class="">
@@ -2457,25 +2854,101 @@ radial-gradient(circle at 50% 50%,rgba(255,183,77,.06) 0%,transparent 50%);}
             </div>
             <!-- ACTIONS -->
             <div class="header-actions">
-                <!-- Bouton dark mode icône seul -->
-                <button class="btn-icon" id="header-theme-btn" onclick="toggleEditorTheme()" title="Mode sombre / clair" style="width:28px;height:28px;font-size:13px;"><i class="ri-moon-line"></i></button>
-                <!-- Export compact -->
-                <div class="dropdown" id="export-dropdown-wrapper">
-                    <button class="btn-export" onclick="toggleExportMenu()" style="padding:6px 10px;font-size:11px;gap:4px;">
-                        <i class="ri-rocket-2-line"></i>
-                        <span class="export-text">Publier</span>
-                        <i class="ri-arrow-down-s-line"></i>
+                <!-- ═══ AJOUT AUTH — Bouton compte TOUJOURS visible ═══
+                     Contient : mode sombre/clair + export + publier +
+                     hébergement + portfolios sauvegardés + historique
+                     + compte Google + déconnexion.
+                     Visible sur PC ET mobile, dès le chargement de la
+                     page, sans attendre une connexion réussie. -->
+                <div id="sync-indicator" style="display:none;">
+                    <span id="sync-dot"></span>
+                    <span id="sync-label">Sauvegardé</span>
+                </div>
+
+                <div id="account-wrapper" style="position:relative;margin-left:6px;">
+
+                    <button id="account-avatar-btn" onclick="toggleAccountMenu(event)" title="Mon compte"
+                        style="background:transparent;border:none;cursor:pointer;padding:2px;border-radius:50%;line-height:0;display:flex;align-items:center;justify-content:center;">
+                        <img id="account-avatar-img" src="" alt="Compte"
+                            style="width:32px;height:32px;border-radius:50%;object-fit:cover;display:none;border:2px solid var(--ui-accent,#6366f1);">
+                        <i id="account-guest-icon" class="ri-account-circle-line"
+                            style="font-size:26px;color:var(--ui-muted,#7a7a9a);display:flex;"></i>
                     </button>
-                    <div class="dropdown-menu" id="export-menu">
-                        <div class="dropdown-header">Options d'export</div>
-                        <button class="dropdown-item" onclick="openHostingGuide()">
-                            <i class="ri-global-line"></i> Hébergement <span class="dropdown-item-sub">Guide</span>
-                        </button>
-                        <button class="dropdown-item" onclick="exportPortfolio()">
-                            <i class="ri-rocket-2-line"></i> Publier le Portfolio <span class="dropdown-item-sub">standalone</span>
-                        </button>
+
+                    <div id="account-menu" style="display:none;position:absolute;right:0;top:calc(100% + 10px);
+                        background:var(--ui-panel,#1e1e2e);border:1px solid var(--ui-border,#2a2a3a);
+                        border-radius:16px;min-width:272px;z-index:9999;overflow:hidden;
+                        box-shadow:0 24px 60px rgba(0,0,0,.45);">
+
+                        <!-- ── Vu par un visiteur NON connecté ── -->
+                        <div id="account-menu-guest" style="padding:16px;">
+                            <div style="text-align:center;padding:8px 0 14px;">
+                                <i class="ri-account-circle-line" style="font-size:40px;color:var(--ui-accent,#6366f1);display:block;margin-bottom:8px;"></i>
+                                <div style="font-size:13px;font-weight:700;color:var(--ui-text,#e8e8f0);margin-bottom:4px;">Non connecté</div>
+                                <div style="font-size:11px;color:var(--ui-muted,#7a7a9a);">Connectez-vous pour sauvegarder votre travail dans le cloud.</div>
+                            </div>
+                            <button class="account-menu-item" id="guest-google-signin-btn" onclick="signInWithGoogle();closeAccountMenu();"
+                                style="justify-content:center;background:linear-gradient(135deg,#6366f1,#818cf8);border:1px solid rgba(129,140,248,.5);border-radius:10px;font-weight:700;color:#fff;transition:all .25s ease;">
+                                <i class="ri-google-fill" style="color:#fff;"></i> Se connecter avec Google
+                            </button>
+                        </div>
+
+                        <!-- ── En-tête profil (visible une fois connecté) ── -->
+                        <div id="account-menu-profile-head" style="display:none;padding:16px 16px 12px;align-items:center;gap:12px;">
+                            <img id="menu-avatar" src="" alt=""
+                                style="width:44px;height:44px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid var(--ui-accent,#6366f1);">
+                            <div style="overflow:hidden;flex:1;">
+                                <div id="menu-name" style="font-size:14px;font-weight:700;color:var(--ui-text,#e8e8f0);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
+                                <div id="menu-email" style="font-size:11px;color:var(--ui-muted,#7a7a9a);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
+                            </div>
+                        </div>
+
+                        <div id="account-menu-sync-row" style="display:none;padding:5px 16px 10px;align-items:center;gap:6px;">
+                            <span id="menu-sync-dot" style="width:7px;height:7px;border-radius:50%;background:#10b981;display:inline-block;transition:background .3s;"></span>
+                            <span id="menu-sync-text" style="font-size:11px;color:var(--ui-muted,#7a7a9a);">Synchronisé ✓</span>
+                        </div>
+
+                        <!-- ── Options toujours disponibles, connecté ou non ── -->
+                        <div id="account-menu-options">
+                            <div style="height:1px;background:var(--ui-border,#2a2a3a);"></div>
+
+                            <div class="account-menu-section-label">Portfolio</div>
+                            <button class="account-menu-item" onclick="exportPortfolio();closeAccountMenu();">
+                                <i class="ri-download-2-line"></i> Télécharger mon portfolio
+                            </button>
+                            <button class="account-menu-item" onclick="exportPortfolio();closeAccountMenu();">
+                                <i class="ri-upload-cloud-line"></i> Publier mon portfolio
+                            </button>
+                            <button class="account-menu-item" onclick="openHostingGuide();closeAccountMenu();">
+                                <i class="ri-global-line"></i> Guide hébergement
+                            </button>
+                            <button class="account-menu-item" id="account-saved-portfolios-btn" onclick="openSavedPortfolios();closeAccountMenu();" style="display:none;">
+                                <i class="ri-folder-line"></i> Mes portfolios sauvegardés
+                            </button>
+
+                            <div style="height:1px;background:var(--ui-border,#2a2a3a);"></div>
+
+                            <div class="account-menu-section-label">Préférences</div>
+                            <button class="account-menu-item" id="account-theme-toggle-btn" onclick="toggleEditorTheme();">
+                                <i class="ri-moon-line" id="account-theme-icon"></i>
+                                <span id="account-theme-label">Mode sombre</span>
+                            </button>
+                            <button class="account-menu-item" id="account-payment-history-btn" onclick="openPaymentHistory();closeAccountMenu();" style="display:none;">
+                                <i class="ri-receipt-line"></i> Historique paiements
+                            </button>
+
+                            <div id="account-signout-row" style="display:none;">
+                                <div style="height:1px;background:var(--ui-border,#2a2a3a);"></div>
+                                <button class="account-menu-item" onclick="signOut();" style="color:#ef4444;">
+                                    <i class="ri-logout-box-line"></i> Se déconnecter
+                                </button>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
+                <!-- ═══ FIN AJOUT AUTH — compte utilisateur ═══ -->
+
             </div>
         </div>
 
@@ -2828,6 +3301,46 @@ radial-gradient(circle at 50% 50%,rgba(255,183,77,.06) 0%,transparent 50%);}
     </div>
 
 </div><!-- end app-container -->
+
+<!-- ── INLINE TEXT EDIT TOOLBAR ── -->
+<div id="inline-toolbar" style="display:none;position:fixed;z-index:2147483647;background:rgba(15,23,42,.95);border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:6px 8px;gap:4px;flex-wrap:wrap;backdrop-filter:blur(12px);box-shadow:0 8px 32px rgba(0,0,0,.3);max-width:340px;">
+    <button onclick="inlineFormat('bold')" title="Gras" style="width:28px;height:28px;border:none;background:rgba(255,255,255,.1);color:#fff;border-radius:6px;cursor:pointer;font-weight:700;font-size:13px;">B</button>
+    <button onclick="inlineFormat('italic')" title="Italique" style="width:28px;height:28px;border:none;background:rgba(255,255,255,.1);color:#fff;border-radius:6px;cursor:pointer;font-style:italic;font-size:13px;">I</button>
+    <button onclick="inlineFormat('underline')" title="Souligné" style="width:28px;height:28px;border:none;background:rgba(255,255,255,.1);color:#fff;border-radius:6px;cursor:pointer;text-decoration:underline;font-size:13px;">U</button>
+    <div style="width:1px;background:rgba(255,255,255,.2);margin:0 2px;align-self:stretch;"></div>
+    <div style="display:flex;align-items:center;gap:4px;">
+        <span style="color:#aaa;font-size:10px;">Couleur</span>
+        <input type="color" value="#ffffff" id="inline-color-pick" oninput="inlineColor(this.value)" onchange="inlineColor(this.value)" style="width:24px;height:24px;border:none;border-radius:4px;cursor:pointer;padding:0;background:none;">
+    </div>
+    <div style="display:flex;align-items:center;gap:4px;">
+        <span style="color:#aaa;font-size:10px;">Taille</span>
+        <select onchange="inlineFontSize(this.value)" style="font-size:10px;background:rgba(255,255,255,.1);color:#fff;border:none;border-radius:4px;padding:2px 4px;">
+            <option value="">Auto</option><option value="12px">12</option><option value="14px">14</option>
+            <option value="16px">16</option><option value="18px">18</option><option value="20px">20</option>
+            <option value="24px">24</option><option value="28px">28</option><option value="32px">32</option>
+            <option value="36px">36</option><option value="48px">48</option>
+        </select>
+    </div>
+    <button onclick="closeInlineToolbar()" style="width:24px;height:24px;border:none;background:rgba(255,0,0,.2);color:#fff;border-radius:6px;cursor:pointer;font-size:11px;margin-left:4px;">✕</button>
+</div>
+
+<!-- ── MINI MENU ANIMATION BG PHOTOS ── -->
+<div id="ph-anim-picker">
+    <div id="ph-anim-dropdown">
+        <button class="ph-anim-opt active" onclick="setPhotoAnim('none')" data-anim="none"><i class="ri-stop-line" style="color:#818cf8;font-size:14px;"></i>Aucune animation</button>
+        <button class="ph-anim-opt" onclick="setPhotoAnim('slowzoom')" data-anim="slowzoom"><i class="ri-zoom-in-line" style="color:#818cf8;font-size:14px;"></i>Zoom lent</button>
+        <button class="ph-anim-opt" onclick="setPhotoAnim('slowpan')" data-anim="slowpan"><i class="ri-drag-move-line" style="color:#818cf8;font-size:14px;"></i>Déplacement lent</button>
+        <button class="ph-anim-opt" onclick="setPhotoAnim('pulse')" data-anim="pulse"><i class="ri-pulse-line" style="color:#818cf8;font-size:14px;"></i>Pulsation</button>
+        <button class="ph-anim-opt" onclick="setPhotoAnim('blur')" data-anim="blur"><i class="ri-blur-off-line" style="color:#818cf8;font-size:14px;"></i>Flou animé</button>
+        <button class="ph-anim-opt" onclick="setPhotoAnim('shake')" data-anim="shake"><i class="ri-contrast-2-line" style="color:#818cf8;font-size:14px;"></i>Vibration subtile</button>
+        <button class="ph-anim-opt" onclick="setPhotoAnim('tilt')" data-anim="tilt"><i class="ri-compass-3-line" style="color:#818cf8;font-size:14px;"></i>Inclinaison douce</button>
+        <button class="ph-anim-opt" onclick="setPhotoAnim('colorwave')" data-anim="colorwave"><i class="ri-contrast-drop-2-line" style="color:#818cf8;font-size:14px;"></i>Vague de couleur</button>
+        <button class="ph-anim-opt" onclick="setPhotoAnim('diagonal')" data-anim="diagonal"><i class="ri-arrow-right-up-line" style="color:#818cf8;font-size:14px;"></i>Glissement diagonal</button>
+        <button class="ph-anim-opt" onclick="setPhotoAnim('breathe')" data-anim="breathe"><i class="ri-heart-pulse-line" style="color:#818cf8;font-size:14px;"></i>Respiration</button>
+        <button class="ph-anim-opt" onclick="setPhotoAnim('parallax')" data-anim="parallax"><i class="ri-stack-line" style="color:#818cf8;font-size:14px;"></i>Flottement parallax</button>
+    </div>
+    <button id="ph-anim-trigger" onclick="togglePhotoAnimMenu()" title="Animer le fond">🎬</button>
+</div>
 
 <input type="file" id="global-file-input" accept="image/*" style="position:absolute;left:-9999px;">
 
@@ -3323,7 +3836,6 @@ const themeCatalogData=[
     {id:'translator',name:'Traducteur',cat:'Langue',c1:'#fffbeb',c2:'#b45309'},
     {id:'event',name:'Event Planner',cat:'Événementiel',c1:'#1a0020',c2:'#f472b6'},
     {id:'ngo',name:'ONG/Humanitaire',cat:'Social',c1:'#f0fdf4',c2:'#15803d'},
-    {id:'custom',name:'Custom Builder',cat:'Manuel',c1:'#e2e8f0',c2:'#6366f1'},
     // ═══ 50 THÈMES PHOTO ═══
     // Nature
     {id:'ph_forest',name:'Forêt Brumeuse',cat:'Photo Nature',c1:'#0a1a0a',c2:'#4ade80'},
@@ -3381,7 +3893,8 @@ const themeCatalogData=[
     {id:'ph_gradient',name:'Gradient Fluide',cat:'Photo Lifestyle',c1:'#060218',c2:'#c084fc'},
     {id:'ph_texture',name:'Texture Premium',cat:'Photo Lifestyle',c1:'#0a080a',c2:'#d1d5db'},
     {id:'ph_particles',name:'Particules Lumineuses',cat:'Photo Lifestyle',c1:'#020210',c2:'#a5b4fc'},
-    {id:'ph_uiux',name:'UI/UX Pro',cat:'Photo Lifestyle',c1:'#040814',c2:'#6366f1'}
+    {id:'ph_uiux',name:'UI/UX Pro',cat:'Photo Lifestyle',c1:'#040814',c2:'#6366f1'},
+    {id:'custom',name:'⚙️ Custom Builder',cat:'Manuel',c1:'#e2e8f0',c2:'#6366f1'}
 ];
 
 const layoutCatalogData=[
@@ -3389,7 +3902,7 @@ const layoutCatalogData=[
     {id:'centered',name:'Centré',icon:'ri-layout-top-line'},{id:'split',name:'Split 50/50',icon:'ri-layout-column-line'},
     {id:'sidebar',name:'Sidebar',icon:'ri-layout-5-line'},{id:'herobg',name:'Immersif',icon:'ri-image-line'},
     {id:'zigzag',name:'Zigzag',icon:'ri-layout-row-line'},{id:'minimal',name:'Minimal',icon:'ri-text'},
-    {id:'masonry',name:'Maçonnerie',icon:'ri-layout-masonry-line'},{id:'custom',name:'Custom',icon:'ri-settings-4-line'},
+    {id:'masonry',name:'Maçonnerie',icon:'ri-layout-masonry-line'},
     {id:'magazine',name:'Magazine',icon:'ri-newspaper-line'},
     {id:'cards3d',name:'Cartes 3D',icon:'ri-stack-line'},
     {id:'timeline',name:'Timeline',icon:'ri-time-line'},
@@ -3399,7 +3912,8 @@ const layoutCatalogData=[
     {id:'glass',name:'Glassmorphism',icon:'ri-blur-off-line'},
     {id:'columns3',name:'3 Colonnes',icon:'ri-layout-grid-line'},
     {id:'story',name:'Story Scroll',icon:'ri-profile-line'},
-    {id:'horizontal',name:'Défilement H.',icon:'ri-arrow-right-line'}
+    {id:'horizontal',name:'Défilement H.',icon:'ri-arrow-right-line'},
+    {id:'custom',name:'⚙️ Custom Builder',icon:'ri-settings-4-line'}
 ];
 
 const animCatalogData=[
@@ -3504,21 +4018,35 @@ function render(){
         vp.style.setProperty('--pf-text',state.custom.text);vp.style.setProperty('--pf-accent',state.custom.accent);
         vp.style.setProperty('--pf-card',state.custom.card);
     }
-    // Background image personnalisé (tous thèmes + custom)
+    // Background image personnalisé — appliqué sur ::before dédié (jamais sur le texte)
+    var customBgStyleTag = document.getElementById('custom-bg-style');
+    if(!customBgStyleTag){
+        customBgStyleTag = document.createElement('style');
+        customBgStyleTag.id = 'custom-bg-style';
+        document.head.appendChild(customBgStyleTag);
+    }
     if(state.custom.bgImage){
-        vp.style.backgroundImage = 'linear-gradient(rgba(0,0,0,'+((state.custom.overlayOpacity||60)/100)+'),rgba(0,0,0,'+((state.custom.overlayOpacity||60)/100)+')),url('+state.custom.bgImage+')';
-        vp.style.backgroundSize = 'cover';
-        vp.style.backgroundPosition = 'center';
+        vp.classList.add('has-custom-bg');
         vp.style.color = '#f1f5f9';
+        var ov = (state.custom.overlayOpacity!=null ? state.custom.overlayOpacity : 60) / 100;
+        customBgStyleTag.textContent =
+            '#portfolio-viewport.has-custom-bg::before{content:"";position:absolute;inset:-20px;z-index:0;pointer-events:none;'
+            + 'background-image:url(' + state.custom.bgImage + ');background-size:cover;background-position:center;background-repeat:no-repeat;}'
+            + '#portfolio-viewport.has-custom-bg::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;'
+            + 'background:linear-gradient(160deg,rgba(0,0,0,' + ov + ') 0%,rgba(0,0,0,' + Math.min(ov+0.12,0.9) + ') 100%);}'
+            + '#portfolio-viewport.has-custom-bg .pf-container{position:relative;z-index:2;}'
+            + '#portfolio-viewport.has-custom-bg .pf-project-card{background:rgba(10,10,20,.55)!important;backdrop-filter:blur(14px)!important;border:1px solid rgba(255,255,255,.12)!important;}'
+            + '#portfolio-viewport.has-custom-bg .pf-bio,#portfolio-viewport.has-custom-bg .pf-project-desc{color:#e2e8f0!important;}'
+            + '#portfolio-viewport.has-custom-bg .pf-name,#portfolio-viewport.has-custom-bg .pf-section-title,#portfolio-viewport.has-custom-bg .pf-project-title{color:#fff!important;}'
+            + '#portfolio-viewport.has-custom-bg .pf-skill-chip{background:rgba(255,255,255,.1)!important;color:#fff!important;border:1px solid rgba(255,255,255,.2)!important;}';
     } else {
-        vp.style.backgroundImage = '';
-        vp.style.backgroundSize = '';
-        vp.style.backgroundPosition = '';
+        vp.classList.remove('has-custom-bg');
+        customBgStyleTag.textContent = '';
         if(state.activeTheme==='custom') vp.style.color = '';
     }
-    // Animation de fond
-    var bgAnimMap = {none:'',slowzoom:'bgSlowZoom 12s ease-in-out infinite alternate',slowpan:'bgSlowPan 15s ease-in-out infinite',pulse:'bgPulse 4s ease-in-out infinite',gradient:'bgGradient 8s ease infinite',particles:'none'};
-    vp.style.animation = bgAnimMap[state.custom.bgAnim||'none'] || '';
+    // Animation de fond — cible ::before uniquement (classe dédiée, jamais le texte)
+    ['none','slowzoom','slowpan','pulse','gradient'].forEach(function(a){ vp.classList.remove('custom-bganim-'+a); });
+    vp.classList.add('custom-bganim-'+(state.custom.bgAnim||'none'));
     // Cadre photo profil
     var profileImg = vp.querySelector('.pf-profile-img');
     if(profileImg && state.custom.frameSize !== '0px'){
@@ -3657,16 +4185,27 @@ function render(){
     vp.innerHTML=`
 <div class="pf-container" style="padding:${state.spacing}px 40px;">
 ${state.multiPage ? buildMultiPageNav() : ''}
-<section class="pf-hero" id="pf-sec-hero"><div class="pf-hero-content anim-el"><span class="pf-role">${state.data.role}</span><h1 class="pf-name">${state.data.name}</h1><p class="pf-bio">${state.data.bio}</p><a href="${ctaHref}" class="pf-contact-btn" ${state.data.ctaType==='whatsapp'||state.data.ctaType==='email'?'target="_blank"':''}>${state.data.cta||'Contact'}</a>${socialsH}</div><div class="pf-hero-img-wrap anim-el"><div class="editable-img-wrapper profile-wrap" onclick="openCanvasImagePicker('profile')" style="${shapeStyles[state.profileShape]||''}"><img src="${state.data.profileImg}" class="pf-profile-img" style="${imgStyles[state.profileShape]||''}"></div></div></section>
-${state.showSkills&&state.skills.length>0?`<div id="pf-sec-skills">${skillsH}</div>`:skillsH}
-${state.experiences&&state.experiences.length>0?`<div id="pf-sec-exp">${expH}</div>`:expH}
-${certH}${bookingH}
-<div class="pf-projects-wrap" id="pf-sec-projects"><h2 class="pf-section-title anim-el">${state.data.sectionTitle||'Travaux & Projets'}</h2><div class="pf-projects" style="grid-template-columns:${gridMap[state.gridCols]||'1fr 1fr'};">${projH}</div></div>
-<div id="pf-sec-contact"></div>
+<div id="pf-sec-hero" data-page="pf-sec-hero" class="pf-section-page">
+<section class="pf-hero"><div class="pf-hero-content anim-el"><span class="pf-role">${state.data.role}</span><h1 class="pf-name">${state.data.name}</h1><p class="pf-bio">${state.data.bio}</p><a href="${ctaHref}" class="pf-contact-btn" ${state.data.ctaType==='whatsapp'||state.data.ctaType==='email'?'target="_blank"':''}>${state.data.cta||'Contact'}</a>${socialsH}</div><div class="pf-hero-img-wrap anim-el"><div class="editable-img-wrapper profile-wrap" onclick="openCanvasImagePicker('profile')" style="${shapeStyles[state.profileShape]||''}"><img src="${state.data.profileImg}" class="pf-profile-img" style="${imgStyles[state.profileShape]||''}"></div></div></section>
+</div>
+<div id="pf-sec-skills" data-page="pf-sec-skills" class="pf-section-page">${skillsH}</div>
+<div id="pf-sec-exp" data-page="pf-sec-exp" class="pf-section-page">${expH}</div>
+<div id="pf-sec-cert" data-page="pf-sec-cert" class="pf-section-page">${certH}</div>
+<div id="pf-sec-booking-w" data-page="pf-sec-booking" class="pf-section-page">${bookingH}</div>
+<div id="pf-sec-projects" data-page="pf-sec-projects" class="pf-section-page">
+<div class="pf-projects-wrap"><h2 class="pf-section-title anim-el">${state.data.sectionTitle||'Travaux & Projets'}</h2><div class="pf-projects" style="grid-template-columns:${gridMap[state.gridCols]||'1fr 1fr'};">${projH}</div></div>
+</div>
+<div id="pf-sec-contact" data-page="pf-sec-contact" class="pf-section-page"></div>
 ${buildFooterHTML()}
+${buildEditorSignatureHTML()}
 </div>${chatH}${langH}`;
     bindScrollAnimations();updateStats();
     if(typeof initInlineTextEdit==='function') initInlineTextEdit();
+    if(typeof updatePhotoAnimBtn==='function') updatePhotoAnimBtn();
+    // Multi-pages: afficher seulement la section active
+    if(state.multiPage && typeof showOnlySection==='function'){
+        showOnlySection(window.currentPage||'pf-sec-hero');
+    }
     // Mise à jour prix en temps réel
     if(typeof updatePricingDisplay==='function') updatePricingDisplay();
 }
@@ -3947,6 +4486,12 @@ function buildFooterHTML(){
     return '<footer class="pf-footer anim-el">' + parts.join('<span class="pf-footer-sep">•</span>') + '</footer>';
 }
 
+// Signature discrète présente sur CHAQUE portfolio exporté par cet éditeur,
+// indépendamment du footer optionnel de l'utilisateur ci-dessus.
+function buildEditorSignatureHTML(){
+    return '<div class="pf-editor-signature">Créé avec <span class="pf-editor-signature-brand">Mental Studio</span></div>';
+}
+
 
 // ── CUSTOM BACKGROUND ──────────────────────────────
 const BG_PRESETS = {
@@ -4021,7 +4566,7 @@ function initInlineTextEdit(){
             '<button onclick="inlineFormat(\'italic\')" title="Italique" style="width:28px;height:28px;border:none;background:rgba(255,255,255,.1);color:#fff;border-radius:6px;cursor:pointer;font-style:italic;font-size:13px;">I</button>',
             '<button onclick="inlineFormat(\'underline\')" title="Souligné" style="width:28px;height:28px;border:none;background:rgba(255,255,255,.1);color:#fff;border-radius:6px;cursor:pointer;text-decoration:underline;font-size:13px;">U</button>',
             '<div style="width:1px;background:rgba(255,255,255,.2);margin:0 2px;"></div>',
-            '<div style="display:flex;align-items:center;gap:4px;"><span style="color:#aaa;font-size:10px;">Couleur</span><input type="color" value="#ffffff" id="inline-color-pick" onchange="inlineColor(this.value)" style="width:24px;height:24px;border:none;border-radius:4px;cursor:pointer;padding:0;background:none;"></div>',
+            '<div style="display:flex;align-items:center;gap:4px;"><span style="color:#aaa;font-size:10px;">Couleur</span><input type="color" value="#ffffff" id="inline-color-pick" oninput="inlineColor(this.value)" onchange="inlineColor(this.value)" style="width:24px;height:24px;border:none;border-radius:4px;cursor:pointer;padding:0;background:none;"></div>',
             '<div style="display:flex;align-items:center;gap:4px;"><span style="color:#aaa;font-size:10px;">Taille</span><select onchange="inlineFontSize(this.value)" style="font-size:10px;background:rgba(255,255,255,.1);color:#fff;border:none;border-radius:4px;padding:2px 4px;"><option value="">Auto</option><option value="12px">12</option><option value="14px">14</option><option value="16px">16</option><option value="18px">18</option><option value="20px">20</option><option value="24px">24</option><option value="28px">28</option><option value="32px">32</option><option value="36px">36</option><option value="48px">48</option></select></div>',
             '<button onclick="closeInlineToolbar()" style="width:24px;height:24px;border:none;background:rgba(255,0,0,.2);color:#fff;border-radius:6px;cursor:pointer;font-size:11px;margin-left:4px;">✕</button>'
         ].join('');
@@ -4089,42 +4634,75 @@ function inlineFontSize(size){
     inlineEditTarget.style.fontSize = size;
 }
 
-// ── MULTI-PAGES AMÉLIORÉ ──────────────────────────
+// ── MULTI-PAGES — sections isolées + hamburger 3D ──
+var currentPage = 'pf-sec-hero';
+
 function buildMultiPageNav(){
     var sections = [];
-    sections.push({id:'pf-sec-hero', label:'Accueil', icon:'ri-home-line'});
+    sections.push({id:'pf-sec-hero',    label:'Accueil',      icon:'ri-home-line'});
     if(state.showSkills && state.skills.length > 0)
-        sections.push({id:'pf-sec-skills', label:'Compétences', icon:'ri-code-s-slash-line'});
+        sections.push({id:'pf-sec-skills',   label:'Compétences',  icon:'ri-code-s-slash-line'});
     if(state.projects && state.projects.length > 0)
-        sections.push({id:'pf-sec-projects', label:'Projets', icon:'ri-folder-line'});
+        sections.push({id:'pf-sec-projects', label:'Projets',       icon:'ri-folder-line'});
     if(state.experiences && state.experiences.length > 0)
-        sections.push({id:'pf-sec-exp', label:'Parcours', icon:'ri-briefcase-line'});
+        sections.push({id:'pf-sec-exp',      label:'Parcours',      icon:'ri-briefcase-line'});
     if(state.certifications && state.certifications.length > 0)
-        sections.push({id:'pf-sec-cert', label:'Certifs', icon:'ri-award-line'});
-    if(state.booking && state.booking.enabled)
-        sections.push({id:'pf-sec-booking', label:'Contact', icon:'ri-calendar-line'});
-    else sections.push({id:'pf-sec-contact', label:'Contact', icon:'ri-mail-line'});
+        sections.push({id:'pf-sec-cert',     label:'Certifications',icon:'ri-award-line'});
+    sections.push({id:'pf-sec-contact',  label:'Contact',       icon:'ri-mail-line'});
 
-    var menuId = 'pf-hamburger-menu';
-    var links = sections.map(function(s,i){
-        return '<a class="pf-mpnav-link" href="#'+s.id+'" onclick="scrollToSection(event,\''+s.id+'\');toggleHamburger(false)" style="display:flex;align-items:center;gap:8px;padding:10px 16px;color:inherit;text-decoration:none;border-radius:8px;font-size:12px;font-weight:700;transition:background .15s;">'
-             + '<i class="'+s.icon+'" style="font-size:14px;"></i>'+s.label+'</a>';
+    // Stocker les sections disponibles pour la navigation
+    window._mpSections = sections;
+
+    var links = sections.map(function(s){
+        return '<a href="#'+s.id+'" onclick="goToPage(event,\''+s.id+'\')">'
+             + '<i class="'+s.icon+'"></i>'+s.label+'</a>';
     }).join('');
 
-    return '<nav class="pf-multipage-nav" id="pf-mpnav-bar">'
-        + '<div id="pf-hamburger-btn" onclick="toggleHamburger()" style="cursor:pointer;padding:6px 10px;border-radius:8px;background:rgba(99,102,241,.15);border:1px solid rgba(99,102,241,.25);display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:inherit;">'
-        + '<span style="display:flex;flex-direction:column;gap:3px;"><span style="width:16px;height:2px;background:currentColor;display:block;border-radius:1px;"></span><span style="width:16px;height:2px;background:currentColor;display:block;border-radius:1px;"></span><span style="width:16px;height:2px;background:currentColor;display:block;border-radius:1px;"></span></span>Menu</div>'
-        + '<div id="'+menuId+'" style="display:none;position:absolute;top:100%;left:0;right:0;background:inherit;border-top:1px solid rgba(128,128,128,.15);z-index:50;backdrop-filter:inherit;padding:6px;">'
-        + links + '</div></nav>';
+    return '<nav class="pf-multipage-nav" id="pf-mpnav-bar" style="position:sticky;top:0;z-index:100;">'
+        + '<div id="pf-hamburger-btn" onclick="toggleHamburger()" title="Navigation">'
+        + '<span></span><span></span><span></span>'
+        + '</div>'
+        + '<div id="pf-hamburger-menu" style="display:none;">' + links + '</div>'
+        + '</nav>';
 }
 
 function toggleHamburger(forceState){
     var menu = document.getElementById('pf-hamburger-menu');
     if(!menu) return;
-    var isOpen = menu.style.display === 'flex';
-    var show = forceState !== undefined ? forceState : !isOpen;
-    menu.style.display = show ? 'flex' : 'none';
-    menu.style.flexDirection = 'column';
+    var isOpen = menu.style.display !== 'none';
+    var show = (forceState !== undefined) ? forceState : !isOpen;
+    if(show){
+        menu.style.display = 'flex';
+        menu.style.flexDirection = 'column';
+    } else {
+        menu.style.display = 'none';
+    }
+}
+
+function goToPage(e, sectionId){
+    if(e) e.preventDefault();
+    toggleHamburger(false);
+    currentPage = sectionId;
+    showOnlySection(sectionId);
+}
+
+function showOnlySection(activeId){
+    var vp = document.getElementById('portfolio-viewport');
+    if(!vp) return;
+    var sections = window._mpSections || [];
+    var allIds = sections.map(function(s){return s.id;});
+
+    allIds.forEach(function(id){
+        var el = vp.querySelector('#'+id);
+        if(!el) return;
+        // Trouver le "bloc" associé à cette section
+        var block = vp.querySelector('[data-page="'+id+'"]');
+        if(block){
+            block.style.display = (id === activeId) ? '' : 'none';
+        }
+    });
+    // Scroller en haut
+    vp.scrollTo({top:0, behavior:'smooth'});
 }
 
 function scrollToSection(e, sectionId){
@@ -4132,10 +4710,93 @@ function scrollToSection(e, sectionId){
     var vp = document.getElementById('portfolio-viewport');
     var el = vp ? vp.querySelector('#'+sectionId) : null;
     if(el && vp){
-        var top = el.offsetTop - 56;
-        vp.scrollTo({top: Math.max(0,top), behavior:'smooth'});
+        vp.scrollTo({top: Math.max(0, el.offsetTop - 56), behavior:'smooth'});
     }
 }
+
+// Fermer le menu si clic hors
+document.addEventListener('click', function(e){
+    if(!e.target.closest('#pf-hamburger-btn') && !e.target.closest('#pf-hamburger-menu')){
+        var menu = document.getElementById('pf-hamburger-menu');
+        if(menu) menu.style.display = 'none';
+    }
+});
+
+
+// ── ANIMATIONS FOND PHOTO ─────────────────────────
+var currentPhotoAnim = 'none';
+
+var PHOTO_ANIMS = {
+    none:      '',
+    slowzoom:  'bgSlowZoom 14s ease-in-out infinite alternate',
+    slowpan:   'bgSlowPan 18s ease-in-out infinite',
+    pulse:     'bgPulseScale 5s ease-in-out infinite',
+    blur:      'bgBlurAnim 6s ease-in-out infinite',
+    shake:     'bgShake 8s ease-in-out infinite',
+    tilt:      'bgTilt 9s ease-in-out infinite',
+    colorwave: 'bgColorWave 10s ease-in-out infinite',
+    diagonal:  'bgDiagonalDrift 16s ease-in-out infinite',
+    breathe:   'bgBreathe 7s ease-in-out infinite',
+    parallax:  'bgParallaxFloat 12s ease-in-out infinite'
+};
+
+function setPhotoAnim(animId){
+    currentPhotoAnim = animId;
+    var vp = document.getElementById('portfolio-viewport');
+    if(vp){
+        // Retirer toutes les classes d'animation précédentes
+        ['none','slowzoom','slowpan','pulse','blur','shake','tilt','colorwave','diagonal','breathe','parallax'].forEach(function(a){
+            vp.classList.remove('ph-anim-'+a);
+        });
+        // Appliquer la nouvelle classe (cible ::before uniquement — jamais le texte)
+        vp.classList.add('ph-anim-'+animId);
+    }
+    // Mettre à jour l'état actif dans le menu
+    document.querySelectorAll('.ph-anim-opt').forEach(function(btn){
+        btn.classList.toggle('active', btn.getAttribute('data-anim') === animId);
+    });
+    // Fermer le menu
+    var dd = document.getElementById('ph-anim-dropdown');
+    if(dd) dd.style.display = 'none';
+}
+
+function togglePhotoAnimMenu(){
+    var dd = document.getElementById('ph-anim-dropdown');
+    if(!dd) return;
+    var isOpen = dd.style.display === 'flex' || dd.style.display === 'block';
+    dd.style.display = isOpen ? 'none' : 'block';
+}
+
+function updatePhotoAnimBtn(){
+    var vp = document.getElementById('portfolio-viewport');
+    var picker = document.getElementById('ph-anim-picker');
+    if(!picker || !vp) return;
+    // Montrer le bouton seulement sur les thèmes photo
+    var isPhoto = Array.from(vp.classList).some(function(c){ return c.startsWith('theme-ph_'); });
+    picker.style.display = isPhoto ? 'flex' : 'none';
+    // Retirer toutes les classes d'animation existantes avant de réappliquer
+    ['none','slowzoom','slowpan','pulse','blur','shake','tilt','colorwave','diagonal','breathe','parallax'].forEach(function(a){
+        vp.classList.remove('ph-anim-'+a);
+    });
+    if(isPhoto){
+        // Réappliquer l'animation choisie par l'utilisateur (cible ::before uniquement)
+        vp.classList.add('ph-anim-'+currentPhotoAnim);
+    } else {
+        // Reset sur les thèmes non-photo
+        currentPhotoAnim = 'none';
+        document.querySelectorAll('.ph-anim-opt').forEach(function(b){
+            b.classList.toggle('active', b.getAttribute('data-anim') === 'none');
+        });
+    }
+}
+
+// Fermer le menu anim si clic hors
+document.addEventListener('click', function(e){
+    if(!e.target.closest('#ph-anim-picker')){
+        var dd = document.getElementById('ph-anim-dropdown');
+        if(dd) dd.style.display = 'none';
+    }
+});
 
 function updateStats(){document.getElementById('stat-projects').textContent=state.projects.length;document.getElementById('stat-skills').textContent=state.skills.length;const t=themeCatalogData.find(t=>t.id===state.activeTheme);document.getElementById('stat-theme').textContent=t?t.name.split(' ')[0]:state.activeTheme;}
 function updateData(k,v){state.data[k]=v;render();}
@@ -4222,6 +4883,11 @@ function toggleEditorTheme(){
     // sidebar-theme-btn supprimé (doublon retiré)
     const mobileBtn=document.getElementById('mbnav-theme-icon');
     if(mobileBtn) mobileBtn.className=iconClass;
+    // Bouton mode sombre/clair dans le menu compte (ajout auth)
+    const accountIcon=document.getElementById('account-theme-icon');
+    if(accountIcon) accountIcon.className=iconClass;
+    const accountLabel=document.getElementById('account-theme-label');
+    if(accountLabel) accountLabel.textContent=isDark?'Mode clair':'Mode sombre';
 }
 
 const fileInput=document.getElementById('global-file-input');
@@ -4528,15 +5194,36 @@ function doExport(){
 const obs = new IntersectionObserver(e=>{e.forEach(e=>{if(e.isIntersecting)e.target.classList.add('is-visible');else e.target.classList.remove('is-visible');});},{threshold:.1});
 document.querySelectorAll('.anim-el').forEach(el=>obs.observe(el));
 
-// Compteur de vues (localStorage — visible par tous sur le même appareil)
+// Compteur de vues GLOBAL — partagé entre tous les visiteurs (via CountAPI, gratuit, sans backend)
 (function(){
-    const key = 'pf_views_${state.data.name.replace(/\s+/g,'_')}';
-    let views = parseInt(localStorage.getItem(key)||'0') + 1;
-    localStorage.setItem(key, views);
     const el = document.getElementById('pf-view-count');
     const pl = document.getElementById('pf-view-plural');
-    if(el){ el.textContent = views; }
-    if(pl){ pl.textContent = views > 1 ? 's' : ''; }
+    const namespace = 'portfolio-studio-mental';
+    const key = 'pf-${state.data.name.replace(/[^a-zA-Z0-9]/g,'-').toLowerCase()}-${paymentState.reference || 'default'}'.substring(0,64);
+    const localKey = 'pf_local_views_backup';
+
+    function showViews(n){
+        if(el){ el.textContent = n; }
+        if(pl){ pl.textContent = n > 1 ? 's' : ''; }
+    }
+
+    // Tentative de comptage global via CountAPI (service gratuit, sans clé)
+    fetch('https://api.countapi.xyz/hit/' + namespace + '/' + key)
+        .then(function(r){ return r.json(); })
+        .then(function(data){
+            if(data && typeof data.value === 'number'){
+                showViews(data.value);
+                localStorage.setItem(localKey, data.value);
+            } else {
+                throw new Error('invalid response');
+            }
+        })
+        .catch(function(){
+            // Fallback local si le service est injoignable (offline, bloqué, etc.)
+            let views = parseInt(localStorage.getItem(localKey)||'0') + 1;
+            localStorage.setItem(localKey, views);
+            showViews(views);
+        });
 })();
 <\/script>`;
 
@@ -5095,29 +5782,65 @@ function mobileDarkToggle(){
    ============================================================ */
 
 /** Règles extensibles — ajouter/modifier ici sans toucher le reste */
+/* ── BARÈME DE TARIFICATION — juste et proportionnel ─────────
+   Chaque point reflète un vrai coût de production/complexité.
+   Rien ne facture ce que l'utilisateur n'a pas produit dans SON portfolio. */
 const PRICING_RULES = [
-    { id:'hero',        label:'Section Accueil',         points:5,  isMultiplier:false, getValue:(s)=>true },
-    { id:'about',       label:'Section À propos',        points:5,  isMultiplier:false, getValue:(s)=>s.data.bio&&s.data.bio.length>10 },
-    { id:'contact',     label:'Contact (CTA)',           points:5,  isMultiplier:false, getValue:(s)=>!!(s.data.ctaLink&&s.data.ctaLink!=='#') },
-    { id:'cv',          label:'CV téléchargeable',       points:10, isMultiplier:false, getValue:()=>!!window.cvData },
-    { id:'projects',    label:'Projets (×5 pts chacun)', points:5,  isMultiplier:true,  getValue:(s)=>s.projects.length },
-    { id:'skills',      label:'Section Compétences',     points:5,  isMultiplier:false, getValue:(s)=>s.skills.length>0 },
-    { id:'socials',     label:'Réseaux sociaux',         points:5,  isMultiplier:false, getValue:(s)=>!!(s.showSocials&&(s.data.linkedin||s.data.twitter||s.data.github||s.data.instagram)) },
-    { id:'experience',  label:'Expériences pro.',        points:10, isMultiplier:false, getValue:(s)=>s.experiences&&s.experiences.length>0 },
-    { id:'certif',      label:'Certifications',          points:10, isMultiplier:false, getValue:(s)=>s.certifications&&s.certifications.length>0 },
-    { id:'animSimple',  label:'Animation simple',        points:10, isMultiplier:false, getValue:(s)=>{const S=['fadeUp','blur','slide','scaleDown','bounce','rotateIn','drop','sweep','fadeLeft','fadeRight','zoomIn','flipX','flipY','fadeDown'];return S.includes(s.activeAnim)&&s.activeAnim!=='none';} },
-    { id:'animAdv',     label:'Animation avancée',       points:30, isMultiplier:false, getValue:(s)=>{const A=['flip','glitch','neonFlash','shatter','warp','typewriter','hologram','magnetic','crystallize','pulseReveal','elastic','ripple','matrix','explosion','morph','gravity','strobe','cinema','spark','vhs'];return A.includes(s.activeAnim);} },
-    { id:'customTheme', label:'Thème personnalisé',      points:10, isMultiplier:false, getValue:(s)=>s.activeTheme!=='luxury' },
-    { id:'darkMode',    label:'Mode sombre',             points:15, isMultiplier:false, getValue:()=>document.body.classList.contains('editor-dark-mode') },
-    { id:'advLayout',   label:'Layout avancé',           points:10, isMultiplier:false, getValue:(s)=>!['classic','centered'].includes(s.activeLayout) },
-    { id:'gallery',     label:'Galerie (3+ projets)',    points:20, isMultiplier:false, getValue:(s)=>s.projects.length>=3 },
-    { id:'booking',     label:'Réservation en ligne',    points:50, isMultiplier:false, getValue:(s)=>!!(s.booking&&s.booking.enabled) },
-    { id:'chat',        label:'Chat en direct',          points:40, isMultiplier:false, getValue:(s)=>!!(s.chat&&s.chat.enabled) },
+    // Contenu de base (chaque section réellement remplie)
+    { id:'about',       label:'Bio renseignée',           points:3,  isMultiplier:false, getValue:(s)=>s.data.bio&&s.data.bio.length>10 },
+    { id:'contact',     label:'Lien de contact actif',     points:3,  isMultiplier:false, getValue:(s)=>!!(s.data.ctaLink&&s.data.ctaLink!=='#') },
+    { id:'cv',          label:'CV téléchargeable',         points:8,  isMultiplier:false, getValue:()=>!!window.cvData },
+    { id:'skills',      label:'Compétences listées',       points:3,  isMultiplier:false, getValue:(s)=>s.skills.length>0 },
+    { id:'socials',     label:'Réseaux sociaux liés',       points:3,  isMultiplier:false, getValue:(s)=>!!(s.showSocials&&(s.data.linkedin||s.data.twitter||s.data.github||s.data.instagram)) },
+
+    // Projets — le vrai cœur du travail, facturé au nombre réel
+    { id:'projects',    label:'Projet ajouté',             points:4,  isMultiplier:true,  getValue:(s)=>s.projects.length },
+    { id:'gallery',     label:'Portfolio étoffé (5+ projets)', points:10, isMultiplier:false, getValue:(s)=>s.projects.length>=5 },
+
+    // Parcours professionnel
+    { id:'experience',  label:'Expérience professionnelle',points:2,  isMultiplier:true,  getValue:(s)=>(s.experiences||[]).length },
+    { id:'certif',      label:'Certification ajoutée',     points:2,  isMultiplier:true,  getValue:(s)=>(s.certifications||[]).length },
+
+    // Mise en forme visuelle
+    { id:'theme',       label:'Thème visuel choisi',       points:2,  isMultiplier:false, getValue:(s)=>!!s.activeTheme },
+    { id:'themePhoto',  label:'Thème avec fond photo',     points:6,  isMultiplier:false, getValue:(s)=>s.activeTheme&&s.activeTheme.startsWith('ph_') },
+    { id:'customBg',    label:'Fond image personnalisé',    points:6,  isMultiplier:false, getValue:(s)=>!!(s.custom&&s.custom.bgImage) },
+    { id:'advLayout',   label:'Disposition avancée',        points:4,  isMultiplier:false, getValue:(s)=>!['classic','centered'].includes(s.activeLayout) },
+    { id:'customFont',  label:'Police personnalisée',       points:3,  isMultiplier:false, getValue:(s)=>!!s.overrideFont },
+    { id:'customColors',label:'Couleurs de texte custom',   points:3,  isMultiplier:false, getValue:(s)=>!!(s.overrideColors&&Object.keys(s.overrideColors).length>0) },
+
+    // Animation — reflète le temps de configuration
+    { id:'animSimple',  label:'Animation d\'apparition',   points:4,  isMultiplier:false, getValue:(s)=>s.activeAnim&&s.activeAnim!=='none' },
+    { id:'animAdvanced',label:'Animation avancée/créative', points:8,  isMultiplier:false, getValue:(s)=>{
+        const BASIC=['fadeUp','blur','slide','scaleDown','bounce','rotateIn','drop','sweep','fadeLeft','fadeRight','zoomIn','flipX','flipY','fadeDown','none'];
+        return s.activeAnim && !BASIC.includes(s.activeAnim);
+    }},
+    { id:'multiAnim',   label:'Animations par section',    points:6,  isMultiplier:false, getValue:(s)=>{
+        if(!s.sectionAnims) return false;
+        const vals = Object.values(s.sectionAnims);
+        return new Set(vals).size >= 3;
+    }},
+    { id:'photoAnim',   label:'Fond photo animé',          points:5,  isMultiplier:false, getValue:(s)=>{
+        if(typeof currentPhotoAnim==='undefined') return false;
+        return currentPhotoAnim && currentPhotoAnim!=='none';
+    }},
+
+    // Fonctionnalités avancées — le vrai coût de dev/intégration
+    { id:'booking',     label:'Prise de RDV en ligne',      points:15, isMultiplier:false, getValue:(s)=>!!(s.booking&&s.booking.enabled) },
+    { id:'chat',        label:'Chat en direct',            points:12, isMultiplier:false, getValue:(s)=>!!(s.chat&&s.chat.enabled) },
+    { id:'multilang',   label:'Portfolio multilingue',      points:12, isMultiplier:false, getValue:(s)=>!!(s.multilang&&s.multilang.enabled) },
+    { id:'footer',      label:'Pied de page personnalisé',  points:4,  isMultiplier:false, getValue:(s)=>!!(s.footer&&s.footer.enabled) },
+    { id:'multiPage',   label:'Navigation multi-pages',     points:10, isMultiplier:false, getValue:(s)=>!!s.multiPage },
 ];
 
-const PRICE_MIN = 15000;
+const PRICE_MIN = 10000;
 const PRICE_MAX = 50000;
-const SCORE_MAX = PRICING_RULES.reduce((sum,r)=>sum+(r.isMultiplier?r.points*10:r.points),0);
+// Plafonds réalistes par règle à multiplicateur (évite un SCORE_MAX gonflé artificiellement)
+const MULTIPLIER_CAPS = { projects:8, experience:5, certif:5 };
+const SCORE_MAX = PRICING_RULES.reduce((sum,r)=>{
+    if(r.isMultiplier) return sum + r.points*(MULTIPLIER_CAPS[r.id]||5);
+    return sum + r.points;
+},0);
 
 /** Calcule score, niveau, prix */
 function calculateComplexityScore(){
@@ -5137,7 +5860,7 @@ function calculateComplexityScore(){
     else if(ratio<0.65){level='Avancé';levelColor='#f59e0b';levelIcon='🟡';}
     else{level='Premium';levelColor='#a855f7';levelIcon='🟣';}
     const rawPrice=PRICE_MIN+(ratio*(PRICE_MAX-PRICE_MIN));
-    const price=Math.min(Math.round(rawPrice/500)*500,PRICE_MAX);
+    const price=Math.min(Math.max(Math.round(rawPrice/250)*250,PRICE_MIN),PRICE_MAX);
     const priceFormatted=price.toLocaleString('fr-FR')+' FCFA';
     return{score,breakdown,level,levelColor,levelIcon,price,priceFormatted,ratio};
 }
@@ -5428,8 +6151,578 @@ function cycleCurrency(){
 })();
 
 initEditor();render();
+requestAnimationFrame(function(){ if(typeof updatePhotoAnimBtn==='function') updatePhotoAnimBtn(); });
 // Construit le dropdown devise après chargement
 requestAnimationFrame(function(){ buildCurrencyDropdown(); });
+
+/* ═══════════════════════════════════════════════════
+   AJOUT AUTH — Système Supabase + Google OAuth
+   Aucune ligne du code existant ci-dessus n'est modifiée.
+   Ce bloc s'ajoute en fin de script, se branchant sur
+   render() par enveloppement (wrap), pas par réécriture.
+   ═══════════════════════════════════════════════════ */
+
+const AUTH_CONFIG = {
+  supabaseUrl     : "https://fhqkfzkszmknyabpcvpb.supabase.co",
+  supabaseAnonKey : "sb_publishable_6p5mnb8FwWdHFiRzaqBh2w_tUsbyllU"
+};
+
+const SITE_CONFIG = {
+  url        : "https://mentaliste1.github.io/Portfolio-Editor/",
+  name       : "Portfolio Studio Master V12",
+  redirectTo : "https://mentaliste1.github.io/Portfolio-Editor/"
+};
+
+const PAYMENT_CONFIG = {
+  notchpayPublicKey : "pk.WKBPS2sqGiFgNVqdfqsq9Eh4BWxafH93ddc0CaWQ7x2i4IQEEimDJCX4olf9LKTCxU4adq2xcdrHhRyphUcJh7BlgIpr0Xpp4xY8pvXRtzmF7pNRVYM6Yt5RbAMvE",
+  currency           : "XAF",
+  amount             : 2500,
+  productName        : "Portfolio Studio — Export Premium",
+  apiBase            : "https://api.notchpay.co"
+};
+
+let supabaseClient = null;
+let currentUser = null;
+let autoSaveTimer = null;
+
+function initSupabase() {
+  try {
+    if (typeof window.supabase === 'undefined' || typeof window.supabase.createClient !== 'function') {
+      return false;
+    }
+    supabaseClient = window.supabase.createClient(AUTH_CONFIG.supabaseUrl, AUTH_CONFIG.supabaseAnonKey);
+    return true;
+  } catch (err) {
+    console.error('[Auth] Erreur init Supabase:', err);
+    return false;
+  }
+}
+
+async function checkAuthOnLoad() {
+  if (!supabaseClient) return;
+  try {
+    const { data: { session }, error } = await supabaseClient.auth.getSession();
+    if (error) throw error;
+    if (session) {
+      hideAuthScreen();
+      await loadUserProfile(session.user);
+    } else {
+      showAuthScreen();
+    }
+  } catch (err) {
+    console.error('[Auth] Erreur vérification session:', err);
+    showAuthScreen();
+  }
+
+  supabaseClient.auth.onAuthStateChange(async (event, session) => {
+    if (event === 'SIGNED_IN' && session) {
+      hideAuthScreen();
+      await loadUserProfile(session.user);
+    } else if (event === 'SIGNED_OUT') {
+      currentUser = null;
+      showAuthScreen();
+    } else if (event === 'TOKEN_REFRESHED') {
+      console.log('[Auth] Token rafraîchi automatiquement.');
+    }
+  });
+}
+
+function showAuthScreen() {
+  const el = document.getElementById('auth-screen');
+  if (el) el.style.display = 'flex';
+  // Le bouton compte reste visible même écran de connexion affiché,
+  // mais il montre l'état "invité" (icône générique, pas d'avatar).
+  setAccountMenuGuestState();
+}
+
+function hideAuthScreen() {
+  const el = document.getElementById('auth-screen');
+  if (el) el.style.display = 'none';
+}
+
+function setAccountMenuGuestState() {
+  const img = document.getElementById('account-avatar-img');
+  const guestIcon = document.getElementById('account-guest-icon');
+  if (img) img.style.display = 'none';
+  if (guestIcon) guestIcon.style.display = 'flex';
+
+  const guestPane = document.getElementById('account-menu-guest');
+  const profileHead = document.getElementById('account-menu-profile-head');
+  const syncRow = document.getElementById('account-menu-sync-row');
+  const signoutRow = document.getElementById('account-signout-row');
+  const savedBtn = document.getElementById('account-saved-portfolios-btn');
+  const historyBtn = document.getElementById('account-payment-history-btn');
+  const sync = document.getElementById('sync-indicator');
+
+  if (guestPane) guestPane.style.display = 'block';
+  if (profileHead) profileHead.style.display = 'none';
+  if (syncRow) syncRow.style.display = 'none';
+  if (signoutRow) signoutRow.style.display = 'none';
+  if (savedBtn) savedBtn.style.display = 'none';
+  if (historyBtn) historyBtn.style.display = 'none';
+  if (sync) sync.style.display = 'none';
+}
+
+function setAccountMenuConnectedState() {
+  const img = document.getElementById('account-avatar-img');
+  const guestIcon = document.getElementById('account-guest-icon');
+  if (img) img.style.display = 'block';
+  if (guestIcon) guestIcon.style.display = 'none';
+
+  const guestPane = document.getElementById('account-menu-guest');
+  const profileHead = document.getElementById('account-menu-profile-head');
+  const syncRow = document.getElementById('account-menu-sync-row');
+  const signoutRow = document.getElementById('account-signout-row');
+  const savedBtn = document.getElementById('account-saved-portfolios-btn');
+  const historyBtn = document.getElementById('account-payment-history-btn');
+  const sync = document.getElementById('sync-indicator');
+
+  if (guestPane) guestPane.style.display = 'none';
+  if (profileHead) profileHead.style.display = 'flex';
+  if (syncRow) syncRow.style.display = 'flex';
+  if (signoutRow) signoutRow.style.display = 'block';
+  if (savedBtn) savedBtn.style.display = 'flex';
+  if (historyBtn) historyBtn.style.display = 'flex';
+  if (sync) sync.style.display = 'flex';
+}
+
+async function signInWithGoogle() {
+  if (!supabaseClient) {
+    showAuthError('Service de connexion indisponible. Réessayez plus tard.');
+    return;
+  }
+  const btn = document.getElementById('btn-google-signin');
+  const loading = document.getElementById('auth-loading');
+  const errorBox = document.getElementById('auth-error');
+  const popupBox = document.getElementById('auth-popup-blocked');
+
+  if (btn) btn.disabled = true;
+  if (loading) loading.style.display = 'flex';
+  if (errorBox) errorBox.style.display = 'none';
+  if (popupBox) popupBox.style.display = 'none';
+
+  try {
+    const { data, error } = await supabaseClient.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: SITE_CONFIG.redirectTo, queryParams: { prompt: 'select_account' } }
+    });
+    if (error) throw error;
+  } catch (err) {
+    console.error('[Auth] Erreur connexion Google:', err);
+    if (btn) btn.disabled = false;
+    if (loading) loading.style.display = 'none';
+    if (err.message && err.message.toLowerCase().includes('popup')) {
+      if (popupBox) {
+        popupBox.style.display = 'block';
+        const link = document.getElementById('auth-redirect-link');
+        if (link) link.onclick = (e) => { e.preventDefault(); window.location.href = SITE_CONFIG.redirectTo; };
+      }
+    } else {
+      showAuthError('Connexion annulée ou échouée. Veuillez réessayer.');
+    }
+  }
+}
+
+function showAuthError(message) {
+  const errorBox = document.getElementById('auth-error');
+  const errorText = document.getElementById('auth-error-text');
+  if (errorBox && errorText) {
+    errorText.textContent = message;
+    errorBox.style.display = 'flex';
+  }
+}
+
+async function loadUserProfile(user) {
+  if (!user || !supabaseClient) return;
+  currentUser = user;
+
+  const avatarUrl = user.user_metadata?.avatar_url || '';
+  const fullName  = user.user_metadata?.full_name || user.email;
+  const email     = user.email || '';
+
+  ['account-avatar-img', 'menu-avatar'].forEach(id => {
+    const img = document.getElementById(id);
+    if (img && avatarUrl) img.src = avatarUrl;
+  });
+  const nameEl  = document.getElementById('menu-name');
+  const emailEl = document.getElementById('menu-email');
+  if (nameEl)  nameEl.textContent  = fullName;
+  if (emailEl) emailEl.textContent = email;
+
+  setAccountMenuConnectedState();
+
+  try {
+    const { data, error } = await supabaseClient
+      .from('user_portfolios')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('updated_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (!error && data && data.portfolio_data) {
+      console.log('[Auth] Dernier portfolio cloud trouvé:', data.portfolio_name);
+    }
+  } catch (err) {
+    console.warn('[Auth] Impossible de charger le dernier portfolio:', err);
+  }
+}
+
+function toggleAccountMenu(event) {
+  if (event) event.stopPropagation();
+  const menu = document.getElementById('account-menu');
+  if (!menu) return;
+  menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
+}
+
+function closeAccountMenu() {
+  const menu = document.getElementById('account-menu');
+  if (menu) menu.style.display = 'none';
+}
+
+document.addEventListener('click', (e) => {
+  const wrapper = document.getElementById('account-wrapper');
+  if (wrapper && !wrapper.contains(e.target)) {
+    closeAccountMenu();
+  }
+});
+
+// Fermeture automatique quand le curseur quitte la zone (souris/PC uniquement —
+// aucun impact sur mobile où mouseleave ne se déclenche pas au toucher).
+let accountMenuLeaveTimer = null;
+(function setupAccountMenuAutoClose() {
+  const wrapper = document.getElementById('account-wrapper');
+  if (!wrapper) return;
+  wrapper.addEventListener('mouseleave', () => {
+    accountMenuLeaveTimer = setTimeout(closeAccountMenu, 350);
+  });
+  wrapper.addEventListener('mouseenter', () => {
+    if (accountMenuLeaveTimer) clearTimeout(accountMenuLeaveTimer);
+  });
+})();
+
+async function signOut() {
+  if (!supabaseClient) return;
+  try {
+    await supabaseClient.auth.signOut();
+    window.location.reload();
+  } catch (err) {
+    console.error('[Auth] Erreur déconnexion:', err);
+    window.location.reload();
+  }
+}
+
+async function savePortfolioToCloud() {
+  if (!supabaseClient || !currentUser) return;
+  setSyncStatus('syncing');
+  try {
+    const { data: existing } = await supabaseClient
+      .from('user_portfolios')
+      .select('id')
+      .eq('user_id', currentUser.id)
+      .order('updated_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    const payload = {
+      user_id: currentUser.id,
+      portfolio_name: (typeof state !== 'undefined' && state.data && state.data.name) ? state.data.name : 'Mon Portfolio',
+      portfolio_data: (typeof state !== 'undefined') ? state : {}
+    };
+
+    let error;
+    if (existing && existing.id) {
+      ({ error } = await supabaseClient.from('user_portfolios').update(payload).eq('id', existing.id));
+    } else {
+      ({ error } = await supabaseClient.from('user_portfolios').insert(payload));
+    }
+    if (error) throw error;
+    setSyncStatus('saved');
+  } catch (err) {
+    console.error('[Auth] Erreur sauvegarde cloud:', err);
+    setSyncStatus('error');
+  }
+}
+
+function setSyncStatus(status) {
+  const dot   = document.getElementById('sync-dot');
+  const label = document.getElementById('sync-label');
+  const menuDot  = document.getElementById('menu-sync-dot');
+  const menuText = document.getElementById('menu-sync-text');
+
+  const map = {
+    saving : { color: '#f59e0b', text: 'Sauvegarde...', cls: 'syncing' },
+    syncing: { color: '#f59e0b', text: 'Sauvegarde...', cls: 'syncing' },
+    saved  : { color: '#10b981', text: 'Sauvegardé ✓',  cls: '' },
+    error  : { color: '#ef4444', text: 'Erreur sync',   cls: 'error' }
+  };
+  const s = map[status] || map.saved;
+
+  if (dot)   { dot.className = s.cls; dot.style.background = s.color; }
+  if (label) label.textContent = s.text;
+  if (menuDot)  menuDot.style.background = s.color;
+  if (menuText) menuText.textContent = s.text;
+}
+
+// Sauvegarde auto avec debounce 3s. On enveloppe render() sans jamais
+// le réécrire — le comportement existant de render() reste identique.
+(function hookAutoSave() {
+  const trySetup = () => {
+    if (typeof window.render !== 'function') {
+      setTimeout(trySetup, 500);
+      return;
+    }
+    const originalRender = window.render;
+    window.render = function(...args) {
+      const result = originalRender.apply(this, args);
+      if (currentUser) {
+        clearTimeout(autoSaveTimer);
+        autoSaveTimer = setTimeout(savePortfolioToCloud, 3000);
+      }
+      return result;
+    };
+  };
+  trySetup();
+})();
+
+async function openPaymentHistory() {
+  const modal = document.getElementById('payment-history-modal');
+  const body  = document.getElementById('ph-body-content');
+  if (!modal || !body) return;
+
+  modal.classList.add('open');
+  body.innerHTML = '<div class="ph-empty">Chargement...</div>';
+
+  if (!supabaseClient || !currentUser) {
+    body.innerHTML = '<div class="ph-empty">Connectez-vous pour voir votre historique.</div>';
+    return;
+  }
+
+  try {
+    const { data, error } = await supabaseClient
+      .from('user_payments')
+      .select('*')
+      .eq('user_id', currentUser.id)
+      .order('created_at', { ascending: false });
+    if (error) throw error;
+
+    if (!data || data.length === 0) {
+      body.innerHTML = '<div class="ph-empty">Aucun paiement pour le moment.</div>';
+      return;
+    }
+
+    const statusClass = { paid: 's-paid', pending: 's-pending', failed: 's-failed' };
+    const statusLabel = { paid: 'Payé', pending: 'En attente', failed: 'Échoué' };
+
+    let html = `<div class="ph-row ph-head-row"><span>Date</span><span>Montant</span><span>Méthode</span><span>Statut</span></div>`;
+    data.forEach(p => {
+      const date = new Date(p.created_at).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' });
+      const amount = new Intl.NumberFormat('fr-FR').format(p.amount) + ' ' + (p.currency || 'XAF');
+      const cls = statusClass[p.status] || 's-pending';
+      const label = statusLabel[p.status] || p.status;
+      html += `<div class="ph-row"><span>${date}</span><span>${amount}</span><span>${p.method || '—'}</span><span class="${cls}">${label}</span></div>`;
+    });
+    body.innerHTML = html;
+  } catch (err) {
+    console.error('[Auth] Erreur chargement paiements:', err);
+    body.innerHTML = '<div class="ph-empty">Erreur de chargement. Réessayez.</div>';
+  }
+}
+
+function closePaymentHistory() {
+  const modal = document.getElementById('payment-history-modal');
+  if (modal) modal.classList.remove('open');
+}
+
+async function openSavedPortfolios() {
+  const modal = document.getElementById('saved-portfolios-modal');
+  const body  = document.getElementById('sp-body-content');
+  if (!modal || !body) return;
+
+  modal.classList.add('open');
+  body.innerHTML = '<div class="ph-empty">Chargement...</div>';
+
+  if (!supabaseClient || !currentUser) {
+    body.innerHTML = '<div class="ph-empty">Connectez-vous pour voir vos portfolios.</div>';
+    return;
+  }
+
+  try {
+    const { data, error } = await supabaseClient
+      .from('user_portfolios')
+      .select('*')
+      .eq('user_id', currentUser.id)
+      .order('updated_at', { ascending: false });
+    if (error) throw error;
+
+    if (!data || data.length === 0) {
+      body.innerHTML = '<div class="ph-empty">Aucun portfolio sauvegardé pour le moment.</div>';
+      return;
+    }
+
+    let html = '';
+    data.forEach(p => {
+      const date = new Date(p.updated_at).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+      html += `<div class="sp-item"><div><div class="sp-item-name">${p.portfolio_name || 'Mon Portfolio'}</div><div class="sp-item-date">Modifié le ${date}</div></div><button class="sp-load-btn" onclick="loadSavedPortfolio('${p.id}')">Charger</button></div>`;
+    });
+    body.innerHTML = html;
+  } catch (err) {
+    console.error('[Auth] Erreur chargement portfolios:', err);
+    body.innerHTML = '<div class="ph-empty">Erreur de chargement. Réessayez.</div>';
+  }
+}
+
+async function loadSavedPortfolio(portfolioId) {
+  if (!supabaseClient || !currentUser) return;
+  try {
+    const { data, error } = await supabaseClient
+      .from('user_portfolios')
+      .select('portfolio_data')
+      .eq('id', portfolioId)
+      .eq('user_id', currentUser.id)
+      .single();
+    if (error) throw error;
+
+    if (data && data.portfolio_data && typeof state !== 'undefined') {
+      Object.assign(state, data.portfolio_data);
+      if (typeof render === 'function') render();
+      closeSavedPortfolios();
+      if (typeof showToast === 'function') showToast('Portfolio chargé ✓');
+    }
+  } catch (err) {
+    console.error('[Auth] Erreur chargement portfolio:', err);
+  }
+}
+
+function closeSavedPortfolios() {
+  const modal = document.getElementById('saved-portfolios-modal');
+  if (modal) modal.classList.remove('open');
+}
+
+let authInitDone = false;
+let authRetryCount = 0;
+const AUTH_MAX_RETRIES = 20; // 20 x 250ms = 5 secondes max d'attente du SDK
+
+function runAuthInit() {
+  if (authInitDone) return;
+
+  const ok = initSupabase();
+  if (ok) {
+    authInitDone = true;
+    checkAuthOnLoad();
+    return;
+  }
+
+  authRetryCount++;
+  if (authRetryCount <= AUTH_MAX_RETRIES) {
+    // Le SDK Supabase peut ne pas être encore complètement prêt
+    // (chargement réseau lent) — on réessaie sur un court délai
+    // avant d'abandonner. Zéro impact sur l'éditeur pendant ce temps.
+    setTimeout(runAuthInit, 250);
+    return;
+  }
+
+  // Après 5 secondes sans SDK disponible (bloqué par un ad-blocker,
+  // extension de vie privée, ou CDN injoignable) : dégradation
+  // gracieuse assumée — l'éditeur continue de fonctionner normalement.
+  // Le bouton compte reste visible (état invité) pour que toutes les
+  // options Export/Publier/Hébergement/Mode sombre restent accessibles,
+  // seule la connexion Google est indisponible dans ce cas précis.
+  authInitDone = true;
+  console.warn('[Auth] SDK Supabase indisponible après plusieurs tentatives — éditeur en mode local, sans compte.');
+  const authScreen = document.getElementById('auth-screen');
+  if (authScreen) authScreen.style.display = 'none';
+  setAccountMenuGuestState();
+  const sync = document.getElementById('sync-indicator');
+  if (sync) sync.style.display = 'none';
+}
+
+// État initial affiché immédiatement (icône invité) pendant que
+// runAuthInit() vérifie en arrière-plan s'il y a une session active.
+setAccountMenuGuestState();
+
+if (document.readyState === 'complete' || document.readyState === 'interactive') {
+  runAuthInit();
+} else {
+  document.addEventListener('DOMContentLoaded', runAuthInit);
+}
+/* ═══ FIN AJOUT AUTH ═══ */
+
 </script>
+
+<!-- ═══════════════════════════════════════════════════
+     AJOUT AUTH — Écran de connexion Google
+     S'affiche par-dessus l'écran de sécurité existant
+     grâce à un z-index supérieur (99999 > celui de
+     #security-screen). Les deux écrans cohabitent sans
+     conflit : aucune modification du HTML existant.
+     ═══════════════════════════════════════════════════ -->
+<div id="auth-screen" style="display:none;">
+  <div id="auth-card">
+
+    <div id="auth-logo">
+      <i class="ri-layout-masonry-fill" style="font-size:40px;color:#6366f1;display:block;margin-bottom:12px;"></i>
+      <h1 style="font-size:22px;font-weight:700;color:#fff;margin-bottom:8px;">Portfolio Studio</h1>
+      <p style="font-size:13px;color:rgba(255,255,255,0.5);line-height:1.6;margin-bottom:28px;">
+        Créez votre portfolio professionnel<br>en quelques minutes
+      </p>
+    </div>
+
+    <button id="btn-google-signin" onclick="signInWithGoogle()">
+      <svg width="20" height="20" viewBox="0 0 48 48" style="flex-shrink:0;">
+        <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+        <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+        <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+        <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+      </svg>
+      Continuer avec Google
+    </button>
+
+    <div id="auth-loading" style="display:none;">
+      <span class="auth-spinner"></span>
+      Connexion en cours...
+    </div>
+
+    <div id="auth-error" style="display:none;">
+      <i class="ri-error-warning-line"></i>
+      <span id="auth-error-text"></span>
+    </div>
+
+    <div id="auth-popup-blocked" style="display:none;">
+      <p>Popup bloquée par votre navigateur.</p>
+      <a id="auth-redirect-link" href="#">Cliquez ici pour vous connecter →</a>
+    </div>
+
+    <p id="auth-terms">
+      En continuant, vous acceptez nos
+      <a href="#" onclick="return false;">conditions d'utilisation</a>
+    </p>
+
+  </div>
+</div>
+
+<!-- MODAL HISTORIQUE PAIEMENTS -->
+<div id="payment-history-modal" onclick="if(event.target===this)closePaymentHistory()">
+  <div id="payment-history-card">
+    <div class="ph-head">
+      <span>Historique des paiements</span>
+      <button class="ph-close" onclick="closePaymentHistory()">✕</button>
+    </div>
+    <div class="ph-body" id="ph-body-content"></div>
+  </div>
+</div>
+
+<!-- MODAL PORTFOLIOS SAUVEGARDÉS -->
+<div id="saved-portfolios-modal" onclick="if(event.target===this)closeSavedPortfolios()">
+  <div id="saved-portfolios-card">
+    <div class="ph-head">
+      <span>Mes portfolios sauvegardés</span>
+      <button class="ph-close" onclick="closeSavedPortfolios()">✕</button>
+    </div>
+    <div class="ph-body" id="sp-body-content" style="overflow-y:auto;padding:16px;"></div>
+  </div>
+</div>
+
+<!-- ═══ FIN AJOUT AUTH — HTML écran connexion + modals ═══ -->
+
 </body>
 </html>
