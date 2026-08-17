@@ -3,7 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SaaS Portfolio Studio | Master Edition V12</title>
+    <title>Mental-Studio | Créateur de Portfolio Professionnel</title>
+
+    <!-- ═══ APERÇU DE PARTAGE (WhatsApp, Facebook, X/Twitter, etc.) ═══
+         L'image doit être hébergée sur une URL publique réelle —
+         un data-URI/base64 ne fonctionne pas pour ces balises, les
+         plateformes font une requête HTTP séparée pour la récupérer.
+         Voir le fichier og-image-mental-studio.jpg livré à héberger
+         à l'URL exacte indiquée ci-dessous. -->
+    <meta property="og:title" content="Mental-Studio — Créateur de Portfolio Professionnel">
+    <meta property="og:description" content="Créez votre portfolio professionnel en quelques minutes.">
+    <meta property="og:image" content="https://mental-studio.com/og-image-mental-studio.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Logo Mental Studio">
+    <meta property="og:url" content="https://mental-studio.com/">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Mental Studio">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Mental-Studio — Créateur de Portfolio Professionnel">
+    <meta name="twitter:description" content="Créez votre portfolio professionnel en quelques minutes.">
+    <meta name="twitter:image" content="https://mental-studio.com/og-image-mental-studio.jpg">
     <!-- ═══ AJOUT AUTH — SDK Supabase, chargé avant tout autre script ═══ -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&family=Playfair+Display:ital,wght@0,700;1,700&family=Plus+Jakarta+Sans:wght@400;600;800&family=Space+Grotesk:wght@400;700&family=Cinzel:wght@600;800&family=Bebas+Neue&family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300&family=Josefin+Sans:wght@300;400;600;700&family=Raleway:wght@300;400;700;900&display=swap" rel="stylesheet">
@@ -435,7 +455,14 @@ textarea.input-control{min-height:75px;resize:none;line-height:1.6;}
 /* PREVIEW */
 .preview-wrapper{flex:1;padding:18px;display:flex;justify-content:center;align-items:center;background:var(--ui-bg);position:relative;overflow:hidden;}
 .preview-bg-pattern{position:absolute;inset:0;background-image:radial-gradient(circle,var(--ui-border) 1px,transparent 1px);background-size:24px 24px;opacity:.5;}
-.browser-mockup{position:relative;z-index:1;width:100%;max-width:1280px;height:100%;background:#fff;border-radius:14px;box-shadow:0 32px 64px rgba(0,0,0,.16),0 0 0 1px rgba(0,0,0,.06);display:flex;flex-direction:column;overflow:hidden;}
+.browser-mockup{position:relative;z-index:1;width:100%;max-width:1280px;height:100%;background:#fff;border-radius:14px;box-shadow:0 32px 64px rgba(0,0,0,.16),0 0 0 1px rgba(0,0,0,.06);display:flex;flex-direction:column;overflow:hidden;
+    /* Confine les descendants en position:fixed (fond des thèmes
+       photo) à l'intérieur de ce cadre d'aperçu, au lieu de les
+       laisser s'échapper vers la fenêtre réelle du navigateur.
+       Sans effet sur le portfolio exporté (pas de mockup là-bas),
+       où position:fixed cible correctement le vrai viewport visiteur. */
+    transform:translateZ(0);
+}
 .browser-header{height:36px;background:#f8fafc;border-bottom:1px solid #e2e8f0;display:flex;align-items:center;padding:0 12px;gap:6px;flex-shrink:0;}
 .browser-dot{width:10px;height:10px;border-radius:50%;}
 .browser-url-bar{flex:1;margin:0 10px;height:20px;background:#e2e8f0;border-radius:100px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#64748b;font-family:monospace;}
@@ -454,12 +481,46 @@ textarea.input-control{min-height:75px;resize:none;line-height:1.6;}
 .pf-name{margin-bottom:24px;line-height:1.1;transition:.3s;}
 .pf-bio{line-height:1.7;margin-bottom:32px;font-size:17px;}
 .pf-contact-btn{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;font-weight:600;transition:.3s;}
+.pf-cv-btn{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:12px 24px;
+    background:rgba(239,68,68,.1);
+    color:#ef4444!important;
+    border:1px solid rgba(239,68,68,.3);
+    border-radius:100px;
+    font-family:'DM Sans',sans-serif;
+    font-size:13px;font-weight:700;
+    text-decoration:none;
+    margin-left:12px;
+    transition:.2s;
+    -webkit-text-fill-color:#ef4444;
+}
+.pf-cv-btn:hover{background:rgba(239,68,68,.2);}
+.pf-cv-btn i{font-size:16px;}
+@media(max-width:768px){
+    .pf-cv-btn{margin-left:0;margin-top:10px;}
+}
 .pf-projects-wrap{transition:.3s;}
 .pf-section-title{margin:90px 0 50px;font-size:30px;font-weight:800;}
 .pf-projects{display:grid;gap:36px;grid-template-columns:var(--pf-grid-cols,repeat(auto-fit,minmax(300px,1fr)));}
 .pf-project-card{display:flex;flex-direction:column;overflow:hidden;transition:.3s;}
 .pf-project-img{width:100%;object-fit:cover;}
 .pf-project-info{display:flex;flex-direction:column;}
+a.pf-project-info{
+    color:inherit;
+    text-decoration:none;
+    cursor:pointer;
+    transition:opacity .2s ease;
+}
+a.pf-project-info:hover{opacity:.82;}
+a.pf-project-info:hover .pf-project-title{text-decoration:underline;}
+.pf-project-link-hint{
+    display:inline-flex;align-items:center;gap:4px;
+    font-size:11px;font-weight:600;
+    margin-top:8px;opacity:.65;
+    color:inherit;
+}
+.pf-project-link-hint i{font-size:12px;}
 .pf-project-title{margin-bottom:10px;font-size:22px;font-weight:700;}
 .pf-project-desc{line-height:1.6;opacity:.8;font-size:15px;}
 .pf-skills-section{margin-top:50px;}
@@ -2130,15 +2191,17 @@ radial-gradient(circle at 50% 50%,rgba(255,183,77,.06) 0%,transparent 50%);}
     overflow-y:auto;
 }
 /* Couche 1 : l'image de fond, animable SANS toucher au texte.
-   Légèrement plus grande que le conteneur (108%, centrée) pour que
-   les animations de zoom/pulse ne laissent jamais voir de bord vide,
-   sans avoir besoin d'overflow:hidden sur le parent (qui bloquerait
-   le scroll vertical du portfolio). background-size:cover comble déjà
-   le zoom horizontal de bgSlowZoom ; cette marge couvre le transform
-   scale() de bgPulseScale. */
+   position:fixed — ancré à la fenêtre du visiteur plutôt qu'à la
+   hauteur du contenu, qui grandit dès qu'on ajoute un projet/une
+   expérience. Sans ça, une image en position:absolute étirée sur
+   toute la hauteur de page pouvait laisser apparaître le fond blanc
+   par défaut de la page en dessous, ou se déformer en changeant de
+   thème. Fixed garantit une couverture pleine et stable en toutes
+   circonstances. La marge de 108% reste utile pour les animations
+   de zoom/pulse qui ne doivent jamais laisser voir de bord vide. */
 [class*="theme-ph_"]::before{
     content:'';
-    position:absolute;
+    position:fixed;
     top:-4%;left:-4%;
     width:108%;height:108%;
     background-size:cover;
@@ -2147,10 +2210,11 @@ radial-gradient(circle at 50% 50%,rgba(255,183,77,.06) 0%,transparent 50%);}
     z-index:0;pointer-events:none;
     will-change:transform,background-position,filter,opacity;
 }
-/* Couche 2 : overlay sombre pour lisibilité, jamais animé */
+/* Couche 2 : overlay sombre pour lisibilité, jamais animé.
+   Fixed également, pour rester collé à l'image ci-dessus. */
 [class*="theme-ph_"]::after{
     content:'';
-    position:absolute;inset:0;
+    position:fixed;inset:0;
     background:linear-gradient(160deg,rgba(0,0,0,.6) 0%,rgba(0,0,0,.72) 100%);
     z-index:1;pointer-events:none;
 }
@@ -2335,6 +2399,8 @@ radial-gradient(circle at 50% 50%,rgba(255,183,77,.06) 0%,transparent 50%);}
     -webkit-background-clip:text;
     background-clip:text;
     -webkit-text-fill-color:transparent;
+    text-decoration:none;
+    cursor:pointer;
 }
 
 /* ── NAVIGATION MULTI-PAGES ─────────────────────── */
@@ -2817,7 +2883,7 @@ radial-gradient(circle at 50% 50%,rgba(255,183,77,.06) 0%,transparent 50%);}
 
 </style>
 </head>
-<body class="">
+<body class="editor-dark-mode">
 
 <div id="security-screen" style="display:none;">
     <div class="security-bg"></div><div class="security-grid"></div>
@@ -2930,8 +2996,8 @@ radial-gradient(circle at 50% 50%,rgba(255,183,77,.06) 0%,transparent 50%);}
 
                             <div class="account-menu-section-label">Préférences</div>
                             <button class="account-menu-item" id="account-theme-toggle-btn" onclick="toggleEditorTheme();">
-                                <i class="ri-moon-line" id="account-theme-icon"></i>
-                                <span id="account-theme-label">Mode sombre</span>
+                                <i class="ri-sun-line" id="account-theme-icon"></i>
+                                <span id="account-theme-label">Mode clair</span>
                             </button>
                             <button class="account-menu-item" id="account-payment-history-btn" onclick="openPaymentHistory();closeAccountMenu();" style="display:none;">
                                 <i class="ri-receipt-line"></i> Historique paiements
@@ -3500,11 +3566,14 @@ radial-gradient(circle at 50% 50%,rgba(255,183,77,.06) 0%,transparent 50%);}
 </div>
 </div>
 
-<!-- ===== MODAL PAIEMENT ===== -->
+<!-- ═══════════════════════════════════════════════════════
+     MODAL PAIEMENT — NotchPay (MTN MoMo / Orange Money / Visa)
+     Remplace l'ancien système de code manuel via WhatsApp.
+     3 étapes : choix méthode → attente confirmation → succès.
+     ═══════════════════════════════════════════════════════ -->
 <div id="pm-modal" style="display:none;position:fixed;inset:0;z-index:9998;background:rgba(5,5,20,.75);backdrop-filter:blur(8px);align-items:flex-start;justify-content:center;padding:8px;overflow-y:auto;">
 <div style="background:var(--ui-panel);border:1px solid var(--ui-border);border-radius:20px;width:100%;max-width:460px;display:flex;flex-direction:column;box-shadow:0 40px 80px rgba(0,0,0,.4);animation:pmFadeIn .35s cubic-bezier(.34,1.56,.64,1);margin:auto;">
 
-    <!-- HEADER MODAL sticky -->
     <div style="padding:16px 20px 12px;border-bottom:1px solid var(--ui-border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
         <div style="display:flex;align-items:center;gap:10px;">
             <div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#6366f1,#a855f7);display:flex;align-items:center;justify-content:center;color:white;font-size:16px;"><i class="ri-secure-payment-line"></i></div>
@@ -3518,191 +3587,108 @@ radial-gradient(circle at 50% 50%,rgba(255,183,77,.06) 0%,transparent 50%);}
 
     <div style="padding:24px;">
 
-    <!-- Récapitulatif complexité dynamique — injecté par openPaymentModal() -->
-    <div id="pm-complexity-summary" style="display:none;padding:0 20px 4px;"></div>
-    <div style="padding:0 20px 24px;">
+    <div id="pm-price-breakdown" style="margin-bottom:18px;"></div>
 
-        <!-- PRIX BADGE -->
-        <div style="text-align:center;margin-bottom:18px;">
-            <div style="display:inline-flex;align-items:center;gap:10px;background:linear-gradient(135deg,rgba(99,102,241,.1),rgba(168,85,247,.08));border:1px solid rgba(99,102,241,.2);border-radius:100px;padding:10px 24px;">
-                <i class="ri-price-tag-3-fill" style="color:#6366f1;font-size:18px;"></i>
-                <span style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--ui-text);" id="pm-price-display">Calcul en cours...</span>
-                <span id="pm-price-converted" style="font-size:11px;color:var(--ui-muted);"></span>
-            </div>
-            <div style="font-size:12px;color:var(--ui-muted);margin-top:8px;">Téléchargement illimité de votre portfolio</div>
+    <!-- ═══ ÉTAPE 1 — CHOIX DU MOYEN DE PAIEMENT ═══ -->
+    <div id="pm-step-choice" class="pm-step">
+        <div style="text-align:center;margin-bottom:20px;">
+            <div style="font-size:11px;color:var(--ui-muted);margin-bottom:4px;">Montant à payer</div>
+            <div id="pm-amount-display" style="font-family:'Syne',sans-serif;font-size:32px;font-weight:800;color:var(--ui-text);">2 500 FCFA</div>
         </div>
 
-        <!-- ÉTAPE 1 : CHOIX MÉTHODE -->
-        <div id="step-method" class="pay-step">
-            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--ui-muted);margin-bottom:12px;">Choisissez votre méthode de paiement</div>
-            <div style="display:flex;flex-direction:column;gap:10px;">
-                <div class="pay-method-card" data-method="orange" onclick="selectPayMethod('orange')" style="display:flex;align-items:center;gap:14px;padding:14px 16px;border:1.5px solid var(--ui-border);border-radius:14px;cursor:pointer;transition:.2s;background:var(--ui-surface);">
-                    <div style="width:42px;height:42px;border-radius:12px;background:#ff6600;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:20px;">🟠</div>
-                    <div style="flex:1;">
-                        <div style="font-weight:700;font-size:13px;color:var(--ui-text);">Orange Money</div>
-                        <div style="font-size:11px;color:var(--ui-muted);">Paiement mobile Orange</div>
-                    </div>
-                    <i class="ri-arrow-right-s-line" style="color:var(--ui-muted);font-size:18px;"></i>
+        <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:18px;">
+            <button type="button" class="pm-method-btn" data-method="mtn" onclick="selectPaymentMethod('mtn')" style="display:flex;align-items:center;gap:12px;padding:14px 16px;border:2px solid var(--ui-border);border-radius:14px;background:var(--ui-surface);cursor:pointer;transition:.2s;text-align:left;">
+                <div style="width:38px;height:38px;border-radius:10px;background:#FFC107;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;color:#1a1a1a;flex-shrink:0;">MTN</div>
+                <div style="flex:1;">
+                    <div style="font-size:13px;font-weight:700;color:var(--ui-text);">MTN Mobile Money</div>
+                    <div style="font-size:11px;color:var(--ui-muted);">Paiement instantané par téléphone</div>
                 </div>
-                <div class="pay-method-card" data-method="mobile" onclick="selectPayMethod('mobile')" style="display:flex;align-items:center;gap:14px;padding:14px 16px;border:1.5px solid var(--ui-border);border-radius:14px;cursor:pointer;transition:.2s;background:var(--ui-surface);">
-                    <div style="width:42px;height:42px;border-radius:12px;background:#0066cc;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:20px;">💙</div>
-                    <div style="flex:1;">
-                        <div style="font-weight:700;font-size:13px;color:var(--ui-text);">Mobile Money (MTN / Moov)</div>
-                        <div style="font-size:11px;color:var(--ui-muted);">Paiement mobile Money</div>
-                    </div>
-                    <i class="ri-arrow-right-s-line" style="color:var(--ui-muted);font-size:18px;"></i>
-                </div>
-                <div class="pay-method-card" data-method="visa" onclick="selectPayMethod('visa')" style="display:flex;align-items:center;gap:14px;padding:14px 16px;border:1.5px solid var(--ui-border);border-radius:14px;cursor:pointer;transition:.2s;background:var(--ui-surface);">
-                    <div style="width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#1a1f71,#2566af);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px;color:white;font-weight:800;font-family:serif;">VISA</div>
-                    <div style="flex:1;">
-                        <div style="font-weight:700;font-size:13px;color:var(--ui-text);">Carte Visa / Mastercard</div>
-                        <div style="font-size:11px;color:var(--ui-muted);">Paiement international sécurisé</div>
-                    </div>
-                    <i class="ri-arrow-right-s-line" style="color:var(--ui-muted);font-size:18px;"></i>
-                </div>
-            </div>
-        </div>
+                <i class="ri-checkbox-blank-circle-line pm-method-check" style="font-size:18px;color:var(--ui-muted);"></i>
+            </button>
 
-        <!-- ÉTAPE 2A : MOBILE (Orange / MTN) -->
-        <div id="step-mobile" class="pay-step" style="display:none;">
-            <button onclick="showPayStep('step-method')" style="background:none;border:none;cursor:pointer;color:var(--ui-muted);font-size:12px;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:4px;padding:0;font-family:'DM Sans',sans-serif;"><i class="ri-arrow-left-s-line"></i> Retour</button>
-
-            <div id="pm-mobile-instructions" style="background:rgba(255,102,0,.06);border:1px solid rgba(255,102,0,.2);border-radius:12px;padding:14px;margin-bottom:18px;">
-                <div style="font-size:12px;font-weight:700;color:var(--ui-text);margin-bottom:6px;"><i class="ri-information-line" style="color:#ff6600;"></i> Instructions de paiement</div>
-                <div style="font-size:12px;color:var(--ui-muted);line-height:1.7;">
-                    1. Envoyez <strong style="color:var(--ui-text);" id="mm-amount-label">...</strong> au numéro :<br>
-                    <strong style="font-size:15px;color:var(--ui-accent);letter-spacing:2px;" id="pm-mobile-number">+237 656 787 566</strong><br>
-                    2. Nom du destinataire : <strong style="color:var(--ui-text);">Brandon Mballa</strong><br>
-                    3. Remplissez le formulaire ci-dessous et patientez.
+            <button type="button" class="pm-method-btn" data-method="orange" onclick="selectPaymentMethod('orange')" style="display:flex;align-items:center;gap:12px;padding:14px 16px;border:2px solid var(--ui-border);border-radius:14px;background:var(--ui-surface);cursor:pointer;transition:.2s;text-align:left;">
+                <div style="width:38px;height:38px;border-radius:10px;background:#FF6600;display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;flex-shrink:0;"><i class="ri-smartphone-line"></i></div>
+                <div style="flex:1;">
+                    <div style="font-size:13px;font-weight:700;color:var(--ui-text);">Orange Money</div>
+                    <div style="font-size:11px;color:var(--ui-muted);">Paiement instantané par téléphone</div>
                 </div>
-            </div>
+                <i class="ri-checkbox-blank-circle-line pm-method-check" style="font-size:18px;color:var(--ui-muted);"></i>
+            </button>
 
-            <div style="margin-bottom:12px;">
-                <label style="font-size:11px;font-weight:600;color:var(--ui-text);display:block;margin-bottom:5px;">Votre nom complet *</label>
-                <input id="pm-name" type="text" placeholder="Ex: Jean Dupont" class="input-control">
-            </div>
-            <div style="margin-bottom:18px;">
-                <label style="font-size:11px;font-weight:600;color:var(--ui-text);display:block;margin-bottom:5px;">Votre numéro expéditeur *</label>
-                <input id="pm-phone" type="tel" placeholder="+237 6XX XXX XXX" class="input-control">
-            </div>
-            <div style="background:var(--ui-surface);border-radius:10px;padding:10px 14px;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between;">
-                <span style="font-size:11px;color:var(--ui-muted);">Référence de commande</span>
-                <span id="pm-ref-display" style="font-size:11px;font-weight:700;color:var(--ui-accent);letter-spacing:1px;font-family:monospace;"></span>
-            </div>
-            <button onclick="submitMobilePayment()" style="width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);color:white;border:none;border-radius:12px;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 8px 24px rgba(99,102,241,.3);transition:.2s;" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform='none'">
-                <i class="ri-send-plane-fill"></i> J'ai effectué le paiement
+            <button type="button" class="pm-method-btn" data-method="card" onclick="selectPaymentMethod('card')" style="display:flex;align-items:center;gap:12px;padding:14px 16px;border:2px solid var(--ui-border);border-radius:14px;background:var(--ui-surface);cursor:pointer;transition:.2s;text-align:left;">
+                <div style="width:38px;height:38px;border-radius:10px;background:#1a1f71;display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;flex-shrink:0;"><i class="ri-bank-card-line"></i></div>
+                <div style="flex:1;">
+                    <div style="font-size:13px;font-weight:700;color:var(--ui-text);">Visa / Mastercard</div>
+                    <div style="font-size:11px;color:var(--ui-muted);">Carte bancaire internationale</div>
+                </div>
+                <i class="ri-checkbox-blank-circle-line pm-method-check" style="font-size:18px;color:var(--ui-muted);"></i>
             </button>
         </div>
 
-        <!-- ÉTAPE 2B : VISA / GOOGLE PAY -->
-        <div id="step-visa" class="pay-step" style="display:none;">
-            <button onclick="showPayStep('step-method')" style="background:none;border:none;cursor:pointer;color:var(--ui-muted);font-size:12px;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:4px;padding:0;font-family:'DM Sans',sans-serif;"><i class="ri-arrow-left-s-line"></i> Retour</button>
-
-            <!-- OPTION 1 : GOOGLE PAY -->
-            <div style="background:rgba(66,133,244,.06);border:1px solid rgba(66,133,244,.2);border-radius:14px;padding:16px;margin-bottom:14px;">
-                <div style="font-size:12px;font-weight:700;color:var(--ui-text);margin-bottom:10px;display:flex;align-items:center;gap:6px;">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 11.5v3.5h5.5c-.24 1.26-1.42 3.7-5.5 3.7-3.31 0-6-2.74-6-6.12s2.69-6.12 6-6.12c1.88 0 3.14.8 3.86 1.5l2.63-2.54C16.9 3.73 14.66 2.75 12 2.75 6.48 2.75 2 7.23 2 12.62S6.48 22.5 12 22.5c5.52 0 9.19-3.88 9.19-9.35 0-.63-.07-1.11-.16-1.6H12z" fill="#4285F4"/></svg>
-                    Option recommandée — Google Pay
-                </div>
-                <div style="font-size:11px;color:var(--ui-muted);margin-bottom:12px;line-height:1.6;">
-                    Payez rapidement avec votre carte enregistrée sur Google Pay. Sécurisé et instantané.
-                </div>
-                <button onclick="launchGooglePay()" style="width:100%;padding:13px;background:#000;color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:.2s;" onmouseover="this.style.background='#1a1a1a'" onmouseout="this.style.background='#000'">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 11.5v3.5h5.5c-.24 1.26-1.42 3.7-5.5 3.7-3.31 0-6-2.74-6-6.12s2.69-6.12 6-6.12c1.88 0 3.14.8 3.86 1.5l2.63-2.54C16.9 3.73 14.66 2.75 12 2.75 6.48 2.75 2 7.23 2 12.62S6.48 22.5 12 22.5c5.52 0 9.19-3.88 9.19-9.35 0-.63-.07-1.11-.16-1.6H12z" fill="white"/></svg>
-                    Payer avec Google Pay — <span id="gp-price-label">...</span>
-                </button>
-                <div style="font-size:10px;color:var(--ui-muted);margin-top:8px;text-align:center;">Vous serez redirigé vers Google Pay pour finaliser</div>
+        <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:18px;">
+            <div>
+                <label style="font-size:11px;font-weight:700;color:var(--ui-muted);display:block;margin-bottom:5px;">Email *</label>
+                <input type="email" id="pm-email" placeholder="votre@email.com" style="width:100%;padding:11px 14px;border:1.5px solid var(--ui-border);border-radius:10px;background:var(--ui-bg);color:var(--ui-text);font-size:13px;font-family:'DM Sans',sans-serif;">
             </div>
-
-            <!-- SÉPARATEUR -->
-            <div style="display:flex;align-items:center;gap:10px;margin:14px 0;">
-                <div style="flex:1;height:1px;background:var(--ui-border);"></div>
-                <span style="font-size:11px;color:var(--ui-muted);font-weight:600;">ou entrez vos coordonnées manuellement</span>
-                <div style="flex:1;height:1px;background:var(--ui-border);"></div>
+            <div>
+                <label style="font-size:11px;font-weight:700;color:var(--ui-muted);display:block;margin-bottom:5px;">Nom complet</label>
+                <input type="text" id="pm-name" placeholder="Votre nom" style="width:100%;padding:11px 14px;border:1.5px solid var(--ui-border);border-radius:10px;background:var(--ui-bg);color:var(--ui-text);font-size:13px;font-family:'DM Sans',sans-serif;">
             </div>
-
-            <!-- OPTION 2 : CARTE MANUELLE -->
-            <div style="background:var(--ui-surface);border-radius:14px;padding:16px;">
-                <div style="font-size:11px;font-weight:700;color:var(--ui-text);margin-bottom:12px;display:flex;align-items:center;gap:6px;">
-                    <i class="ri-bank-card-line" style="color:var(--ui-accent);"></i> Entrez les détails de votre carte
-                </div>
-                <div style="margin-bottom:10px;">
-                    <label style="font-size:10px;font-weight:600;color:var(--ui-muted);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px;">Nom sur la carte *</label>
-                    <input id="pm-vname" type="text" placeholder="JEAN DUPONT" class="input-control" style="text-transform:uppercase;font-size:12px;">
-                </div>
-                <div style="margin-bottom:10px;">
-                    <label style="font-size:10px;font-weight:600;color:var(--ui-muted);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px;">Numéro de carte *</label>
-                    <div style="position:relative;">
-                        <input id="pm-card" type="text" placeholder="1234 5678 9012 3456" class="input-control" maxlength="19" style="font-size:12px;padding-right:40px;" oninput="this.value=this.value.replace(/[^\d]/g,'').replace(/(\d{4})(?=\d)/g,'$1 ').trim()">
-                        <div style="position:absolute;right:10px;top:50%;transform:translateY(-50%);display:flex;gap:3px;">
-                            <div style="width:16px;height:10px;background:#eb001b;border-radius:50%;"></div>
-                            <div style="width:16px;height:10px;background:#f79e1b;border-radius:50%;margin-left:-6px;"></div>
-                        </div>
-                    </div>
-                </div>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;">
-                    <div>
-                        <label style="font-size:10px;font-weight:600;color:var(--ui-muted);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px;">Expiration *</label>
-                        <input id="pm-exp" type="text" placeholder="MM/AA" class="input-control" maxlength="5" style="font-size:12px;" oninput="let v=this.value.replace(/\D/g,'');if(v.length>=2)v=v.substring(0,2)+'/'+v.substring(2);this.value=v;">
-                    </div>
-                    <div>
-                        <label style="font-size:10px;font-weight:600;color:var(--ui-muted);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px;">CVV *</label>
-                        <input id="pm-cvv" type="password" placeholder="•••" class="input-control" maxlength="4" style="font-size:12px;letter-spacing:3px;">
-                    </div>
-                </div>
-                <button onclick="submitVisaPayment()" style="width:100%;padding:13px;background:linear-gradient(135deg,#1a1f71,#2566af);color:white;border:none;border-radius:10px;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(26,31,113,.25);transition:.2s;" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform='none'">
-                    <i class="ri-bank-card-fill"></i> <span id="card-price-label">Confirmer le paiement</span>
-                </button>
-                <div style="display:flex;align-items:center;justify-content:center;gap:6px;margin-top:10px;">
-                    <i class="ri-lock-fill" style="font-size:11px;color:var(--ui-muted);"></i>
-                    <span style="font-size:10px;color:var(--ui-muted);">Connexion sécurisée SSL • Vos données sont protégées</span>
-                </div>
+            <div id="pm-phone-wrap" style="display:none;">
+                <label style="font-size:11px;font-weight:700;color:var(--ui-muted);display:block;margin-bottom:5px;">Numéro de téléphone *</label>
+                <input type="tel" id="pm-phone" placeholder="+237 6XX XXX XXX" style="width:100%;padding:11px 14px;border:1.5px solid var(--ui-border);border-radius:10px;background:var(--ui-bg);color:var(--ui-text);font-size:13px;font-family:'DM Sans',sans-serif;">
             </div>
         </div>
 
-        <!-- ÉTAPE 3 : EN ATTENTE DE VALIDATION -->
-        <div id="step-pending" class="pay-step" style="display:none;text-align:center;">
-            <div style="width:70px;height:70px;border-radius:50%;background:linear-gradient(135deg,rgba(99,102,241,.15),rgba(168,85,247,.1));border:2px solid rgba(99,102,241,.2);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;animation:spinPulse 2s linear infinite;">
-                <i class="ri-loader-4-line" style="font-size:30px;color:#6366f1;animation:spinIcon 1s linear infinite;"></i>
-            </div>
-            <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--ui-text);margin-bottom:8px;">Paiement en cours de vérification</div>
-            <div style="font-size:12px;color:var(--ui-muted);line-height:1.7;margin-bottom:24px;">Votre paiement a bien été enregistré.<br>Notre équipe vérifie votre transaction sous <strong style="color:var(--ui-text);">quelques minutes</strong>.<br>Ne fermez pas cette fenêtre.</div>
+        <div id="pm-choice-error" style="display:none;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:#ef4444;padding:10px 14px;border-radius:10px;font-size:12px;margin-bottom:14px;"></div>
 
-            <!-- Référence visible -->
-            <div style="background:var(--ui-surface);border-radius:10px;padding:12px;margin-bottom:20px;">
-                <div style="font-size:10px;color:var(--ui-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Votre référence de paiement</div>
-                <div id="pm-ref-pending" style="font-family:monospace;font-size:14px;font-weight:700;color:var(--ui-accent);letter-spacing:2px;"></div>
-                <div style="font-size:10px;color:var(--ui-muted);margin-top:4px;">Communiquez ce code à notre équipe</div>
-            </div>
+        <button type="button" id="pm-pay-btn" onclick="initiatePayment()" style="width:100%;padding:16px;background:linear-gradient(135deg,#6366f1,#a855f7);color:white;border:none;border-radius:14px;font-family:'Syne',sans-serif;font-size:14px;font-weight:800;cursor:pointer;box-shadow:0 8px 32px rgba(99,102,241,.3);transition:.2s;display:flex;align-items:center;justify-content:center;gap:8px;">
+            <span id="pm-pay-btn-label">Payer maintenant</span>
+        </button>
 
-            <!-- Zone code de validation -->
-            <div style="border-top:1px solid var(--ui-border);padding-top:18px;">
-                <div style="font-size:11px;font-weight:700;color:var(--ui-text);margin-bottom:10px;">Vous avez reçu un code de validation ?</div>
-                <div style="display:flex;gap:8px;">
-                    <input id="pm-valcode" type="text" placeholder="Ex: VALID2026" class="input-control" style="text-transform:uppercase;letter-spacing:2px;text-align:center;font-weight:700;">
-                    <button onclick="submitValidationCode()" style="padding:9px 14px;background:var(--ui-accent);color:white;border:none;border-radius:8px;font-weight:700;cursor:pointer;white-space:nowrap;font-family:'DM Sans',sans-serif;font-size:12px;flex-shrink:0;">Valider</button>
-                </div>
-                <div id="pm-valcode-err" style="display:none;color:#ef4444;font-size:11px;margin-top:6px;text-align:left;"></div>
-                <div style="font-size:10px;color:var(--ui-muted);margin-top:12px;margin-bottom:10px;">Une fois le paiement envoyé, contactez-nous directement :</div>
-                <button onclick="openWhatsApp()" style="width:100%;padding:12px 16px;background:linear-gradient(135deg,#25d366,#128c7e);color:white;border:none;border-radius:10px;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 16px rgba(37,211,102,.3);transition:.2s;" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform='none'">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-                    Contacter l'équipe sur WhatsApp
-                </button>
-                <div style="font-size:10px;color:var(--ui-muted);margin-top:8px;text-align:center;">Votre référence sera automatiquement incluse dans le message</div>
-            </div>
+        <div style="text-align:center;margin-top:12px;font-size:10.5px;color:var(--ui-muted);display:flex;align-items:center;justify-content:center;gap:5px;">
+            <i class="ri-lock-line"></i> Paiement chiffré et sécurisé via NotchPay
         </div>
+    </div>
 
-        <!-- ÉTAPE 4 : SUCCÈS -->
-        <div id="step-success" class="pay-step" style="display:none;text-align:center;">
-            <div style="width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#10b981,#059669);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;box-shadow:0 8px 32px rgba(16,185,129,.3);animation:successPop .5s cubic-bezier(.34,1.56,.64,1);">
-                <i class="ri-check-line" style="font-size:36px;color:white;"></i>
-            </div>
-            <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--ui-text);margin-bottom:8px;">Paiement confirmé ! 🎉</div>
-            <div style="font-size:13px;color:var(--ui-muted);margin-bottom:28px;line-height:1.7;">Merci pour votre confiance. Votre portfolio est maintenant prêt à être téléchargé.</div>
-            <button onclick="proceedDownload()" style="width:100%;padding:16px;background:linear-gradient(135deg,#10b981,#059669);color:white;border:none;border-radius:14px;font-family:'Syne',sans-serif;font-size:14px;font-weight:800;cursor:pointer;box-shadow:0 8px 32px rgba(16,185,129,.3);transition:.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
-                <i class="ri-download-2-line"></i> Télécharger mon Portfolio
-            </button>
+    <!-- ═══ ÉTAPE 2 — EN ATTENTE DE CONFIRMATION ═══ -->
+    <div id="pm-step-pending" class="pm-step" style="display:none;text-align:center;padding:20px 0;">
+        <div style="width:64px;height:64px;margin:0 auto 20px;border-radius:50%;background:rgba(99,102,241,.1);display:flex;align-items:center;justify-content:center;">
+            <span class="pm-spinner"></span>
         </div>
+        <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--ui-text);margin-bottom:8px;">Confirmez le paiement</div>
+        <div id="pm-pending-msg" style="font-size:13px;color:var(--ui-muted);line-height:1.6;margin-bottom:6px;">Une notification a été envoyée sur votre téléphone.<br>Confirmez le paiement pour continuer.</div>
+        <div id="pm-pending-timer" style="font-size:11px;color:var(--ui-muted);margin-top:16px;">Vérification en cours...</div>
+
+        <div id="pm-pending-error" style="display:none;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:#ef4444;padding:12px 14px;border-radius:10px;font-size:12px;margin-top:18px;text-align:left;"></div>
+
+        <button type="button" onclick="cancelPendingPayment()" style="margin-top:20px;background:none;border:none;color:var(--ui-muted);font-size:12px;cursor:pointer;text-decoration:underline;">Annuler</button>
+    </div>
+
+    <!-- ═══ ÉTAPE 3 — SUCCÈS ═══ -->
+    <div id="pm-step-success" class="pm-step" style="display:none;text-align:center;padding:10px 0;">
+        <div id="pm-confetti-wrap" style="position:relative;height:0;overflow:visible;"></div>
+        <div style="width:72px;height:72px;margin:0 auto 18px;border-radius:50%;background:rgba(16,185,129,.12);display:flex;align-items:center;justify-content:center;animation:pmSuccessPop .5s cubic-bezier(.34,1.56,.64,1);">
+            <i class="ri-checkbox-circle-fill" style="font-size:38px;color:#10b981;"></i>
+        </div>
+        <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--ui-text);margin-bottom:8px;">Paiement confirmé !</div>
+        <div style="font-size:13px;color:var(--ui-muted);margin-bottom:28px;line-height:1.7;">Merci pour votre confiance. Votre portfolio est maintenant prêt à être téléchargé.</div>
+        <button type="button" onclick="proceedDownload()" style="width:100%;padding:16px;background:linear-gradient(135deg,#10b981,#059669);color:white;border:none;border-radius:14px;font-family:'Syne',sans-serif;font-size:14px;font-weight:800;cursor:pointer;box-shadow:0 8px 32px rgba(16,185,129,.3);transition:.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
+            <i class="ri-download-2-line"></i> Télécharger mon Portfolio
+        </button>
+    </div>
+
+    <!-- ═══ ÉCRAN D'ERREUR (paiement refusé / timeout) ═══ -->
+    <div id="pm-step-failed" class="pm-step" style="display:none;text-align:center;padding:20px 0;">
+        <div style="width:64px;height:64px;margin:0 auto 18px;border-radius:50%;background:rgba(239,68,68,.1);display:flex;align-items:center;justify-content:center;">
+            <i class="ri-close-circle-fill" style="font-size:34px;color:#ef4444;"></i>
+        </div>
+        <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--ui-text);margin-bottom:8px;">Paiement échoué</div>
+        <div id="pm-failed-msg" style="font-size:13px;color:var(--ui-muted);line-height:1.6;margin-bottom:24px;">Le paiement n'a pas pu être confirmé. Vous pouvez réessayer.</div>
+        <button type="button" onclick="retryPayment()" style="width:100%;padding:14px;background:var(--ui-surface);color:var(--ui-text);border:1.5px solid var(--ui-border);border-radius:14px;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;cursor:pointer;">
+            <i class="ri-refresh-line"></i> Réessayer
+        </button>
+    </div>
 
     </div><!-- end content -->
 </div><!-- end modal box -->
@@ -3712,9 +3698,33 @@ radial-gradient(circle at 50% 50%,rgba(255,183,77,.06) 0%,transparent 50%);}
 @keyframes pmFadeIn{from{opacity:0;transform:scale(.95) translateY(10px);}to{opacity:1;transform:scale(1) translateY(0);}}
 @keyframes spinIcon{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
 @keyframes successPop{from{transform:scale(0);opacity:0;}to{transform:scale(1);opacity:1;}}
-.pay-method-card{transition:.2s;}
-.pay-method-card:hover{border-color:var(--ui-accent)!important;background:var(--ui-panel)!important;transform:translateY(-1px);}
-.pay-method-card.selected{border-color:var(--ui-accent)!important;background:var(--ui-accent-glow)!important;}
+@keyframes pmSuccessPop{from{transform:scale(0);opacity:0;}to{transform:scale(1);opacity:1;}}
+@keyframes pmSpin{to{transform:rotate(360deg);}}
+@keyframes pmConfettiFall{0%{transform:translateY(-10px) rotate(0deg);opacity:1;}100%{transform:translateY(180px) rotate(540deg);opacity:0;}}
+
+.pm-method-btn:hover{border-color:var(--ui-accent)!important;transform:translateY(-1px);}
+.pm-method-btn.pm-method-selected{border-color:var(--ui-accent)!important;background:var(--ui-accent-glow,rgba(99,102,241,.08))!important;}
+.pm-method-btn.pm-method-selected .pm-method-check{color:var(--ui-accent)!important;}
+.pm-method-btn.pm-method-selected .pm-method-check::before{content:"\ea7b";}
+
+.pm-spinner{
+    width:32px;height:32px;
+    border:3px solid rgba(99,102,241,.15);
+    border-top-color:#6366f1;
+    border-radius:50%;
+    display:inline-block;
+    animation:pmSpin .8s linear infinite;
+}
+
+.pm-confetti-piece{
+    position:absolute;top:0;
+    width:6px;height:10px;
+    border-radius:1px;
+    animation:pmConfettiFall 1.1s ease-in forwards;
+}
+
+#pm-pay-btn:disabled{opacity:.6;cursor:not-allowed;}
+#pm-pay-btn .pm-spinner{width:16px;height:16px;border-width:2px;vertical-align:middle;}
 </style>
 
 <script>
@@ -3742,11 +3752,21 @@ const state={
     multilang:{enabled:false,langs:['fr','en']},
     data:{name:'Brandon Mballa',role:'CEO @ Mental Trading | Stratégie Digitale',bio:"Je développe des architectures de trading institutionnel et des stratégies d'acquisition ciblées. Spécialisé en analyse on-chain.",profileImg:'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=800&q=80',cta:'Démarrer le projet',ctaLink:'#',linkedin:'',twitter:'',github:'',instagram:'',sectionTitle:'Travaux & Projets'},
     skills:[],
-    projects:[{id:1,title:'Analyse On-Chain SUI',desc:"Développement d'un journal de trading automatisé.",img:'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&w=800&q=80',link:''},{id:2,title:'Dynace Global',desc:'Création de tunnels de prospection digitale performants.',img:'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=800&q=80',link:''}],
+    projects:[],
     custom:{font:"'DM Sans',sans-serif",radius:'16px',heroDir:'row',bg:'#ffffff',text:'#111111',accent:'#6366f1',card:'#f3f4f6',bgImage:'',bgAnim:'none',overlayOpacity:60,frameColor:'#6366f1',frameSize:'4px',frameStyle:'solid'},
     footer:{enabled:false,copyright:'',email:'',location:''},
     multiPage:false
 };
+
+// Instantané figé des animations de section d'origine — sert
+// uniquement à détecter si l'utilisateur a réellement personnalisé
+// des sections (pour une tarification juste), sans jamais être
+// modifié lui-même après ce point.
+const DEFAULT_SECTION_ANIMS = Object.freeze({...state.sectionAnims});
+
+// Clé de sauvegarde locale — déclarée tôt car restoreStateFromLocalStorage()
+// est appelée avant l'initialisation de l'éditeur, plus loin dans ce script.
+const LOCAL_STATE_KEY = 'mental_studio_portfolio_draft_v1';
 
 const themeCatalogData=[
     {id:'luxury',name:'Prestige Gold',cat:'Élite',c1:'#050505',c2:'#d4af37'},
@@ -4030,9 +4050,9 @@ function render(){
         vp.style.color = '#f1f5f9';
         var ov = (state.custom.overlayOpacity!=null ? state.custom.overlayOpacity : 60) / 100;
         customBgStyleTag.textContent =
-            '#portfolio-viewport.has-custom-bg::before{content:"";position:absolute;inset:-20px;z-index:0;pointer-events:none;'
+            '#portfolio-viewport.has-custom-bg::before{content:"";position:fixed;top:-4%;left:-4%;width:108%;height:108%;z-index:0;pointer-events:none;'
             + 'background-image:url(' + state.custom.bgImage + ');background-size:cover;background-position:center;background-repeat:no-repeat;}'
-            + '#portfolio-viewport.has-custom-bg::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;'
+            + '#portfolio-viewport.has-custom-bg::after{content:"";position:fixed;inset:0;z-index:1;pointer-events:none;'
             + 'background:linear-gradient(160deg,rgba(0,0,0,' + ov + ') 0%,rgba(0,0,0,' + Math.min(ov+0.12,0.9) + ') 100%);}'
             + '#portfolio-viewport.has-custom-bg .pf-container{position:relative;z-index:2;}'
             + '#portfolio-viewport.has-custom-bg .pf-project-card{background:rgba(10,10,20,.55)!important;backdrop-filter:blur(14px)!important;border:1px solid rgba(255,255,255,.12)!important;}'
@@ -4181,12 +4201,18 @@ function render(){
     })() : '';
 
     const skillsH=state.showSkills&&state.skills.length>0?`<div class="pf-skills-section anim-el"><h3>Compétences</h3><div class="pf-skills-grid">${state.skills.map(s=>`<span class="pf-skill-chip">${s}</span>`).join('')}</div></div>`:'';
-    const projH=state.projects.map((p,i)=>`<article class="pf-project-card anim-el" style="animation-delay:${i*state.animStagger}ms;"><div class="editable-img-wrapper" onclick="openCanvasImagePicker('project',${p.id})"><img src="${p.img}" class="pf-project-img" style="height:220px;object-fit:cover;width:100%;"></div><div class="pf-project-info"><h3 class="pf-project-title">${p.title||'Titre'}</h3><p class="pf-project-desc">${p.desc||''}</p></div></article>`).join('');
+    const projH=state.projects.map((p,i)=>{
+        const hasLink = p.link && p.link.trim() !== '';
+        const linkAttrs = hasLink ? ` href="${p.link}" target="_blank" rel="noopener noreferrer"` : '';
+        const infoTag = hasLink ? 'a' : 'div';
+        return `<article class="pf-project-card anim-el" style="animation-delay:${i*state.animStagger}ms;"><div class="editable-img-wrapper" onclick="openCanvasImagePicker('project',${p.id})"><img src="${p.img}" class="pf-project-img" style="height:220px;object-fit:cover;width:100%;"></div><${infoTag} class="pf-project-info"${linkAttrs}><h3 class="pf-project-title">${p.title||'Titre'}</h3><p class="pf-project-desc">${p.desc||''}</p>${hasLink?'<span class="pf-project-link-hint"><i class="ri-external-link-line"></i> Voir le projet</span>':''}</${infoTag}></article>`;
+    }).join('');
+    const cvButtonH = (typeof cvData !== 'undefined' && cvData) ? `<a id="pf-cv-download-btn" href="${cvData}" download="CV_${(state.data.name||'Portfolio').replace(/\s+/g,'_')}.pdf" class="pf-cv-btn" onclick="event.stopPropagation();"><i class="ri-file-pdf-2-fill"></i> Télécharger mon CV</a>` : '';
     vp.innerHTML=`
 <div class="pf-container" style="padding:${state.spacing}px 40px;">
 ${state.multiPage ? buildMultiPageNav() : ''}
 <div id="pf-sec-hero" data-page="pf-sec-hero" class="pf-section-page">
-<section class="pf-hero"><div class="pf-hero-content anim-el"><span class="pf-role">${state.data.role}</span><h1 class="pf-name">${state.data.name}</h1><p class="pf-bio">${state.data.bio}</p><a href="${ctaHref}" class="pf-contact-btn" ${state.data.ctaType==='whatsapp'||state.data.ctaType==='email'?'target="_blank"':''}>${state.data.cta||'Contact'}</a>${socialsH}</div><div class="pf-hero-img-wrap anim-el"><div class="editable-img-wrapper profile-wrap" onclick="openCanvasImagePicker('profile')" style="${shapeStyles[state.profileShape]||''}"><img src="${state.data.profileImg}" class="pf-profile-img" style="${imgStyles[state.profileShape]||''}"></div></div></section>
+<section class="pf-hero"><div class="pf-hero-content anim-el"><span class="pf-role">${state.data.role}</span><h1 class="pf-name">${state.data.name}</h1><p class="pf-bio">${state.data.bio}</p><a href="${ctaHref}" class="pf-contact-btn" ${state.data.ctaType==='whatsapp'||state.data.ctaType==='email'?'target="_blank"':''}>${state.data.cta||'Contact'}</a>${cvButtonH}${socialsH}</div><div class="pf-hero-img-wrap anim-el"><div class="editable-img-wrapper profile-wrap" onclick="openCanvasImagePicker('profile')" style="${shapeStyles[state.profileShape]||''}"><img src="${state.data.profileImg}" class="pf-profile-img" style="${imgStyles[state.profileShape]||''}"></div></div></section>
 </div>
 <div id="pf-sec-skills" data-page="pf-sec-skills" class="pf-section-page">${skillsH}</div>
 <div id="pf-sec-exp" data-page="pf-sec-exp" class="pf-section-page">${expH}</div>
@@ -4199,6 +4225,12 @@ ${state.multiPage ? buildMultiPageNav() : ''}
 ${buildFooterHTML()}
 ${buildEditorSignatureHTML()}
 </div>${chatH}${langH}`;
+    // Le DOM du portfolio vient d'être entièrement régénéré :
+    // toute référence à un ancien élément en édition inline est
+    // désormais invalide, on la réinitialise proprement plutôt
+    // que de laisser une référence fantôme.
+    if(typeof inlineEditTarget !== 'undefined') inlineEditTarget = null;
+    if(typeof inlineToolbar !== 'undefined' && inlineToolbar) inlineToolbar.style.display = 'none';
     bindScrollAnimations();updateStats();
     if(typeof initInlineTextEdit==='function') initInlineTextEdit();
     if(typeof updatePhotoAnimBtn==='function') updatePhotoAnimBtn();
@@ -4413,7 +4445,7 @@ function initEditor(){
 }
 
 function renderEditorProjects(){
-    document.getElementById('editor-projects-list').innerHTML=state.projects.map(p=>`<div class="project-edit-card"><div class="project-edit-header"><img src="${p.img}" class="inline-img-preview"><div class="project-edit-meta"><div class="project-edit-title-preview">${p.title||'Nouveau projet'}</div><div style="display:flex;gap:4px;margin-top:4px;"><button class="btn-sm-outline" onclick="openCanvasImagePicker('project',${p.id})"><i class="ri-image-edit-line"></i> Image</button></div></div><button class="btn btn-danger-sm" onclick="deleteProject(${p.id})"><i class="ri-delete-bin-line"></i></button></div><input type="text" class="input-control" style="margin-bottom:6px;font-size:12px;" value="${p.title}" oninput="updateProjectData(${p.id},'title',this.value)" placeholder="Titre"><textarea class="input-control" style="min-height:45px;font-size:12px;" oninput="updateProjectData(${p.id},'desc',this.value)" placeholder="Description...">${p.desc}</textarea><input type="text" class="input-control" style="margin-top:5px;font-size:12px;" value="${p.link||''}" oninput="updateProjectData(${p.id},'link',this.value)" placeholder="Lien (optionnel)"></div>`).join('');
+    document.getElementById('editor-projects-list').innerHTML=state.projects.map(p=>`<div class="project-edit-card"><div class="project-edit-header"><img src="${p.img}" class="inline-img-preview"><div class="project-edit-meta"><div class="project-edit-title-preview">${p.title||'Nouveau projet'}</div><div style="display:flex;gap:4px;margin-top:4px;"><button class="btn-sm-outline" onclick="openCanvasImagePicker('project',${p.id})"><i class="ri-image-edit-line"></i> Image</button></div></div><button class="btn btn-danger-sm" onclick="deleteProject(${p.id})"><i class="ri-delete-bin-line"></i></button></div><input type="text" class="input-control" style="margin-bottom:6px;font-size:12px;" value="${p.title}" oninput="updateProjectData(${p.id},'title',this.value)" placeholder="Titre"><textarea class="input-control" style="min-height:45px;font-size:12px;" oninput="updateProjectData(${p.id},'desc',this.value)" placeholder="Description...">${p.desc}</textarea><input type="text" class="input-control" style="margin-top:5px;font-size:12px;" value="${p.link||''}" oninput="updateProjectData(${p.id},'link',this.value)" onblur="normalizeProjectLink(${p.id})" placeholder="https://exemple.com/mon-projet"></div>`).join('');
 }
 
 function renderSkillTags(){document.getElementById('skills-container').innerHTML=state.skills.map((s,i)=>`<span class="skill-tag">${s}<button onclick="removeSkill(${i})">×</button></span>`).join('');}
@@ -4489,7 +4521,7 @@ function buildFooterHTML(){
 // Signature discrète présente sur CHAQUE portfolio exporté par cet éditeur,
 // indépendamment du footer optionnel de l'utilisateur ci-dessus.
 function buildEditorSignatureHTML(){
-    return '<div class="pf-editor-signature">Créé avec <span class="pf-editor-signature-brand">Mental Studio</span></div>';
+    return '<div class="pf-editor-signature">Créé avec <a href="https://mental-studio.com/" target="_blank" rel="noopener noreferrer" class="pf-editor-signature-brand">Mental Studio</a></div>';
 }
 
 
@@ -4580,18 +4612,29 @@ function initInlineTextEdit(){
     var editableSelectors = '.pf-name,.pf-role,.pf-bio,.pf-section-title,.pf-project-title,.pf-project-desc';
     vp.addEventListener('click', function(e){
         var target = e.target.closest(editableSelectors);
-        if(!target) return;
-        
-        // Rendre éditable
-        if(!target.getAttribute('contenteditable')){
-            target.setAttribute('contenteditable','true');
-            target.style.outline = '2px solid rgba(99,102,241,.5)';
-            target.style.borderRadius = '4px';
-            target.style.minWidth = '40px';
-            inlineEditTarget = target;
-            showInlineToolbar(e.clientX, e.clientY);
-            target.focus();
+        if(!target){
+            // Clic dans le portfolio mais hors d'un texte éditable :
+            // referme proprement toute section restée ouverte.
+            closeInlineToolbar();
+            return;
         }
+
+        // Si on clique sur l'élément déjà actif, ne rien refaire
+        // (évite de perdre la sélection en cours de frappe).
+        if(target === inlineEditTarget) return;
+
+        // Fermer systématiquement l'élément précédent avant
+        // d'en ouvrir un nouveau — c'est ce qui manquait et
+        // causait l'empilement de sections jamais refermées.
+        closeInlineToolbar();
+
+        target.setAttribute('contenteditable','true');
+        target.style.outline = '2px solid rgba(99,102,241,.5)';
+        target.style.borderRadius = '4px';
+        target.style.minWidth = '40px';
+        inlineEditTarget = target;
+        showInlineToolbar(e.clientX, e.clientY);
+        target.focus();
     });
     
     // Fermer si clic hors du portfolio ou de la toolbar
@@ -4617,7 +4660,21 @@ function closeInlineToolbar(){
         inlineEditTarget.removeAttribute('contenteditable');
         inlineEditTarget.style.outline = '';
         inlineEditTarget.style.borderRadius = '';
+        inlineEditTarget.style.minWidth = '';
         inlineEditTarget = null;
+    }
+    // Filet de sécurité supplémentaire : si pour une raison
+    // quelconque un autre élément du portfolio est resté
+    // contenteditable (ex. après un changement de thème qui
+    // régénère le DOM), on le nettoie aussi.
+    var vp = document.getElementById('portfolio-viewport');
+    if(vp){
+        vp.querySelectorAll('[contenteditable="true"]').forEach(function(el){
+            el.removeAttribute('contenteditable');
+            el.style.outline = '';
+            el.style.borderRadius = '';
+            el.style.minWidth = '';
+        });
     }
 }
 
@@ -4802,6 +4859,22 @@ function updateStats(){document.getElementById('stat-projects').textContent=stat
 function updateData(k,v){state.data[k]=v;render();}
 function updateCustom(k,v){state.custom[k]=v;render();}
 function updateProjectData(id,f,v){const p=state.projects.find(p=>p.id===id);if(p){p[f]=v;renderEditorProjects();render();}}
+
+// Normalise le lien de projet une fois la saisie terminée (onblur, pas
+// oninput) pour ne jamais perturber la frappe en cours. Sans protocole,
+// un lien comme "exemple.com" serait interprété par le navigateur comme
+// un chemin relatif du portfolio lui-même plutôt qu'une redirection
+// externe — c'est ce qui donnait l'impression que le lien "ne marche pas".
+function normalizeProjectLink(id){
+    const p = state.projects.find(p=>p.id===id);
+    if(!p || !p.link) return;
+    const trimmed = p.link.trim();
+    if(trimmed !== '' && !/^https?:\/\//i.test(trimmed)){
+        p.link = 'https://' + trimmed;
+        renderEditorProjects();
+        render();
+    }
+}
 function addProject(){state.projects.push({id:Date.now(),title:'Nouveau projet',desc:'Description.',img:'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80',link:''});renderEditorProjects();render();}
 function deleteProject(id){state.projects=state.projects.filter(p=>p.id!==id);renderEditorProjects();render();}
 function addSkill(){const i=document.getElementById('inp-skill-new');const v=i.value.trim();if(!v)return;state.skills.push(v);i.value='';renderSkillTags();render();}
@@ -4894,224 +4967,364 @@ const fileInput=document.getElementById('global-file-input');
 function openCanvasImagePicker(type,id=null){activeImageContext.type=type;activeImageContext.id=id;fileInput.value='';fileInput.click();}
 fileInput.addEventListener('change',function(e){const f=e.target.files[0];if(f){const r=new FileReader();r.onload=function(ev){if(activeImageContext.type==='profile'){state.data.profileImg=ev.target.result;}else if(activeImageContext.type==='project'){const p=state.projects.find(p=>p.id===activeImageContext.id);if(p)p.img=ev.target.result;}renderEditorProjects();render();};r.readAsDataURL(f);}});
 
-/* ====== SYSTÈME DE PAIEMENT — CÔTÉ CLIENT UNIQUEMENT ====== */
-// Pointe vers ton serveur backend (à changer avec ton URL Railway/Render)
-const API_BASE = 'https://ton-serveur.railway.app';
+/* ═══════════════════════════════════════════════════════
+   SYSTÈME DE PAIEMENT — NotchPay via Supabase Edge Functions
+   Remplace intégralement l'ancien système de code manuel
+   envoyé par WhatsApp. Flux 100% automatique :
+   create-payment → webhook NotchPay → verify-token → download.
+   ═══════════════════════════════════════════════════════ */
+
+// Réutilise AUTH_CONFIG déjà défini plus loin (système auth Google)
+// pour l'URL Supabase — évite toute duplication de configuration.
+const PAYMENT_API_BASE = 'https://fhqkfzkszmknyabpcvpb.supabase.co/functions/v1';
+const PAYMENT_ANON_KEY = 'sb_publishable_6p5mnb8FwWdHFiRzaqBh2w_tUsbyllU';
 
 let paymentState = {
     method: null,
     phone: '',
     name: '',
+    email: '',
     reference: '',
-    status: 'idle'
+    status: 'idle', // idle | pending | paid | failed
+    token: null
 };
 
+let pollTimer = null;
+let pollDeadline = null;
+const POLL_INTERVAL_MS = 3000;
+const POLL_TIMEOUT_MS = 5 * 60 * 1000; // 5 minutes
+
 function generateRef(){
-    return 'PF-' + Date.now().toString(36).toUpperCase() + '-' + Math.random().toString(36).substr(2,4).toUpperCase();
+    return 'SPM-' + Date.now().toString(36).toUpperCase() + '-' + Math.random().toString(36).substr(2,4).toUpperCase();
 }
 
-function exportPortfolio(){
-    if(paymentState.status === 'approved'){ doExport(); return; }
+// ── LOCALSTORAGE — token de paiement déjà validé ──────────
+const PAYMENT_TOKEN_KEY = 'mental_studio_payment_token_v1';
+
+function saveTokenLocally(token, expiresAt){
+    try {
+        localStorage.setItem(PAYMENT_TOKEN_KEY, JSON.stringify({ token, expiresAt }));
+    } catch(err){ console.warn('[Paiement] Impossible de sauvegarder le token:', err); }
+}
+
+function getSavedToken(){
+    try {
+        const raw = localStorage.getItem(PAYMENT_TOKEN_KEY);
+        if(!raw) return null;
+        const parsed = JSON.parse(raw);
+        if(!parsed || !parsed.token) return null;
+        if(parsed.expiresAt && new Date(parsed.expiresAt) < new Date()){
+            localStorage.removeItem(PAYMENT_TOKEN_KEY);
+            return null;
+        }
+        return parsed.token;
+    } catch(err){ return null; }
+}
+
+function clearSavedToken(){
+    try { localStorage.removeItem(PAYMENT_TOKEN_KEY); } catch(err){}
+}
+
+// ── POINT D'ENTRÉE — bouton Publier/Télécharger existant ──
+async function exportPortfolio(){
+    // La connexion Google n'est exigée qu'ici, au moment précis où
+    // l'utilisateur veut télécharger/publier — jamais au chargement
+    // de la page. L'éditeur reste librement visible et utilisable
+    // pour tout visiteur qui n'a pas encore de compte.
+    if (!currentUser) {
+        pendingDownloadAfterAuth = true;
+        showAuthScreen();
+        return;
+    }
+
+    const savedToken = getSavedToken();
+    if(savedToken){
+        try{
+            const valid = await checkSavedToken(savedToken);
+            if(valid){ doExport(); return; }
+            clearSavedToken();
+        } catch(err){
+            console.warn('[Paiement] Vérification token échouée, ouverture du paiement:', err);
+        }
+    }
     openPaymentModal();
 }
 
+async function checkSavedToken(token){
+    const res = await fetch(PAYMENT_API_BASE + '/verify-token?token=' + encodeURIComponent(token), {
+        headers: { 'apikey': PAYMENT_ANON_KEY }
+    });
+    if(!res.ok) return false;
+    const data = await res.json();
+    if(data && data.valid){
+        paymentState.token = token;
+        return true;
+    }
+    return false;
+}
+
+// ── ÉTAPE 1 — OUVERTURE DU MODAL ──────────────────────────
 function openPaymentModal(){
     paymentState.reference = generateRef();
     paymentState.method = null;
     paymentState.status = 'idle';
+    paymentState.token = null;
 
-    // Calcul du prix + conversion dans la devise active (cohérence avec le badge)
     const pricing = calculateComplexityScore();
-    const displayPrice = convertPrice(pricing.price);
-    // Prix FCFA toujours affiché en référence
-    const fcfaPrice = CURRENCY_RATES['FCFA'].fmt(pricing.price);
+    const displayPrice = (typeof convertPrice === 'function') ? convertPrice(pricing.price) : pricing.priceFormatted;
 
-    // Injecter le prix dans le modal
-    const pmPrice = document.getElementById('pm-price-display');
-    if(pmPrice) pmPrice.textContent = currentCurrency==='FCFA' ? displayPrice : fcfaPrice + ' (' + displayPrice + ')';
-    // Mettre à jour la conversion affichée
-    const pmConverted = document.getElementById('pm-price-converted');
-    if(pmConverted) pmConverted.textContent = '';
+    const amountEl = document.getElementById('pm-amount-display');
+    if(amountEl) amountEl.textContent = displayPrice;
 
-    // Récapitulatif de complexité
-    const pmSummary = document.getElementById('pm-complexity-summary');
-    if(pmSummary){
-        pmSummary.style.display = 'block';
-        pmSummary.innerHTML = `
-        <div style="background:var(--ui-surface);border:1px solid var(--ui-border);border-radius:10px;padding:12px;margin-bottom:16px;text-align:left;">
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-                <span style="font-size:11px;font-weight:700;color:var(--ui-text);">Complexité du portfolio</span>
-                <span style="font-size:11px;font-weight:800;color:${pricing.levelColor};background:${pricing.levelColor}18;padding:2px 10px;border-radius:100px;">${pricing.levelIcon} ${pricing.level}</span>
-            </div>
-            <div style="background:var(--ui-panel);border-radius:6px;overflow:hidden;height:6px;margin-bottom:8px;">
-                <div style="height:100%;width:${Math.round(pricing.ratio*100)}%;background:linear-gradient(90deg,#6366f1,#a855f7);border-radius:6px;transition:.5s;"></div>
-            </div>
-            <div style="font-size:10px;color:var(--ui-muted);margin-bottom:6px;">Score : <strong style="color:var(--ui-text);">${pricing.score} pts</strong> — Éléments inclus :</div>
-            <div style="display:flex;flex-wrap:wrap;gap:4px;">
-                ${pricing.breakdown.slice(0,8).map(b=>`<span style="background:rgba(99,102,241,.08);color:var(--ui-accent);border:1px solid rgba(99,102,241,.15);border-radius:100px;padding:2px 8px;font-size:10px;font-weight:600;">${b.label} +${b.points}</span>`).join('')}
-                ${pricing.breakdown.length>8?`<span style="color:var(--ui-muted);font-size:10px;">+${pricing.breakdown.length-8} autres...</span>`:''}
-            </div>
-        </div>`;
+    const breakdownEl = document.getElementById('pm-price-breakdown');
+    if(breakdownEl && pricing.breakdown && pricing.breakdown.length > 0){
+        breakdownEl.innerHTML = '<div style="font-size:11px;color:var(--ui-muted);background:var(--ui-surface);border-radius:10px;padding:10px 12px;max-height:110px;overflow-y:auto;">' +
+            pricing.breakdown.map(b => `<div style="display:flex;justify-content:space-between;padding:2px 0;"><span>${b.label}</span><span>+${b.points}pt</span></div>`).join('') +
+            '</div>';
+    } else if(breakdownEl){
+        breakdownEl.innerHTML = '';
     }
 
-    // Boutons montants — même devise que le badge
-    ['gp-price-label','card-price-label'].forEach(id=>{
-        const el=document.getElementById(id);
-        if(el) el.textContent=`Payer — ${displayPrice}`;
-    });
-    const mm=document.getElementById('mm-amount-label');
-    if(mm) mm.textContent=displayPrice;
-
+    resetModalToStep('choice');
     document.getElementById('pm-modal').style.display = 'flex';
-    var r1 = document.getElementById('pm-ref-display');
-    var r2 = document.getElementById('pm-ref-pending');
-    if(r1) r1.textContent = paymentState.reference;
-    if(r2) r2.textContent = paymentState.reference;
-    document.getElementById('pm-valcode-err').style.display = 'none';
-    document.getElementById('pm-valcode').value = '';
-    // Recalcul du prix au moment exact de l'ouverture
-    updatePricingDisplay();
-    showPayStep('step-method');
+    document.body.style.overflow = 'hidden';
 }
 
 function closePaymentModal(){
     document.getElementById('pm-modal').style.display = 'none';
+    document.body.style.overflow = '';
+    stopPolling();
 }
 
-function showPayStep(stepId){
-    document.querySelectorAll('.pay-step').forEach(s => s.style.display = 'none');
-    document.getElementById(stepId).style.display = 'block';
-    document.getElementById(stepId).style.animation = 'pmFadeIn .3s ease';
-    const r1 = document.getElementById('pm-ref-display');
-    const r2 = document.getElementById('pm-ref-pending');
-    if(r1) r1.textContent = paymentState.reference;
-    if(r2) r2.textContent = paymentState.reference;
+function resetModalToStep(step){
+    ['choice','pending','success','failed'].forEach(s => {
+        const el = document.getElementById('pm-step-' + s);
+        if(el) el.style.display = (s === step) ? 'block' : 'none';
+    });
+    const errBox = document.getElementById('pm-choice-error');
+    if(errBox) errBox.style.display = 'none';
 }
 
-function selectPayMethod(method){
+// ── SÉLECTION DE LA MÉTHODE DE PAIEMENT ───────────────────
+function selectPaymentMethod(method){
     paymentState.method = method;
-    document.querySelectorAll('.pay-method-card').forEach(c => c.classList.remove('selected'));
-    document.querySelector(`.pay-method-card[data-method="${method}"]`).classList.add('selected');
-    const numbers = { orange: '+237 656 787 566', mobile: '+237 678 754 216' };
-    if(method !== 'visa'){
-        const numEl = document.getElementById('pm-mobile-number');
-        if(numEl) numEl.textContent = numbers[method];
-        const box = document.getElementById('pm-mobile-instructions');
-        if(box) box.style.borderColor = method === 'orange' ? 'rgba(255,102,0,.2)' : 'rgba(0,102,204,.2)';
+    document.querySelectorAll('.pm-method-btn').forEach(btn => {
+        btn.classList.toggle('pm-method-selected', btn.getAttribute('data-method') === method);
+    });
+    const phoneWrap = document.getElementById('pm-phone-wrap');
+    if(phoneWrap) phoneWrap.style.display = (method === 'mtn' || method === 'orange') ? 'block' : 'none';
+}
+
+// ── ÉTAPE 1 → 2 : INITIER LE PAIEMENT ─────────────────────
+async function initiatePayment(){
+    const errBox = document.getElementById('pm-choice-error');
+    const btn = document.getElementById('pm-pay-btn');
+    const btnLabel = document.getElementById('pm-pay-btn-label');
+    if(errBox) errBox.style.display = 'none';
+
+    const email = (document.getElementById('pm-email')||{}).value?.trim() || '';
+    const name = (document.getElementById('pm-name')||{}).value?.trim() || '';
+    const phone = (document.getElementById('pm-phone')||{}).value?.trim() || '';
+
+    if(!paymentState.method){
+        showPaymentError('choice', 'Veuillez choisir un moyen de paiement.');
+        return;
     }
-    setTimeout(()=> showPayStep(method === 'visa' ? 'step-visa' : 'step-mobile'), 150);
-}
+    if(!email || !email.includes('@')){
+        showPaymentError('choice', 'Veuillez saisir une adresse email valide.');
+        return;
+    }
+    if((paymentState.method === 'mtn' || paymentState.method === 'orange') && phone.length < 8){
+        showPaymentError('choice', 'Veuillez saisir un numéro de téléphone valide.');
+        return;
+    }
 
-function submitMobilePayment(){
-    const phone = document.getElementById('pm-phone').value.trim();
-    const name  = document.getElementById('pm-name').value.trim();
-    if(!phone || !name){ alert('Veuillez remplir tous les champs.'); return; }
+    paymentState.email = email;
+    paymentState.name = name || email;
     paymentState.phone = phone;
-    paymentState.name  = name;
-    paymentState.status = 'pending';
-    // Notifier le serveur qu'un paiement est en attente
-    fetch(`${API_BASE}/api/payment/pending`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            reference: paymentState.reference,
-            name: paymentState.name,
-            phone: paymentState.phone,
-            method: paymentState.method
-        })
-    }).catch(()=>{}); // silencieux si le serveur est down — WhatsApp prend le relais
-    showPayStep('step-pending');
-}
 
-function launchGooglePay(){
-    paymentState.name = document.getElementById('pm-vname').value.trim() || 'Utilisateur';
-    paymentState.status = 'pending';
-    if(window.PaymentRequest){
-        const methodData = [{
-            supportedMethods: 'https://google.com/pay',
-            data: {
-                environment: 'PRODUCTION',
-                apiVersion: 2, apiVersionMinor: 0,
-                merchantInfo: { merchantName: 'Mental Studio' },
-                transactionInfo: { totalPriceStatus: 'FINAL', totalPrice: '7.50', currencyCode: 'EUR', countryCode: 'CM' },
-                allowedPaymentMethods: [{
-                    type: 'CARD',
-                    parameters: { allowedAuthMethods: ['PAN_ONLY','CRYPTOGRAM_3DS'], allowedCardNetworks: ['VISA','MASTERCARD'] },
-                    tokenizationSpecification: { type: 'PAYMENT_GATEWAY', parameters: { gateway: 'example', gatewayMerchantId: 'exampleGatewayMerchantId' } }
-                }]
-            }
-        }];
-        const details = { total: { label: 'Portfolio Studio', amount: { currency: 'EUR', value: '7.50' } } };
-        const request = new PaymentRequest(methodData, details);
-        request.canMakePayment().then(can => {
-            if(can){
-                request.show().then(result => {
-                    result.complete('success');
-                    paymentState.name = result.payerName || 'Google Pay';
-                    showPayStep('step-pending');
-                }).catch(()=> showPayStep('step-pending'));
-            } else { showPayStep('step-pending'); }
-        }).catch(()=> showPayStep('step-pending'));
-    } else { showPayStep('step-pending'); }
-}
+    const pricing = calculateComplexityScore();
 
-function submitVisaPayment(){
-    const card = document.getElementById('pm-card').value.trim();
-    const exp  = document.getElementById('pm-exp').value.trim();
-    const cvv  = document.getElementById('pm-cvv').value.trim();
-    const name = document.getElementById('pm-vname').value.trim();
-    if(!card || !exp || !cvv || !name){ alert('Veuillez remplir tous les champs.'); return; }
-    paymentState.name = name;
-    paymentState.status = 'pending';
-    showPayStep('step-pending');
-}
-
-// Vérifie le code auprès du SERVEUR uniquement — rien dans le navigateur
-async function submitValidationCode(){
-    const code = document.getElementById('pm-valcode').value.trim().toUpperCase();
-    const err = document.getElementById('pm-valcode-err');
-    if(!code){ err.textContent = "Entrez le code reçu."; err.style.display = 'block'; return; }
-
-    const btn = document.querySelector('#step-pending button[onclick="submitValidationCode()"]');
-    if(btn){ btn.disabled = true; btn.textContent = 'Vérification...'; }
+    if(btn) btn.disabled = true;
+    if(btnLabel) btnLabel.innerHTML = '<span class="pm-spinner"></span>';
 
     try {
-        const res = await fetch(`${API_BASE}/api/payment/verify`, {
+        const res = await fetch(PAYMENT_API_BASE + '/create-payment', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ reference: paymentState.reference, code })
+            headers: {
+                'Content-Type': 'application/json',
+                'apikey': PAYMENT_ANON_KEY
+            },
+            body: JSON.stringify({
+                email: paymentState.email,
+                amount: pricing.price,
+                method: paymentState.method,
+                portfolioKey: paymentState.reference,
+                name: paymentState.name,
+                phone: paymentState.phone
+            })
         });
-        const data = await res.json();
-        if(data.valid){
-            paymentState.status = 'approved';
-            paymentState.downloadToken = data.token;
-            err.style.display = 'none';
-            showPayStep('step-success');
-        } else {
-            err.textContent = "❌ Code invalide. Vérifiez le code reçu sur WhatsApp.";
-            err.style.display = 'block';
-            document.getElementById('pm-valcode').style.borderColor = '#ef4444';
-            setTimeout(()=> document.getElementById('pm-valcode').style.borderColor = '', 2000);
+
+        if(!res.ok){
+            const errData = await res.json().catch(()=>({}));
+            throw new Error(errData.error || 'Le serveur de paiement est momentanément indisponible.');
         }
-    } catch(e){
-        err.textContent = "⚠️ Serveur inaccessible. Réessayez dans quelques instants.";
-        err.style.display = 'block';
+
+        const data = await res.json();
+        paymentState.reference = data.reference || paymentState.reference;
+
+        if(data.paymentUrl){
+            window.open(data.paymentUrl, '_blank', 'noopener');
+        }
+
+        resetModalToStep('pending');
+        const pendingMsg = document.getElementById('pm-pending-msg');
+        if(pendingMsg){
+            pendingMsg.innerHTML = (paymentState.method === 'card')
+                ? 'Finalisez le paiement dans l\'onglet ouvert,<br>puis revenez ici.'
+                : 'Une notification a été envoyée sur votre téléphone.<br>Confirmez le paiement pour continuer.';
+        }
+        startPolling();
+
+    } catch(err){
+        console.error('[Paiement] Erreur initiation:', err);
+        showPaymentError('choice', err.message || 'Impossible de contacter le serveur de paiement. Vérifiez votre connexion et réessayez.');
     } finally {
-        if(btn){ btn.disabled = false; btn.textContent = 'Valider'; }
+        if(btn) btn.disabled = false;
+        if(btnLabel) btnLabel.textContent = 'Payer maintenant';
     }
+}
+
+function showPaymentError(step, message){
+    const boxId = step === 'choice' ? 'pm-choice-error' : 'pm-pending-error';
+    const box = document.getElementById(boxId);
+    if(box){
+        box.textContent = message;
+        box.style.display = 'block';
+    }
+}
+
+// ── ÉTAPE 2 — POLLING DU STATUT DE PAIEMENT ───────────────
+function startPolling(){
+    stopPolling();
+    pollDeadline = Date.now() + POLL_TIMEOUT_MS;
+    paymentState.status = 'pending';
+    pollTimer = setInterval(pollPaymentStatus, POLL_INTERVAL_MS);
+    updatePollingTimerDisplay();
+    pollPaymentStatus();
+
+    document.addEventListener('visibilitychange', handleVisibilityChangeForPolling);
+}
+
+function handleVisibilityChangeForPolling(){
+    if(document.hidden && pollTimer){
+        clearInterval(pollTimer);
+        pollTimer = null;
+    } else if(!document.hidden && paymentState.status === 'pending' && !pollTimer){
+        pollTimer = setInterval(pollPaymentStatus, POLL_INTERVAL_MS);
+        pollPaymentStatus();
+    }
+}
+
+function stopPolling(){
+    if(pollTimer){ clearInterval(pollTimer); pollTimer = null; }
+    document.removeEventListener('visibilitychange', handleVisibilityChangeForPolling);
+}
+
+function updatePollingTimerDisplay(){
+    const el = document.getElementById('pm-pending-timer');
+    if(!el || paymentState.status !== 'pending') return;
+    const remaining = Math.max(0, Math.ceil((pollDeadline - Date.now())/1000));
+    const min = Math.floor(remaining/60);
+    const sec = remaining%60;
+    el.textContent = 'Vérification automatique... (' + min + ':' + String(sec).padStart(2,'0') + ' restantes)';
+    if(remaining > 0 && paymentState.status === 'pending'){
+        setTimeout(updatePollingTimerDisplay, 1000);
+    }
+}
+
+async function pollPaymentStatus(){
+    if(paymentState.status !== 'pending') { stopPolling(); return; }
+
+    if(Date.now() > pollDeadline){
+        stopPolling();
+        onPaymentTimeout();
+        return;
+    }
+
+    try {
+        const res = await fetch(PAYMENT_API_BASE + '/check-payment?reference=' + encodeURIComponent(paymentState.reference), {
+            headers: { 'apikey': PAYMENT_ANON_KEY }
+        });
+        if(!res.ok) return;
+
+        const data = await res.json();
+        if(data.status === 'paid' && data.token){
+            stopPolling();
+            onPaymentSuccess(data.token, data.expiresAt);
+        } else if(data.status === 'failed' || data.status === 'canceled'){
+            stopPolling();
+            onPaymentFailed('Le paiement a été refusé ou annulé.');
+        }
+    } catch(err){
+        console.warn('[Paiement] Erreur de vérification (nouvelle tentative au prochain cycle):', err);
+    }
+}
+
+function onPaymentTimeout(){
+    paymentState.status = 'failed';
+    onPaymentFailed('Le délai de confirmation (5 minutes) a été dépassé. Si vous avez déjà payé, réessayez : le paiement sera automatiquement détecté.');
+}
+
+function onPaymentFailed(message){
+    paymentState.status = 'failed';
+    resetModalToStep('failed');
+    const msgEl = document.getElementById('pm-failed-msg');
+    if(msgEl) msgEl.textContent = message;
+}
+
+function retryPayment(){
+    paymentState.status = 'idle';
+    resetModalToStep('choice');
+}
+
+function cancelPendingPayment(){
+    stopPolling();
+    paymentState.status = 'idle';
+    resetModalToStep('choice');
+}
+
+// ── ÉTAPE 3 — SUCCÈS ───────────────────────────────────────
+function onPaymentSuccess(token, expiresAt){
+    paymentState.status = 'paid';
+    paymentState.token = token;
+    saveTokenLocally(token, expiresAt);
+    resetModalToStep('success');
+    fireConfetti();
+}
+
+function fireConfetti(){
+    const wrap = document.getElementById('pm-confetti-wrap');
+    if(!wrap) return;
+    wrap.innerHTML = '';
+    const colors = ['#6366f1','#a855f7','#10b981','#f59e0b','#ec4899'];
+    for(let i=0; i<24; i++){
+        const piece = document.createElement('div');
+        piece.className = 'pm-confetti-piece';
+        piece.style.left = (Math.random()*100) + '%';
+        piece.style.background = colors[Math.floor(Math.random()*colors.length)];
+        piece.style.animationDelay = (Math.random()*0.3) + 's';
+        piece.style.transform = 'rotate(' + Math.floor(Math.random()*360) + 'deg)';
+        wrap.appendChild(piece);
+    }
+    setTimeout(()=>{ wrap.innerHTML = ''; }, 1500);
 }
 
 function proceedDownload(){
     closePaymentModal();
     doExport();
     setTimeout(()=>{
-        paymentState.status = 'idle';
-        paymentState.method = null;
-        paymentState.phone = '';
-        paymentState.name = '';
-        paymentState.reference = '';
-        paymentState.downloadToken = null;
-        showToast('✅ Portfolio téléchargé ! Un nouveau paiement sera requis pour le prochain portfolio.');
+        showToast('✅ Portfolio téléchargé avec succès !');
     }, 1000);
 }
 
@@ -5173,14 +5386,6 @@ function doExport(){
 
     const fonts = `<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&family=Playfair+Display:ital,wght@0,700;1,700&family=Plus+Jakarta+Sans:wght@400;600;800&family=Space+Grotesk:wght@400;700&family=Cinzel:wght@600;800&family=Bebas+Neue&family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300&family=Josefin+Sans:wght@300;400;600;700&family=Raleway:wght@300;400;700;900&display=swap" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">`;
-
-    // Bouton CV
-    const cvBtn = cvData ? `
-<a id="cv-download-btn" href="${cvData}" download="CV_${state.data.name.replace(/\s+/g,'_')}.pdf"
-   style="display:inline-flex;align-items:center;gap:8px;padding:12px 24px;background:rgba(239,68,68,.1);color:#ef4444;border:1px solid rgba(239,68,68,.3);border-radius:100px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;text-decoration:none;margin-top:12px;transition:.2s;"
-   onmouseover="this.style.background='rgba(239,68,68,.2)'" onmouseout="this.style.background='rgba(239,68,68,.1)'">
-   <i class="ri-file-pdf-2-fill" style="font-size:16px;"></i> Télécharger mon CV
-</a>` : '';
 
     // Compteur de vues
     const viewCounter = `
@@ -5379,13 +5584,7 @@ ${antiSpamScript}
 </body>
 </html>`;
 
-    // Injecter le bouton CV dans le HTML si CV présent
-    let finalH = h;
-    if(cvData){
-        finalH = h.replace('</section>', `${cvBtn}</section>`);
-    }
-
-    const b = new Blob([finalH], {type:'text/html;charset=utf-8'});
+    const b = new Blob([h], {type:'text/html;charset=utf-8'});
     const u = URL.createObjectURL(b);
     const a = document.createElement('a');
     a.href = u; a.download = 'Mon_Portfolio_Publie.html';
@@ -5802,7 +6001,6 @@ const PRICING_RULES = [
     { id:'certif',      label:'Certification ajoutée',     points:2,  isMultiplier:true,  getValue:(s)=>(s.certifications||[]).length },
 
     // Mise en forme visuelle
-    { id:'theme',       label:'Thème visuel choisi',       points:2,  isMultiplier:false, getValue:(s)=>!!s.activeTheme },
     { id:'themePhoto',  label:'Thème avec fond photo',     points:6,  isMultiplier:false, getValue:(s)=>s.activeTheme&&s.activeTheme.startsWith('ph_') },
     { id:'customBg',    label:'Fond image personnalisé',    points:6,  isMultiplier:false, getValue:(s)=>!!(s.custom&&s.custom.bgImage) },
     { id:'advLayout',   label:'Disposition avancée',        points:4,  isMultiplier:false, getValue:(s)=>!['classic','centered'].includes(s.activeLayout) },
@@ -5815,10 +6013,13 @@ const PRICING_RULES = [
         const BASIC=['fadeUp','blur','slide','scaleDown','bounce','rotateIn','drop','sweep','fadeLeft','fadeRight','zoomIn','flipX','flipY','fadeDown','none'];
         return s.activeAnim && !BASIC.includes(s.activeAnim);
     }},
-    { id:'multiAnim',   label:'Animations par section',    points:6,  isMultiplier:false, getValue:(s)=>{
-        if(!s.sectionAnims) return false;
-        const vals = Object.values(s.sectionAnims);
-        return new Set(vals).size >= 3;
+    { id:'multiAnim',   label:'Animations par section personnalisées', points:6,  isMultiplier:false, getValue:(s)=>{
+        if(!s.sectionAnims || typeof DEFAULT_SECTION_ANIMS==='undefined') return false;
+        let changedCount = 0;
+        Object.keys(s.sectionAnims).forEach(key=>{
+            if(s.sectionAnims[key] !== DEFAULT_SECTION_ANIMS[key]) changedCount++;
+        });
+        return changedCount >= 3;
     }},
     { id:'photoAnim',   label:'Fond photo animé',          points:5,  isMultiplier:false, getValue:(s)=>{
         if(typeof currentPhotoAnim==='undefined') return false;
@@ -5853,6 +6054,7 @@ function calculateComplexityScore(){
         else if(!rule.isMultiplier&&val) pts=rule.points;
         if(pts>0){ score+=pts; breakdown.push({label:rule.label,points:pts}); }
     });
+
     let level,levelColor,levelIcon;
     const ratio=Math.min(score/SCORE_MAX,1);
     if(ratio<0.2){level='Basique';levelColor='#64748b';levelIcon='⚪';}
@@ -6150,6 +6352,22 @@ function cycleCurrency(){
     setTimeout(tick, 800);
 })();
 
+// Empêche les liens de projet de faire naviguer hors de
+// l'éditeur pendant l'édition en direct — dans le portfolio
+// exporté final, ce script n'existe pas, les liens fonctionnent
+// normalement pour les visiteurs.
+(function preventProjectLinkNavigationInEditor(){
+    const vp = document.getElementById('portfolio-viewport');
+    if (!vp) return;
+    vp.addEventListener('click', function(e){
+        const link = e.target.closest('a.pf-project-info');
+        if (link) {
+            e.preventDefault();
+        }
+    });
+})();
+
+restoreStateFromLocalStorage();
 initEditor();render();
 requestAnimationFrame(function(){ if(typeof updatePhotoAnimBtn==='function') updatePhotoAnimBtn(); });
 // Construit le dropdown devise après chargement
@@ -6168,9 +6386,9 @@ const AUTH_CONFIG = {
 };
 
 const SITE_CONFIG = {
-  url        : "https://mentaliste1.github.io/Portfolio-Editor/",
-  name       : "Portfolio Studio Master V12",
-  redirectTo : "https://mentaliste1.github.io/Portfolio-Editor/"
+  url        : "https://mental-studio.com/",
+  name       : "Mental Studio",
+  redirectTo : "https://mental-studio.com/"
 };
 
 const PAYMENT_CONFIG = {
@@ -6184,6 +6402,10 @@ const PAYMENT_CONFIG = {
 let supabaseClient = null;
 let currentUser = null;
 let autoSaveTimer = null;
+// Si l'utilisateur clique "Télécharger" sans être connecté, on retient
+// l'intention pour reprendre automatiquement le téléchargement juste
+// après une connexion réussie, sans qu'il ait à recliquer.
+let pendingDownloadAfterAuth = false;
 
 function initSupabase() {
   try {
@@ -6206,21 +6428,29 @@ async function checkAuthOnLoad() {
     if (session) {
       hideAuthScreen();
       await loadUserProfile(session.user);
-    } else {
-      showAuthScreen();
     }
+    // Pas de session : on NE force PAS l'écran de connexion ici.
+    // L'éditeur reste librement visible et utilisable — la connexion
+    // n'est demandée qu'au moment de télécharger/publier, via
+    // requireAuthForDownload(), pas au chargement de la page.
   } catch (err) {
     console.error('[Auth] Erreur vérification session:', err);
-    showAuthScreen();
   }
 
   supabaseClient.auth.onAuthStateChange(async (event, session) => {
     if (event === 'SIGNED_IN' && session) {
       hideAuthScreen();
       await loadUserProfile(session.user);
+      // Si la connexion a été déclenchée par un clic sur
+      // "Télécharger/Publier", on reprend automatiquement ce
+      // téléchargement maintenant que l'utilisateur est connecté.
+      if (pendingDownloadAfterAuth) {
+        pendingDownloadAfterAuth = false;
+        exportPortfolio();
+      }
     } else if (event === 'SIGNED_OUT') {
       currentUser = null;
-      showAuthScreen();
+      setAccountMenuGuestState();
     } else if (event === 'TOKEN_REFRESHED') {
       console.log('[Auth] Token rafraîchi automatiquement.');
     }
@@ -6230,14 +6460,21 @@ async function checkAuthOnLoad() {
 function showAuthScreen() {
   const el = document.getElementById('auth-screen');
   if (el) el.style.display = 'flex';
-  // Le bouton compte reste visible même écran de connexion affiché,
-  // mais il montre l'état "invité" (icône générique, pas d'avatar).
   setAccountMenuGuestState();
 }
 
 function hideAuthScreen() {
   const el = document.getElementById('auth-screen');
   if (el) el.style.display = 'none';
+}
+
+// Permet de fermer l'écran de connexion sans se connecter, pour
+// revenir librement à l'éditeur — l'intention de téléchargement en
+// attente est annulée, l'utilisateur devra recliquer s'il change
+// d'avis plus tard.
+function closeAuthScreen() {
+  pendingDownloadAfterAuth = false;
+  hideAuthScreen();
 }
 
 function setAccountMenuGuestState() {
@@ -6360,7 +6597,12 @@ async function loadUserProfile(user) {
       .limit(1)
       .maybeSingle();
     if (!error && data && data.portfolio_data) {
-      console.log('[Auth] Dernier portfolio cloud trouvé:', data.portfolio_name);
+      // Le portfolio du compte cloud prime sur un brouillon local
+      // éventuel — on applique ses données et on redessine.
+      Object.assign(state, data.portfolio_data);
+      if (typeof render === 'function') render();
+      if (typeof initEditor === 'function') initEditor();
+      console.log('[Auth] Portfolio cloud restauré:', data.portfolio_name);
     }
   } catch (err) {
     console.warn('[Auth] Impossible de charger le dernier portfolio:', err);
@@ -6474,6 +6716,11 @@ function setSyncStatus(status) {
     const originalRender = window.render;
     window.render = function(...args) {
       const result = originalRender.apply(this, args);
+      // Sauvegarde locale — toujours active, connecté ou non,
+      // filet de sécurité contre la perte de travail au
+      // rafraîchissement/fermeture du navigateur.
+      clearTimeout(localSaveTimer);
+      localSaveTimer = setTimeout(saveStateToLocalStorage, 800);
       if (currentUser) {
         clearTimeout(autoSaveTimer);
         autoSaveTimer = setTimeout(savePortfolioToCloud, 3000);
@@ -6483,6 +6730,38 @@ function setSyncStatus(status) {
   };
   trySetup();
 })();
+
+// ── SAUVEGARDE LOCALE AUTOMATIQUE (filet de sécurité) ─────
+let localSaveTimer = null;
+
+function saveStateToLocalStorage() {
+  try {
+    if (typeof state === 'undefined') return;
+    localStorage.setItem(LOCAL_STATE_KEY, JSON.stringify(state));
+  } catch (err) {
+    // Quota dépassé ou stockage indisponible : on n'interrompt
+    // jamais l'édition pour autant, c'est un filet de sécurité.
+    console.warn('[AutoSave local] Impossible de sauvegarder localement:', err);
+  }
+}
+
+function restoreStateFromLocalStorage() {
+  try {
+    const raw = localStorage.getItem(LOCAL_STATE_KEY);
+    if (!raw) return false;
+    const saved = JSON.parse(raw);
+    if (!saved || typeof saved !== 'object') return false;
+    Object.assign(state, saved);
+    return true;
+  } catch (err) {
+    console.warn('[AutoSave local] Impossible de restaurer:', err);
+    return false;
+  }
+}
+
+function clearLocalDraft() {
+  try { localStorage.removeItem(LOCAL_STATE_KEY); } catch (err) {}
+}
 
 async function openPaymentHistory() {
   const modal = document.getElementById('payment-history-modal');
@@ -6657,13 +6936,16 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
      conflit : aucune modification du HTML existant.
      ═══════════════════════════════════════════════════ -->
 <div id="auth-screen" style="display:none;">
+  <button id="auth-screen-close" onclick="closeAuthScreen()" title="Continuer sans se connecter" style="position:absolute;top:20px;right:20px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.7);width:36px;height:36px;border-radius:10px;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;">
+    <i class="ri-close-line"></i>
+  </button>
   <div id="auth-card">
 
     <div id="auth-logo">
       <i class="ri-layout-masonry-fill" style="font-size:40px;color:#6366f1;display:block;margin-bottom:12px;"></i>
       <h1 style="font-size:22px;font-weight:700;color:#fff;margin-bottom:8px;">Portfolio Studio</h1>
       <p style="font-size:13px;color:rgba(255,255,255,0.5);line-height:1.6;margin-bottom:28px;">
-        Créez votre portfolio professionnel<br>en quelques minutes
+        Connectez-vous pour télécharger votre portfolio
       </p>
     </div>
 
