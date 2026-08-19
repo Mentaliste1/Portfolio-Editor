@@ -7015,31 +7015,37 @@ const TUTORIAL_SEEN_KEY = 'mental_studio_tutorial_seen_v1';
 const TUTORIAL_STEPS = [
   {
     selector: '#account-wrapper',
+    mobileSelector: '#account-wrapper',
     title: 'Votre compte',
     desc: "C'est ici que vous gérez votre compte : téléchargement, publication, historique de paiements et mode sombre/clair."
   },
   {
     selector: '[data-tab="data"]',
+    mobileSelector: '#mbnav-data',
     title: 'Vos informations',
     desc: "Renseignez ici votre nom, votre rôle, votre photo, vos projets et votre CV — le contenu de votre portfolio."
   },
   {
     selector: '[data-tab="style"]',
+    mobileSelector: '#mbnav-style',
     title: 'Thèmes et mise en page',
     desc: "Choisissez parmi des dizaines de thèmes visuels et de dispositions pour donner le style qui vous ressemble."
   },
   {
     selector: '[data-tab="anim"]',
+    mobileSelector: '#mbnav-anim',
     title: 'Animations',
     desc: "Ajoutez du mouvement à votre portfolio — animations d'apparition, effets de fond, transitions entre sections."
   },
   {
     selector: '[data-tab="advanced"]',
+    mobileSelector: '#mbnav-advanced',
     title: 'Options avancées',
     desc: "Réservation de rendez-vous, chat, multilingue, multi-pages — personnalisez les fonctionnalités de votre portfolio."
   },
   {
     selector: '#pricing-badge-bar',
+    mobileSelector: '#pricing-badge-bar',
     title: 'Le prix se calcule automatiquement',
     desc: "Chaque option ajoutée fait évoluer le prix ici, en temps réel, selon la complexité de votre portfolio."
   }
@@ -7073,7 +7079,24 @@ function showTutorialStep(index){
   const step = TUTORIAL_STEPS[index];
   if (!step) { endTutorial(); return; }
 
-  const target = document.querySelector(step.selector);
+  // Choisit le bon sélecteur selon la taille d'écran réelle au moment
+  // de l'affichage — la sidebar PC (data-tab=...) est display:none en
+  // dessous de 768px, remplacée par la barre de navigation du bas
+  // (mbnav-...). Cibler le mauvais élément donnait un rectangle vide
+  // (0,0,0,0), d'où le spotlight qui semblait parti "du côté", vers
+  // le coin de l'écran au lieu de la vraie zone visible.
+  const isMobile = window.innerWidth <= 768;
+  const selector = isMobile ? (step.mobileSelector || step.selector) : step.selector;
+  let target = document.querySelector(selector);
+
+  // Un élément caché par display:none reste techniquement trouvable
+  // par querySelector — on vérifie sa visibilité réelle via
+  // offsetParent (null pour tout élément non affiché) avant de s'en
+  // servir pour positionner le spotlight.
+  if (target && target.offsetParent === null) {
+    target = null;
+  }
+
   const ring = document.getElementById('tutorial-spotlight-ring');
   const card = document.getElementById('tutorial-card');
   const counter = document.getElementById('tutorial-step-counter');
@@ -7087,8 +7110,9 @@ function showTutorialStep(index){
   if (nextBtn) nextBtn.textContent = (index === TUTORIAL_STEPS.length - 1) ? 'Terminer' : 'Suivant';
 
   if (!target || !ring || !card) {
-    // Zone cible introuvable (ex: écran trop petit, élément masqué) —
-    // on passe simplement à l'étape suivante plutôt que de bloquer.
+    // Zone cible introuvable ou réellement invisible — on passe
+    // simplement à l'étape suivante plutôt que de bloquer ou
+    // d'afficher un spotlight mal positionné.
     nextTutorialStep();
     return;
   }
