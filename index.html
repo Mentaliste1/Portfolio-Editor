@@ -26,9 +26,13 @@
     <meta name="twitter:description" content="Créez votre portfolio professionnel en quelques minutes.">
     <meta name="twitter:image" content="https://mental-studio.com/og-image-mental-studio.jpg">
     <!-- ═══ AJOUT AUTH — SDK Supabase, chargé avant tout autre script ═══ -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&family=Playfair+Display:ital,wght@0,700;1,700&family=Plus+Jakarta+Sans:wght@400;600;800&family=Space+Grotesk:wght@400;700&family=Cinzel:wght@600;800&family=Bebas+Neue&family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300&family=Josefin+Sans:wght@300;400;600;700&family=Raleway:wght@300;400;700;900&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&family=Playfair+Display:ital,wght@0,700;1,700&family=Plus+Jakarta+Sans:wght@400;600;800&family=Space+Grotesk:wght@400;700&family=Cinzel:wght@600;800&family=Bebas+Neue&family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300&family=Josefin+Sans:wght@300;400;600;700&family=Raleway:wght@300;400;700;900&display=swap" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" media="print" onload="this.media='all'">
+    <noscript>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&family=Playfair+Display:ital,wght@0,700;1,700&family=Plus+Jakarta+Sans:wght@400;600;800&family=Space+Grotesk:wght@400;700&family=Cinzel:wght@600;800&family=Bebas+Neue&family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300&family=Josefin+Sans:wght@300;400;600;700&family=Raleway:wght@300;400;700;900&display=swap">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css">
+    </noscript>
     <style>
 :root {
     --ui-bg:#fafafa;--ui-panel:#ffffff;--ui-surface:#f3f4f6;
@@ -3029,11 +3033,8 @@ radial-gradient(circle at 50% 50%,rgba(255,183,77,.06) 0%,transparent 50%);}
                             <button class="account-menu-item" onclick="exportPortfolio();closeAccountMenu();">
                                 <i class="ri-download-2-line"></i> Télécharger mon portfolio
                             </button>
-                            <button class="account-menu-item" onclick="exportPortfolio();closeAccountMenu();">
+                            <button class="account-menu-item" onclick="openPublishChoiceModal();closeAccountMenu();">
                                 <i class="ri-upload-cloud-line"></i> Publier mon portfolio
-                            </button>
-                            <button class="account-menu-item" onclick="openHostingGuide();closeAccountMenu();">
-                                <i class="ri-global-line"></i> Guide hébergement
                             </button>
                             <button class="account-menu-item" id="account-saved-portfolios-btn" onclick="openSavedPortfolios();closeAccountMenu();" style="display:none;">
                                 <i class="ri-folder-line"></i> Mes portfolios sauvegardés
@@ -3463,6 +3464,48 @@ radial-gradient(circle at 50% 50%,rgba(255,183,77,.06) 0%,transparent 50%);}
 <input type="file" id="global-file-input" accept="image/*" style="position:absolute;left:-9999px;">
 
 <!-- ===== MODAL GUIDE HÉBERGEMENT ===== -->
+<!-- ═══════════════════════════════════════════════════════
+     MODAL PUBLIER — choix entre auto-hébergement et
+     contact de l'équipe pour l'hébergement via WhatsApp.
+     ═══════════════════════════════════════════════════════ -->
+<div id="publish-choice-modal" style="display:none;position:fixed;inset:0;z-index:9997;background:rgba(5,5,20,.8);backdrop-filter:blur(10px);align-items:center;justify-content:center;padding:12px;overflow-y:auto;">
+<div style="background:var(--ui-panel);border:1px solid var(--ui-border);border-radius:24px;width:100%;max-width:460px;box-shadow:0 40px 80px rgba(0,0,0,.4);animation:pmFadeIn .35s cubic-bezier(.34,1.56,.64,1);margin:auto;">
+
+    <div style="padding:20px 24px 16px;border-bottom:1px solid var(--ui-border);display:flex;align-items:center;justify-content:space-between;">
+        <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#6366f1,#a855f7);display:flex;align-items:center;justify-content:center;color:white;font-size:16px;"><i class="ri-upload-cloud-2-line"></i></div>
+            <div>
+                <div style="font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--ui-text);">Publier mon portfolio</div>
+                <div style="font-size:11px;color:var(--ui-muted);">Choisis comment le mettre en ligne</div>
+            </div>
+        </div>
+        <button onclick="closePublishChoiceModal()" style="background:none;border:none;cursor:pointer;color:var(--ui-muted);font-size:20px;width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;" onmouseover="this.style.background='var(--ui-surface)'" onmouseout="this.style.background='none'"><i class="ri-close-line"></i></button>
+    </div>
+
+    <div style="padding:24px;display:flex;flex-direction:column;gap:12px;">
+
+        <button type="button" onclick="closePublishChoiceModal();openHostingGuide();" style="display:flex;align-items:center;gap:14px;padding:16px;border:2px solid var(--ui-border);border-radius:16px;background:var(--ui-surface);cursor:pointer;transition:.2s;text-align:left;" onmouseover="this.style.borderColor='var(--ui-accent)'" onmouseout="this.style.borderColor='var(--ui-border)'">
+            <div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#10b981,#059669);display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px;flex-shrink:0;"><i class="ri-global-line"></i></div>
+            <div style="flex:1;">
+                <div style="font-size:14px;font-weight:700;color:var(--ui-text);margin-bottom:2px;">Héberger moi-même</div>
+                <div style="font-size:12px;color:var(--ui-muted);line-height:1.5;">Guide gratuit, étape par étape, pour mettre ton portfolio en ligne toi-même.</div>
+            </div>
+            <i class="ri-arrow-right-s-line" style="font-size:20px;color:var(--ui-muted);"></i>
+        </button>
+
+        <button type="button" onclick="contactTeamForHosting()" style="display:flex;align-items:center;gap:14px;padding:16px;border:2px solid var(--ui-border);border-radius:16px;background:var(--ui-surface);cursor:pointer;transition:.2s;text-align:left;" onmouseover="this.style.borderColor='#25D366'" onmouseout="this.style.borderColor='var(--ui-border)'">
+            <div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#25D366,#128C7E);display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px;flex-shrink:0;"><i class="ri-whatsapp-line"></i></div>
+            <div style="flex:1;">
+                <div style="font-size:14px;font-weight:700;color:var(--ui-text);margin-bottom:2px;">Contacter l'équipe pour l'hébergement</div>
+                <div style="font-size:12px;color:var(--ui-muted);line-height:1.5;">On s'occupe de tout pour toi — contact direct via WhatsApp.</div>
+            </div>
+            <i class="ri-arrow-right-s-line" style="font-size:20px;color:var(--ui-muted);"></i>
+        </button>
+
+    </div>
+</div>
+</div>
+
 <div id="hosting-modal" style="display:none;position:fixed;inset:0;z-index:9997;background:rgba(5,5,20,.8);backdrop-filter:blur(10px);align-items:flex-start;justify-content:center;padding:12px;overflow-y:auto;">
 <div style="background:var(--ui-panel);border:1px solid var(--ui-border);border-radius:24px;width:100%;max-width:580px;box-shadow:0 40px 80px rgba(0,0,0,.4);animation:pmFadeIn .35s cubic-bezier(.34,1.56,.64,1);margin:auto;">
 
@@ -3509,8 +3552,8 @@ radial-gradient(circle at 50% 50%,rgba(255,183,77,.06) 0%,transparent 50%);}
             <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:white;font-family:'Syne',sans-serif;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">1</div>
             <div style="flex:1;">
                 <div style="font-size:13px;font-weight:700;color:var(--ui-text);margin-bottom:4px;">Télécharger ton portfolio</div>
-                <div style="font-size:12px;color:var(--ui-muted);line-height:1.7;">Clique sur <strong style="color:var(--ui-text);">"Publier le Portfolio"</strong> dans ce même menu Exporter. Un fichier <code style="background:var(--ui-surface);padding:2px 6px;border-radius:4px;font-size:11px;">Mon_Portfolio_Publie.html</code> sera téléchargé sur ton appareil.</div>
-                <button onclick="closeHostingGuide();toggleExportMenu();" style="margin-top:8px;padding:7px 14px;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:white;border:none;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;display:inline-flex;align-items:center;gap:5px;"><i class="ri-download-2-line"></i> Publier mon portfolio maintenant</button>
+                <div style="font-size:12px;color:var(--ui-muted);line-height:1.7;">Clique sur <strong style="color:var(--ui-text);">"Télécharger mon portfolio"</strong> dans le menu de ton compte. Un fichier <code style="background:var(--ui-surface);padding:2px 6px;border-radius:4px;font-size:11px;">Mon_Portfolio_Publie.html</code> sera téléchargé sur ton appareil.</div>
+                <button onclick="closeHostingGuide();exportPortfolio();" style="margin-top:8px;padding:7px 14px;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:white;border:none;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;display:inline-flex;align-items:center;gap:5px;"><i class="ri-download-2-line"></i> Télécharger mon portfolio maintenant</button>
             </div>
         </div>
 
@@ -3819,6 +3862,50 @@ const DEFAULT_SECTION_ANIMS = Object.freeze({...state.sectionAnims});
 // Clé de sauvegarde locale — déclarée tôt car restoreStateFromLocalStorage()
 // est appelée avant l'initialisation de l'éditeur, plus loin dans ce script.
 const LOCAL_STATE_KEY = 'mental_studio_portfolio_draft_v1';
+
+// Constantes du tutoriel — déclarées tôt car maybeStartTutorial()
+// est appelée dès le chargement de la page, avant l'initialisation
+// du système d'authentification plus bas dans ce script.
+const TUTORIAL_SEEN_KEY = 'mental_studio_tutorial_seen_v2';
+
+const TUTORIAL_STEPS = [
+  {
+    selector: '#account-wrapper',
+    mobileSelector: '#account-wrapper',
+    title: 'Bienvenue !',
+    desc: "Créez librement votre portfolio, sans compte. Vous ne devrez vous connecter avec Google qu'au moment de télécharger — votre travail sera toujours sauvegardé automatiquement."
+  },
+  {
+    selector: '[data-tab="data"]',
+    mobileSelector: '#mbnav-data',
+    title: 'Vos informations',
+    desc: "Renseignez ici votre nom, votre rôle, votre photo, vos projets et votre CV — le contenu de votre portfolio."
+  },
+  {
+    selector: '[data-tab="style"]',
+    mobileSelector: '#mbnav-style',
+    title: 'Thèmes et mise en page',
+    desc: "Choisissez parmi des dizaines de thèmes visuels et de dispositions pour donner le style qui vous ressemble."
+  },
+  {
+    selector: '[data-tab="anim"]',
+    mobileSelector: '#mbnav-anim',
+    title: 'Animations',
+    desc: "Ajoutez du mouvement à votre portfolio — animations d'apparition, effets de fond, transitions entre sections."
+  },
+  {
+    selector: '[data-tab="advanced"]',
+    mobileSelector: '#mbnav-advanced',
+    title: 'Options avancées',
+    desc: "Réservation de rendez-vous, chat, multilingue, multi-pages — personnalisez les fonctionnalités de votre portfolio."
+  },
+  {
+    selector: '#pricing-badge-bar',
+    mobileSelector: '#pricing-badge-bar',
+    title: 'Le prix se calcule automatiquement',
+    desc: "Chaque option ajoutée fait évoluer le prix ici, en temps réel, selon la complexité de votre portfolio."
+  }
+];
 
 const themeCatalogData=[
     {id:'luxury',name:'Prestige Gold',cat:'Élite',c1:'#050505',c2:'#d4af37'},
@@ -5089,6 +5176,16 @@ async function exportPortfolio(){
         return;
     }
 
+    // Accès gratuit accordé par l'administrateur : la vérification
+    // est faite côté serveur uniquement (jamais dans le navigateur,
+    // qui pourrait être modifié par l'utilisateur).
+    try {
+        const freeAccess = await checkFreeAccess();
+        if (freeAccess) { doExport(); return; }
+    } catch (err) {
+        console.warn('[Accès gratuit] Vérification impossible, passage au paiement:', err);
+    }
+
     const savedToken = getSavedToken();
     if(savedToken){
         try{
@@ -5100,6 +5197,31 @@ async function exportPortfolio(){
         }
     }
     openPaymentModal();
+}
+
+// Interroge le serveur pour savoir si le compte connecté bénéficie
+// d'un accès gratuit au téléchargement (accordé par l'administrateur
+// dans la table free_access de Supabase).
+async function checkFreeAccess(){
+    if (!currentUser || !currentUser.email) return false;
+    const res = await fetch(
+        PAYMENT_API_BASE + '/check-free-access?email=' + encodeURIComponent(currentUser.email),
+        { headers: { 'apikey': PAYMENT_ANON_KEY } }
+    );
+    if (!res.ok) return false;
+    const data = await res.json();
+    if (data && data.allowed) {
+        const labels = {
+            permanent: 'Accès administrateur',
+            temporaire: 'Accès gratuit temporaire',
+            usage_unique: 'Accès gratuit (téléchargement unique)'
+        };
+        if (typeof showToast === 'function') {
+            showToast('✅ ' + (labels[data.type] || 'Accès gratuit') + ' — téléchargement débloqué.');
+        }
+        return true;
+    }
+    return false;
 }
 
 async function checkSavedToken(token){
@@ -5436,8 +5558,9 @@ function doExport(){
 })();
 <\/script>`;
 
-    const fonts = `<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&family=Playfair+Display:ital,wght@0,700;1,700&family=Plus+Jakarta+Sans:wght@400;600;800&family=Space+Grotesk:wght@400;700&family=Cinzel:wght@600;800&family=Bebas+Neue&family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300&family=Josefin+Sans:wght@300;400;600;700&family=Raleway:wght@300;400;700;900&display=swap" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">`;
+    const fonts = `<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&family=Playfair+Display:ital,wght@0,700;1,700&family=Plus+Jakarta+Sans:wght@400;600;800&family=Space+Grotesk:wght@400;700&family=Cinzel:wght@600;800&family=Bebas+Neue&family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300&family=Josefin+Sans:wght@300;400;600;700&family=Raleway:wght@300;400;700;900&display=swap" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&family=Playfair+Display:ital,wght@0,700;1,700&family=Plus+Jakarta+Sans:wght@400;600;800&family=Space+Grotesk:wght@400;700&family=Cinzel:wght@600;800&family=Bebas+Neue&family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300&family=Josefin+Sans:wght@300;400;600;700&family=Raleway:wght@300;400;700;900&display=swap"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css"></noscript>`;
 
     // Compteur de vues
     const viewCounter = `
@@ -5654,6 +5777,26 @@ function closeHostingGuide(){
 document.getElementById('hosting-modal').addEventListener('click', function(e){
     if(e.target === this) closeHostingGuide();
 });
+
+// ── MODAL PUBLIER — choix héberger soi-même / contacter l'équipe ──
+function openPublishChoiceModal(){
+    document.getElementById('publish-choice-modal').style.display = 'flex';
+}
+function closePublishChoiceModal(){
+    document.getElementById('publish-choice-modal').style.display = 'none';
+}
+document.getElementById('publish-choice-modal').addEventListener('click', function(e){
+    if(e.target === this) closePublishChoiceModal();
+});
+
+// Redirige vers WhatsApp avec un message pré-rempli où le client
+// annonce qu'il vient pour l'hébergement de son portfolio.
+function contactTeamForHosting(){
+    const message = "Bonjour, je viens pour l'hébergement de mon portfolio.";
+    const url = "https://wa.me/message/Y57VXGKRSQ3OJ1?text=" + encodeURIComponent(message);
+    window.open(url, '_blank', 'noopener');
+    closePublishChoiceModal();
+}
 
 function showToast(msg){
     const t=document.createElement('div');
@@ -6423,6 +6566,10 @@ function cycleCurrency(){
 
 restoreStateFromLocalStorage();
 initEditor();render();
+// Le tutoriel s'affiche pour tout nouveau visiteur dès son arrivée
+// sur le site, connecté ou non — il ne dépend plus d'une connexion
+// réussie. Il ne se déclenche qu'une seule fois par navigateur.
+maybeStartTutorial();
 requestAnimationFrame(function(){ if(typeof updatePhotoAnimBtn==='function') updatePhotoAnimBtn(); });
 // Construit le dropdown devise après chargement
 requestAnimationFrame(function(){ buildCurrencyDropdown(); });
@@ -6641,7 +6788,6 @@ async function loadUserProfile(user) {
   if (emailEl) emailEl.textContent = email;
 
   setAccountMenuConnectedState();
-  maybeStartTutorial();
 
   // Un brouillon local présent signifie que le visiteur travaillait
   // déjà activement (connecté ou non) avant cette connexion — ce
@@ -7010,47 +7156,6 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
 }
 
 // ── TUTORIEL D'ACCUEIL — une seule fois par utilisateur ────
-const TUTORIAL_SEEN_KEY = 'mental_studio_tutorial_seen_v1';
-
-const TUTORIAL_STEPS = [
-  {
-    selector: '#account-wrapper',
-    mobileSelector: '#account-wrapper',
-    title: 'Votre compte',
-    desc: "C'est ici que vous gérez votre compte : téléchargement, publication, historique de paiements et mode sombre/clair."
-  },
-  {
-    selector: '[data-tab="data"]',
-    mobileSelector: '#mbnav-data',
-    title: 'Vos informations',
-    desc: "Renseignez ici votre nom, votre rôle, votre photo, vos projets et votre CV — le contenu de votre portfolio."
-  },
-  {
-    selector: '[data-tab="style"]',
-    mobileSelector: '#mbnav-style',
-    title: 'Thèmes et mise en page',
-    desc: "Choisissez parmi des dizaines de thèmes visuels et de dispositions pour donner le style qui vous ressemble."
-  },
-  {
-    selector: '[data-tab="anim"]',
-    mobileSelector: '#mbnav-anim',
-    title: 'Animations',
-    desc: "Ajoutez du mouvement à votre portfolio — animations d'apparition, effets de fond, transitions entre sections."
-  },
-  {
-    selector: '[data-tab="advanced"]',
-    mobileSelector: '#mbnav-advanced',
-    title: 'Options avancées',
-    desc: "Réservation de rendez-vous, chat, multilingue, multi-pages — personnalisez les fonctionnalités de votre portfolio."
-  },
-  {
-    selector: '#pricing-badge-bar',
-    mobileSelector: '#pricing-badge-bar',
-    title: 'Le prix se calcule automatiquement',
-    desc: "Chaque option ajoutée fait évoluer le prix ici, en temps réel, selon la complexité de votre portfolio."
-  }
-];
-
 let currentTutorialStep = 0;
 
 function hasTutorialBeenSeen(){
@@ -7062,8 +7167,8 @@ function markTutorialAsSeen(){
 
 function maybeStartTutorial(){
   if (hasTutorialBeenSeen()) return;
-  // Petit délai pour laisser l'interface se stabiliser après la connexion
-  // (avatar chargé, menu compte visible) avant de démarrer le tutoriel.
+  // Petit délai pour laisser l'interface se stabiliser (polices,
+  // mise en page) avant de démarrer le tutoriel.
   setTimeout(startTutorial, 600);
 }
 
@@ -7089,12 +7194,18 @@ function showTutorialStep(index){
   const selector = isMobile ? (step.mobileSelector || step.selector) : step.selector;
   let target = document.querySelector(selector);
 
-  // Un élément caché par display:none reste techniquement trouvable
-  // par querySelector — on vérifie sa visibilité réelle via
-  // offsetParent (null pour tout élément non affiché) avant de s'en
-  // servir pour positionner le spotlight.
-  if (target && target.offsetParent === null) {
-    target = null;
+  // Un élément caché (display:none, ou tout autre cas le rendant non
+  // rendu à l'écran) reste techniquement trouvable par querySelector —
+  // on vérifie sa taille réelle à l'écran avant de s'en servir pour
+  // positionner le spotlight : un rectangle à zéro signifie qu'il
+  // n'est pas réellement affiché, quelle qu'en soit la raison.
+  let targetRect = null;
+  if (target) {
+    targetRect = target.getBoundingClientRect();
+    if (targetRect.width === 0 && targetRect.height === 0) {
+      target = null;
+      targetRect = null;
+    }
   }
 
   const ring = document.getElementById('tutorial-spotlight-ring');
@@ -7117,7 +7228,7 @@ function showTutorialStep(index){
     return;
   }
 
-  const rect = target.getBoundingClientRect();
+  const rect = targetRect;
   const padding = 8;
   ring.style.top = (rect.top - padding) + 'px';
   ring.style.left = (rect.left - padding) + 'px';
