@@ -487,21 +487,27 @@ textarea.input-control{min-height:75px;resize:none;line-height:1.6;}
 .pf-bio{line-height:1.7;margin-bottom:32px;font-size:17px;}
 .pf-contact-btn{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;font-weight:600;transition:.3s;}
 .pf-cv-btn{
-    display:inline-flex;align-items:center;gap:8px;
-    padding:12px 24px;
-    background:rgba(239,68,68,.1);
-    color:#ef4444!important;
-    border:1px solid rgba(239,68,68,.3);
+    display:inline-flex;align-items:center;gap:6px;
+    padding:9px 18px;
+    background:transparent;
+    color:inherit;
+    border:1.5px solid currentColor;
     border-radius:100px;
-    font-family:'DM Sans',sans-serif;
-    font-size:13px;font-weight:700;
+    font-family:inherit;
+    font-size:12px;font-weight:700;
     text-decoration:none;
     margin-left:12px;
-    transition:.2s;
-    -webkit-text-fill-color:#ef4444;
+    opacity:.75;
+    transition:opacity .25s ease,transform .25s ease,box-shadow .25s ease;
+    vertical-align:middle;
+    -webkit-text-fill-color:currentColor;
 }
-.pf-cv-btn:hover{background:rgba(239,68,68,.2);}
-.pf-cv-btn i{font-size:16px;}
+.pf-cv-btn:hover{
+    opacity:1;
+    transform:translateY(-2px);
+    box-shadow:0 6px 18px rgba(0,0,0,.18);
+}
+.pf-cv-btn i{font-size:14px;}
 @media(max-width:768px){
     .pf-cv-btn{margin-left:0;margin-top:10px;}
 }
@@ -1863,6 +1869,30 @@ radial-gradient(circle at 50% 50%,rgba(255,183,77,.06) 0%,transparent 50%);}
 @media(max-width:768px){.pf-booking-card{flex-direction:column;text-align:center;}.pf-booking-btn{width:100%;justify-content:center;}}
 /* CHAT WIDGET PULSE */
 @keyframes chatPulse{0%,100%{box-shadow:0 8px 24px rgba(0,0,0,.2),0 0 0 0 rgba(37,211,102,.4);}50%{box-shadow:0 8px 24px rgba(0,0,0,.2),0 0 0 10px rgba(37,211,102,0);}}
+
+/* Bulle d'accueil du chat — s'affiche à l'ouverture, puis s'efface
+   d'elle-même pour libérer la vue, et revient au survol du bouton. */
+@keyframes chatBubbleIntro{
+    0%   {opacity:0;transform:translateY(10px) scale(.94);}
+    12%  {opacity:1;transform:translateY(0) scale(1);}
+    78%  {opacity:1;transform:translateY(0) scale(1);}
+    100% {opacity:0;transform:translateY(10px) scale(.94);visibility:hidden;}
+}
+.pf-chat-bubble{
+    opacity:0;
+    visibility:hidden;
+    transform:translateY(10px) scale(.94);
+    transform-origin:bottom right;
+    transition:opacity .3s ease,transform .3s ease,visibility .3s;
+    animation:chatBubbleIntro 6.5s ease forwards;
+    pointer-events:none;
+}
+#pf-chat-widget:hover .pf-chat-bubble{
+    animation:none;
+    opacity:1;
+    visibility:visible;
+    transform:translateY(0) scale(1);
+}
 @media(max-width:1024px){
     [class^="theme-"] .pf-name{font-size:28px!important;}
     [class^="theme-"] .pf-profile-img{width:160px!important;height:160px!important;}
@@ -2237,19 +2267,15 @@ radial-gradient(circle at 50% 50%,rgba(255,183,77,.06) 0%,transparent 50%);}
 
 /* PHOTO PROFIL — taille normale, arrondie */
 [class*="theme-ph_"] .pf-hero-img-wrap{
-    flex:0 0 200px!important;
-    width:200px!important;
-    height:200px!important;
-    max-width:200px!important;
-    max-height:200px!important;
+    flex:0 0 auto!important;
+    max-width:300px!important;
 }
+/* Bordure et ombre décoratives conservées, mais la FORME reste
+   pilotée par le sélecteur de format choisi par l'utilisateur
+   (les styles inline) — plus de cercle imposé. */
 [class*="theme-ph_"] .pf-profile-img{
-    width:200px!important;
-    height:200px!important;
-    max-width:200px!important;
-    max-height:200px!important;
+    max-width:300px!important;
     object-fit:cover!important;
-    border-radius:50%!important;
     border:3px solid rgba(255,255,255,.35)!important;
     box-shadow:0 8px 32px rgba(0,0,0,.4)!important;
 }
@@ -2289,8 +2315,142 @@ radial-gradient(circle at 50% 50%,rgba(255,183,77,.06) 0%,transparent 50%);}
 @media(max-width:768px){
     [class*="theme-ph_"]{background-attachment:scroll!important;}
     [class*="theme-ph_"] .pf-hero{flex-direction:column!important;text-align:center!important;}
-    [class*="theme-ph_"] .pf-hero-img-wrap{flex:0 0 140px!important;width:140px!important;height:140px!important;max-width:140px!important;max-height:140px!important;}
-    [class*="theme-ph_"] .pf-profile-img{width:140px!important;height:140px!important;max-width:140px!important;max-height:140px!important;}
+    [class*="theme-ph_"] .pf-hero-img-wrap{flex:0 0 auto!important;max-width:170px!important;}
+    [class*="theme-ph_"] .pf-profile-img{max-width:170px!important;height:auto!important;}
+}
+
+/* ═══════════════════════════════════════════════════════
+   TYPOGRAPHIE PAR FAMILLE DE THÈMES PHOTO
+   Chaque univers reçoit son propre caractère typographique,
+   pour que deux portfolios sur fond photo ne se ressemblent
+   jamais. Seules les polices/graisses changent — la structure
+   et les couleurs de lisibilité restent identiques.
+   ═══════════════════════════════════════════════════════ */
+
+/* ── NATURE — serif organique et élégant ── */
+.theme-ph_forest .pf-name,.theme-ph_autumn .pf-name,.theme-ph_mountain .pf-name,
+.theme-ph_beach .pf-name,.theme-ph_desert .pf-name,.theme-ph_waterfall .pf-name,
+.theme-ph_cherry .pf-name,.theme-ph_lavender .pf-name,.theme-ph_jungle .pf-name,
+.theme-ph_sunset .pf-name,
+.theme-ph_forest .pf-section-title,.theme-ph_autumn .pf-section-title,.theme-ph_mountain .pf-section-title,
+.theme-ph_beach .pf-section-title,.theme-ph_desert .pf-section-title,.theme-ph_waterfall .pf-section-title,
+.theme-ph_cherry .pf-section-title,.theme-ph_lavender .pf-section-title,.theme-ph_jungle .pf-section-title,
+.theme-ph_sunset .pf-section-title{
+    font-family:'Cormorant Garamond',serif!important;
+    font-weight:600!important;
+    letter-spacing:.5px!important;
+}
+.theme-ph_forest .pf-role,.theme-ph_autumn .pf-role,.theme-ph_mountain .pf-role,
+.theme-ph_beach .pf-role,.theme-ph_desert .pf-role,.theme-ph_waterfall .pf-role,
+.theme-ph_cherry .pf-role,.theme-ph_lavender .pf-role,.theme-ph_jungle .pf-role,
+.theme-ph_sunset .pf-role{
+    font-family:'Raleway',sans-serif!important;
+    letter-spacing:3px!important;text-transform:uppercase!important;font-size:11px!important;
+}
+
+/* ── COSMOS — futuriste et technique ── */
+.theme-ph_galaxy .pf-name,.theme-ph_nebula .pf-name,.theme-ph_aurora .pf-name,
+.theme-ph_stars .pf-name,.theme-ph_earth .pf-name,
+.theme-ph_galaxy .pf-section-title,.theme-ph_nebula .pf-section-title,.theme-ph_aurora .pf-section-title,
+.theme-ph_stars .pf-section-title,.theme-ph_earth .pf-section-title{
+    font-family:'Space Grotesk',sans-serif!important;
+    font-weight:700!important;
+    letter-spacing:-.5px!important;
+}
+.theme-ph_galaxy .pf-role,.theme-ph_nebula .pf-role,.theme-ph_aurora .pf-role,
+.theme-ph_stars .pf-role,.theme-ph_earth .pf-role{
+    font-family:'Space Grotesk',sans-serif!important;
+    letter-spacing:4px!important;text-transform:uppercase!important;font-size:10.5px!important;
+}
+
+/* ── EAU — léger et fluide ── */
+.theme-ph_ocean .pf-name,.theme-ph_waves .pf-name,.theme-ph_underwater .pf-name,
+.theme-ph_lake .pf-name,.theme-ph_rain .pf-name,
+.theme-ph_ocean .pf-section-title,.theme-ph_waves .pf-section-title,.theme-ph_underwater .pf-section-title,
+.theme-ph_lake .pf-section-title,.theme-ph_rain .pf-section-title{
+    font-family:'Josefin Sans',sans-serif!important;
+    font-weight:300!important;
+    letter-spacing:2px!important;
+}
+.theme-ph_ocean .pf-role,.theme-ph_waves .pf-role,.theme-ph_underwater .pf-role,
+.theme-ph_lake .pf-role,.theme-ph_rain .pf-role{
+    font-family:'Josefin Sans',sans-serif!important;
+    letter-spacing:5px!important;text-transform:uppercase!important;font-size:10px!important;
+}
+
+/* ── URBAIN — impact et affiche ── */
+.theme-ph_city_night .pf-name,.theme-ph_neon .pf-name,.theme-ph_bridge .pf-name,
+.theme-ph_architecture .pf-name,.theme-ph_street .pf-name{
+    font-family:'Bebas Neue',sans-serif!important;
+    letter-spacing:2px!important;
+    font-size:clamp(42px,7vw,86px)!important;
+}
+.theme-ph_city_night .pf-section-title,.theme-ph_neon .pf-section-title,.theme-ph_bridge .pf-section-title,
+.theme-ph_architecture .pf-section-title,.theme-ph_street .pf-section-title{
+    font-family:'Bebas Neue',sans-serif!important;
+    letter-spacing:3px!important;
+}
+.theme-ph_city_night .pf-role,.theme-ph_neon .pf-role,.theme-ph_bridge .pf-role,
+.theme-ph_architecture .pf-role,.theme-ph_street .pf-role{
+    font-family:'Space Grotesk',sans-serif!important;
+    letter-spacing:4px!important;text-transform:uppercase!important;font-size:10.5px!important;
+}
+
+/* ── ANIMAUX — majestueux et gravé ── */
+.theme-ph_wolf .pf-name,.theme-ph_eagle .pf-name,.theme-ph_cat .pf-name,
+.theme-ph_horse .pf-name,.theme-ph_lion .pf-name,
+.theme-ph_wolf .pf-section-title,.theme-ph_eagle .pf-section-title,.theme-ph_cat .pf-section-title,
+.theme-ph_horse .pf-section-title,.theme-ph_lion .pf-section-title{
+    font-family:'Cinzel',serif!important;
+    font-weight:700!important;
+    letter-spacing:2px!important;
+}
+.theme-ph_wolf .pf-role,.theme-ph_eagle .pf-role,.theme-ph_cat .pf-role,
+.theme-ph_horse .pf-role,.theme-ph_lion .pf-role{
+    font-family:'Raleway',sans-serif!important;
+    letter-spacing:4px!important;text-transform:uppercase!important;font-size:10.5px!important;
+}
+
+/* ── BUSINESS — net et professionnel ── */
+.theme-ph_office .pf-name,.theme-ph_meeting .pf-name,.theme-ph_laptop .pf-name,
+.theme-ph_coffee .pf-name,.theme-ph_library .pf-name,.theme-ph_studio .pf-name,
+.theme-ph_minimal .pf-name,.theme-ph_tech .pf-name,.theme-ph_design .pf-name,
+.theme-ph_podcast .pf-name,
+.theme-ph_office .pf-section-title,.theme-ph_meeting .pf-section-title,.theme-ph_laptop .pf-section-title,
+.theme-ph_coffee .pf-section-title,.theme-ph_library .pf-section-title,.theme-ph_studio .pf-section-title,
+.theme-ph_minimal .pf-section-title,.theme-ph_tech .pf-section-title,.theme-ph_design .pf-section-title,
+.theme-ph_podcast .pf-section-title{
+    font-family:'Plus Jakarta Sans',sans-serif!important;
+    font-weight:800!important;
+    letter-spacing:-1px!important;
+}
+.theme-ph_office .pf-role,.theme-ph_meeting .pf-role,.theme-ph_laptop .pf-role,
+.theme-ph_coffee .pf-role,.theme-ph_library .pf-role,.theme-ph_studio .pf-role,
+.theme-ph_minimal .pf-role,.theme-ph_tech .pf-role,.theme-ph_design .pf-role,
+.theme-ph_podcast .pf-role{
+    font-family:'DM Sans',sans-serif!important;
+    letter-spacing:2.5px!important;text-transform:uppercase!important;font-size:11px!important;
+}
+
+/* ── LIFESTYLE — signature designer ── */
+.theme-ph_marble .pf-name,.theme-ph_bokeh .pf-name,.theme-ph_abstract_geo .pf-name,
+.theme-ph_smoke .pf-name,.theme-ph_ink .pf-name,.theme-ph_neon_art .pf-name,
+.theme-ph_gradient .pf-name,.theme-ph_texture .pf-name,.theme-ph_particles .pf-name,
+.theme-ph_uiux .pf-name,
+.theme-ph_marble .pf-section-title,.theme-ph_bokeh .pf-section-title,.theme-ph_abstract_geo .pf-section-title,
+.theme-ph_smoke .pf-section-title,.theme-ph_ink .pf-section-title,.theme-ph_neon_art .pf-section-title,
+.theme-ph_gradient .pf-section-title,.theme-ph_texture .pf-section-title,.theme-ph_particles .pf-section-title,
+.theme-ph_uiux .pf-section-title{
+    font-family:'Syne',sans-serif!important;
+    font-weight:800!important;
+    letter-spacing:-1.5px!important;
+}
+.theme-ph_marble .pf-role,.theme-ph_bokeh .pf-role,.theme-ph_abstract_geo .pf-role,
+.theme-ph_smoke .pf-role,.theme-ph_ink .pf-role,.theme-ph_neon_art .pf-role,
+.theme-ph_gradient .pf-role,.theme-ph_texture .pf-role,.theme-ph_particles .pf-role,
+.theme-ph_uiux .pf-role{
+    font-family:'Syne',sans-serif!important;
+    letter-spacing:3px!important;text-transform:uppercase!important;font-size:10.5px!important;
 }
 
 /* ── NATURE ── */
@@ -2393,19 +2553,34 @@ radial-gradient(circle at 50% 50%,rgba(255,183,77,.06) 0%,transparent 50%);}
     padding:14px 20px 22px;
     font-size:10.5px;
     color:inherit;
-    opacity:.4;
+    opacity:.55;
     letter-spacing:.2px;
     transition:opacity .3s ease;
 }
-.pf-editor-signature:hover{opacity:.7;}
+.pf-editor-signature:hover{opacity:1;}
 .pf-editor-signature-brand{
     font-weight:700;
-    background:linear-gradient(135deg,#6366f1,#a78bfa);
+    background:linear-gradient(100deg,#6366f1 0%,#a78bfa 35%,#ffffff 50%,#a78bfa 65%,#6366f1 100%);
+    background-size:250% 100%;
     -webkit-background-clip:text;
     background-clip:text;
     -webkit-text-fill-color:transparent;
     text-decoration:none;
     cursor:pointer;
+    animation:sigShimmer 5s ease-in-out infinite;
+    transition:filter .3s ease;
+}
+/* Reflet lumineux qui balaie lentement le nom — attire l'œil
+   discrètement, sans jamais gêner la lecture du portfolio. */
+@keyframes sigShimmer{
+    0%,100% {background-position:120% 0;}
+    50%     {background-position:-20% 0;}
+}
+.pf-editor-signature-brand:hover{
+    filter:drop-shadow(0 0 8px rgba(139,124,246,.7));
+}
+@media(prefers-reduced-motion:reduce){
+    .pf-editor-signature-brand{animation:none;}
 }
 
 /* ── NAVIGATION MULTI-PAGES ─────────────────────── */
@@ -4166,7 +4341,7 @@ const animCatalogData=[
     {id:'neonGlow',name:'Neon Glow',icon:'🌃',desc:'Lueur néon',cat:'advanced'}
 ];
 
-let scrollObserver=null,activeImageContext={type:null,id:null};
+let scrollObserver=null,scrollResetObserver=null,activeImageContext={type:null,id:null};
 
 function render(){
     const vp=document.getElementById('portfolio-viewport');
@@ -4316,7 +4491,7 @@ function render(){
                title="${state.chat.welcomeMsg||'Contactez-nous'}">
                 <i class="${chatIcon}"></i>
             </a>
-            <div style="position:absolute;bottom:66px;right:0;background:white;color:#111;padding:10px 14px;border-radius:12px 12px 0 12px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.12);max-width:200px;white-space:normal;line-height:1.5;">
+            <div class="pf-chat-bubble" style="position:absolute;bottom:66px;right:0;background:white;color:#111;padding:10px 14px;border-radius:12px 12px 0 12px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;box-shadow:0 4px 20px rgba(0,0,0,.12);max-width:200px;white-space:normal;line-height:1.5;">
                 ${state.chat.welcomeMsg||'Bonjour ! Comment puis-je vous aider ?'}
             </div>
         </div>`;
@@ -4346,7 +4521,7 @@ function render(){
         const infoTag = hasLink ? 'a' : 'div';
         return `<article class="pf-project-card anim-el" style="animation-delay:${i*state.animStagger}ms;"><div class="editable-img-wrapper" onclick="openCanvasImagePicker('project',${p.id})"><img src="${p.img}" class="pf-project-img" style="height:220px;object-fit:cover;width:100%;"></div><${infoTag} class="pf-project-info"${linkAttrs}><h3 class="pf-project-title">${p.title||'Titre'}</h3><p class="pf-project-desc">${p.desc||''}</p>${hasLink?'<span class="pf-project-link-hint"><i class="ri-external-link-line"></i> Voir le projet</span>':''}</${infoTag}></article>`;
     }).join('');
-    const cvButtonH = (typeof cvData !== 'undefined' && cvData) ? `<a id="pf-cv-download-btn" href="${cvData}" download="CV_${(state.data.name||'Portfolio').replace(/\s+/g,'_')}.pdf" class="pf-cv-btn" onclick="event.stopPropagation();"><i class="ri-file-pdf-2-fill"></i> Télécharger mon CV</a>` : '';
+    const cvButtonH = (typeof cvData !== 'undefined' && cvData) ? `<a id="pf-cv-download-btn" href="${cvData}" download="CV_${(state.data.name||'Portfolio').replace(/\s+/g,'_')}.pdf" class="pf-cv-btn" onclick="event.stopPropagation();"><i class="ri-file-pdf-2-fill"></i> Mon CV</a>` : '';
     vp.innerHTML=`
 <div class="pf-container" style="padding:${state.spacing}px 40px;">
 ${state.multiPage ? buildMultiPageNav() : ''}
@@ -4437,29 +4612,34 @@ function bindScrollAnimations(){
     });
 
     if(scrollObserver) scrollObserver.disconnect();
+    if(scrollResetObserver) scrollResetObserver.disconnect();
 
-    // Observer avec replay — chaque fois que l'élément entre dans le viewport
+    // Observer d'ENTRÉE — déclenche l'animation seulement une fois
+    // l'élément franchement entré dans l'écran (zone tampon de 12%),
+    // jamais dès qu'il effleure la bordure.
     scrollObserver = new IntersectionObserver(entries=>{
         entries.forEach(e=>{
+            if(!e.isIntersecting) return;
             const el = e.target;
-            const animId = el.getAttribute('data-anim') || state.activeAnim;
+            const idx = Array.from(el.parentElement ? el.parentElement.children : []).indexOf(el);
+            setTimeout(()=>{
+                el.classList.add('is-visible');
+            }, idx * state.animStagger);
+        });
+    },{root:vp, threshold:0.15, rootMargin:'0px 0px -12% 0px'});
 
-            // Enlever toutes les classes d'animation possibles
-            const allAnims = ['anim-fadeUp','anim-blur','anim-slide','anim-flip','anim-scaleDown','anim-rotateIn','anim-bounce','anim-glitch','anim-neonFlash','anim-shatter','anim-warp','anim-typewriter','anim-hologram','anim-magnetic','anim-crystallize','anim-pulseReveal','anim-elastic','anim-ripple','anim-matrix','anim-explosion','anim-morph','anim-gravity','anim-strobe','anim-cinema','anim-spark','anim-vhs','anim-fadeLeft','anim-fadeRight','anim-zoomIn','anim-flipX','anim-flipY','anim-fadeDown'];
-
-            if(e.isIntersecting){
-                const idx = Array.from(el.parentElement ? el.parentElement.children : []).indexOf(el);
-                setTimeout(()=>{
-                    // Appliquer la bonne classe d'animation sur le PARENT (viewport)
-                    // et rendre visible
-                    el.classList.add('is-visible');
-                }, idx * state.animStagger);
-            } else {
-                // REPLAY : retire is-visible quand sort du viewport → re-animera au prochain passage
-                el.classList.remove('is-visible');
+    // Observer de RÉINITIALISATION — ne remet à zéro que lorsque
+    // l'élément est LARGEMENT sorti de l'écran (25% au-delà). Entre
+    // les deux zones il existe un tampon où rien ne se déclenche :
+    // c'est ce qui rend le scintillement en bordure impossible, tout
+    // en conservant le rejeu de l'animation à chaque nouveau passage.
+    scrollResetObserver = new IntersectionObserver(entries=>{
+        entries.forEach(e=>{
+            if(!e.isIntersecting){
+                e.target.classList.remove('is-visible');
             }
         });
-    },{root:vp, threshold:0.08, rootMargin:'0px 0px -10px 0px'});
+    },{root:vp, threshold:0, rootMargin:'25% 0px 25% 0px'});
 
     // Appliquer la classe d'animation globale sur le viewport ET sections spécifiques
     // Retirer toutes les classes anim- du viewport
@@ -4523,7 +4703,10 @@ function bindScrollAnimations(){
         `.anim-el{transition-duration:${state.animSpeed}ms !important;}`
     ].join('\n');
 
-    els.forEach(el=>scrollObserver.observe(el));
+    els.forEach(el=>{
+        scrollObserver.observe(el);
+        scrollResetObserver.observe(el);
+    });
 }
 
 // Retourne le CSS d'état initial selon l'animation
@@ -5504,7 +5687,19 @@ function proceedDownload(){
 
 function doExport(){
     const vpH = document.getElementById('portfolio-viewport').outerHTML;
-    const styles = document.querySelector('style').outerHTML;
+
+    // Le style principal, PLUS les styles injectés dynamiquement
+    // (fond personnalisé, animations par section). Sans eux, toute
+    // combinaison thème custom + image était perdue au téléchargement :
+    // querySelector('style') ne renvoie que le premier bloc, or ces
+    // styles-là sont ajoutés au <head> bien après.
+    let styles = document.querySelector('style').outerHTML;
+    ['custom-bg-style','anim-section-style'].forEach(function(id){
+        const dyn = document.getElementById(id);
+        if(dyn && dyn.textContent && dyn.textContent.trim() !== ''){
+            styles += '\n' + dyn.outerHTML;
+        }
+    });
     // Sécurité & protection anti-spam intégrées automatiquement
     const securityHeaders = `
 <meta http-equiv="X-Content-Type-Options" content="nosniff">
@@ -5570,9 +5765,31 @@ function doExport(){
 
     // Script responsive + animations + compteur de vues
     const scripts = `<script>
-// Animations scroll
-const obs = new IntersectionObserver(e=>{e.forEach(e=>{if(e.isIntersecting)e.target.classList.add('is-visible');else e.target.classList.remove('is-visible');});},{threshold:.1});
-document.querySelectorAll('.anim-el').forEach(el=>obs.observe(el));
+// Animations au scroll — avec zone tampon pour éviter tout
+// scintillement quand un élément se trouve pile en bordure d'écran.
+// L'élément s'anime seulement une fois franchement entré (12% de
+// hauteur d'écran passés), et ne se réinitialise qu'une fois
+// franchement sorti — le va-et-vient sur le seuil est impossible.
+const obs = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+        if(entry.isIntersecting){
+            entry.target.classList.add('is-visible');
+        }
+    });
+},{ threshold:0.15, rootMargin:'0px 0px -12% 0px' });
+
+const obsReset = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+        if(!entry.isIntersecting){
+            entry.target.classList.remove('is-visible');
+        }
+    });
+},{ threshold:0, rootMargin:'25% 0px 25% 0px' });
+
+document.querySelectorAll('.anim-el').forEach(function(el){
+    obs.observe(el);
+    obsReset.observe(el);
+});
 
 // Compteur de vues GLOBAL — partagé entre tous les visiteurs (via CountAPI, gratuit, sans backend)
 (function(){
