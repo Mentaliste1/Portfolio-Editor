@@ -468,9 +468,96 @@ textarea.input-control{min-height:75px;resize:none;line-height:1.6;}
        où position:fixed cible correctement le vrai viewport visiteur. */
     transform:translateZ(0);
 }
-.browser-header{height:36px;background:#f8fafc;border-bottom:1px solid #e2e8f0;display:flex;align-items:center;padding:0 12px;gap:6px;flex-shrink:0;}
+.browser-header{height:36px;background:#f8fafc;border-bottom:1px solid #e2e8f0;display:flex;align-items:center;padding:0 12px;gap:6px;flex-shrink:0;position:relative;z-index:10001;}
 .browser-dot{width:10px;height:10px;border-radius:50%;}
-.browser-url-bar{flex:1;margin:0 10px;height:20px;background:#e2e8f0;border-radius:100px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#64748b;font-family:monospace;}
+.browser-url-bar{flex:1 1 auto;min-width:0;overflow:hidden;white-space:nowrap;margin:0 10px;height:20px;background:#e2e8f0;border-radius:100px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#64748b;font-family:monospace;}
+
+/* ── APERÇU PAR APPAREIL (ordinateur / tablette / mobile) ── */
+#device-preview-switch{display:flex;gap:2px;flex-shrink:0;flex-grow:0;min-width:84px;}
+.device-btn{
+    width:26px;height:22px;min-width:26px;border:none;background:transparent;
+    color:#94a3b8;border-radius:5px;cursor:pointer;font-size:13px;
+    display:flex;align-items:center;justify-content:center;transition:.15s;
+    flex-shrink:0;
+}
+.device-btn:hover{background:#e2e8f0;color:#475569;}
+.device-btn.device-btn-active{background:#6366f1;color:#fff;}
+
+/* Le cadre se rétrécit pour simuler l'écran choisi. La largeur
+   réelle change, donc les media queries du portfolio réagissent
+   exactement comme sur un vrai appareil. */
+.browser-mockup{transition:max-width .35s cubic-bezier(.4,0,.2,1);}
+.browser-mockup.device-tablet{max-width:768px;}
+.browser-mockup.device-mobile{max-width:400px;}
+
+/* Les media queries du portfolio se basent sur la largeur de la
+   FENÊTRE, pas du cadre — rétrécir le cadre ne les déclencherait
+   donc pas. On reproduit ici les mêmes règles, scopées au mode
+   aperçu, pour un rendu fidèle. Les règles d'origine sont intactes. */
+.device-mobile .pf-container{padding:44px 20px!important;}
+.device-mobile .pf-hero{flex-direction:column!important;text-align:center!important;gap:32px!important;min-height:auto!important;}
+.device-mobile .pf-hero-content{width:100%!important;}
+.device-mobile .pf-hero-img-wrap{max-width:200px!important;margin:0 auto!important;}
+.device-mobile .pf-profile-img{max-width:200px!important;height:auto!important;}
+.device-mobile .pf-name{font-size:clamp(30px,9vw,44px)!important;}
+.device-mobile .pf-bio{font-size:15px!important;}
+.device-mobile .pf-projects-grid,
+.device-mobile .pf-cert-grid{grid-template-columns:1fr!important;}
+.device-mobile .pf-exp-list{padding-left:20px!important;}
+.device-mobile .pf-cv-btn{margin-left:0!important;margin-top:10px!important;}
+.device-mobile .pf-booking-card{flex-direction:column!important;text-align:center!important;}
+.device-mobile .pf-booking-btn{width:100%!important;justify-content:center!important;}
+.device-mobile .pf-footer{margin-top:40px!important;padding:20px 16px!important;flex-direction:column!important;gap:10px!important;font-size:11px!important;}
+.device-mobile [class*="theme-ph_"] .pf-hero{flex-direction:column!important;text-align:center!important;}
+.device-mobile [class*="theme-ph_"] .pf-hero-img-wrap{max-width:170px!important;}
+.device-mobile [class*="theme-ph_"] .pf-profile-img{max-width:170px!important;height:auto!important;}
+
+.device-tablet .pf-container{padding:60px 32px!important;}
+.device-tablet .pf-hero{gap:40px!important;}
+.device-tablet .pf-projects-grid{grid-template-columns:repeat(2,1fr)!important;}
+
+/* ── BARRE DE PROGRESSION DE LECTURE ── */
+#pf-read-progress{
+    position:fixed;top:0;left:0;width:100%;height:3px;
+    background:rgba(128,128,128,.15);
+    z-index:9999;pointer-events:none;
+}
+/* Dans l'éditeur, elle se place juste sous la barre du navigateur
+   simulé (36px) pour rester visible. Dans le portfolio exporté,
+   ce conteneur n'existe pas : elle reste tout en haut de la page. */
+#app-container #pf-read-progress{top:36px;}
+#pf-read-progress-fill{
+    height:100%;width:0%;
+    background:currentColor;
+    opacity:.9;
+    transition:width .12s linear;
+}
+
+/* ── CURSEUR LUMINEUX ── */
+#pf-cursor-glow{
+    position:fixed;top:0;left:0;
+    width:340px;height:340px;
+    margin-left:-170px;margin-top:-170px;
+    border-radius:50%;
+    background:radial-gradient(circle,currentColor 0%,transparent 68%);
+    opacity:.13;
+    pointer-events:none;
+    z-index:1;
+    transition:transform .18s cubic-bezier(.2,.9,.3,1),opacity .3s ease;
+    will-change:transform;
+}
+/* Sur écran tactile, le halo n'a pas de sens : on le masque. */
+@media(hover:none){ #pf-cursor-glow{display:none;} }
+@media(prefers-reduced-motion:reduce){ #pf-cursor-glow{display:none;} }
+
+/* ── PARALLAXE DE SECTION ── */
+.pf-parallax-on .pf-section-page{
+    will-change:transform;
+    transition:transform .25s cubic-bezier(.2,.9,.3,1);
+}
+@media(prefers-reduced-motion:reduce){
+    .pf-parallax-on .pf-section-page{transform:none!important;transition:none;}
+}
 .portfolio-viewport{flex:1;overflow-y:auto;overflow-x:hidden;scroll-behavior:smooth;position:relative;}
 .editable-img-wrapper{position:relative;display:inline-block;width:100%;height:100%;overflow:hidden;cursor:pointer;}
 .editable-img-wrapper::after{content:"📸 Remplacer";position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.55);color:white;display:flex;justify-content:center;align-items:center;font-size:13px;font-weight:600;opacity:0;transition:.2s;backdrop-filter:blur(4px);pointer-events:none;}
@@ -537,7 +624,79 @@ a.pf-project-info:hover .pf-project-title{text-decoration:underline;}
 .pf-skills-section{margin-top:50px;}
 .pf-skills-section h3{font-size:20px;font-weight:700;margin-bottom:16px;}
 .pf-skills-grid{display:flex;flex-wrap:wrap;gap:10px;}
-.pf-skill-chip{padding:7px 15px;border-radius:100px;font-size:13px;font-weight:600;}
+
+/* ── CHIFFRES CLÉS ── */
+.pf-stats-section{margin:48px 0;}
+.pf-stats-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+    gap:20px;
+}
+.pf-stat-item{
+    text-align:center;
+    padding:22px 14px;
+    border-radius:16px;
+    border:1px solid color-mix(in srgb, currentColor 18%, transparent);
+    background:color-mix(in srgb, currentColor 5%, transparent);
+    transition:transform .35s cubic-bezier(.34,1.56,.64,1),box-shadow .35s ease;
+}
+.pf-stat-item:hover{
+    transform:translateY(-4px);
+    box-shadow:0 12px 28px -10px currentColor;
+}
+.pf-stat-value{
+    font-size:clamp(30px,4.5vw,46px);
+    font-weight:800;
+    line-height:1;
+    letter-spacing:-1.5px;
+    display:flex;align-items:baseline;justify-content:center;gap:1px;
+}
+.pf-stat-label{
+    margin-top:9px;
+    font-size:12px;
+    font-weight:600;
+    opacity:.7;
+    letter-spacing:.5px;
+}
+@media(max-width:768px){
+    .pf-stats-grid{grid-template-columns:repeat(2,1fr);gap:12px;}
+    .pf-stat-item{padding:16px 10px;}
+}
+.device-mobile .pf-stats-grid{grid-template-columns:repeat(2,1fr)!important;gap:12px!important;}
+.pf-skill-chip{
+    padding:7px 15px;border-radius:100px;font-size:13px;font-weight:600;
+    position:relative;
+    cursor:default;
+    background-size:220% 100%;
+    background-position:100% 0;
+    transition:transform .35s cubic-bezier(.34,1.56,.64,1),
+               box-shadow .35s ease,
+               filter .35s ease,
+               letter-spacing .35s ease,
+               background-position .6s cubic-bezier(.4,0,.2,1);
+}
+/* Au survol (et au toucher sur mobile) : la puce se soulève, prend
+   un halo coloré tiré du thème lui-même, et un dégradé la balaie.
+   Tout est construit sur currentColor, donc chaque thème garde sa
+   propre palette sans qu'aucune règle ne lui soit dédiée. */
+.pf-skill-chip:hover,
+.pf-skill-chip:active,
+.pf-skill-chip:focus-visible{
+    transform:translateY(-3px) scale(1.05);
+    box-shadow:0 10px 22px -8px currentColor;
+    filter:saturate(1.45) brightness(1.1);
+    letter-spacing:.4px;
+    background-image:linear-gradient(120deg,
+        transparent 0%,
+        color-mix(in srgb, currentColor 22%, transparent) 45%,
+        color-mix(in srgb, currentColor 30%, transparent) 55%,
+        transparent 100%);
+    background-position:0 0;
+}
+@media(prefers-reduced-motion:reduce){
+    .pf-skill-chip{transition:none;}
+    .pf-skill-chip:hover,.pf-skill-chip:active{transform:none;}
+}
 
 /* LAYOUTS */
 .layout-classic .pf-hero{flex-direction:row;}
@@ -3081,6 +3240,59 @@ radial-gradient(circle at 50% 50%,rgba(255,183,77,.06) 0%,transparent 50%);}
 #fb-submit-btn:hover { opacity:.9; transform:translateY(-1px); }
 #fb-submit-btn:disabled { opacity:.55; cursor:not-allowed; transform:none; }
 
+/* ── TABLEAU DE BORD ADMIN ── */
+#admin-modal {
+  display:none; position:fixed; inset:0; background:rgba(0,0,0,0.82);
+  z-index:99998; align-items:center; justify-content:center; padding:20px;
+  overflow-y:auto;
+}
+#admin-modal.open { display:flex; }
+#admin-card {
+  background:#0a0a0a; border:1px solid #262626;
+  border-radius:20px; width:100%; max-width:620px; max-height:88vh;
+  overflow:hidden; display:flex; flex-direction:column;
+  animation:authIn .3s ease; margin:auto;
+}
+#admin-card .ph-head {
+  padding:18px 22px; font-size:15px; font-weight:700; color:#f1f5f9;
+  border-bottom:1px solid #262626; display:flex;
+  align-items:center; justify-content:space-between; flex-shrink:0; gap:8px;
+}
+#admin-card .ph-close {
+  background:transparent; border:none; cursor:pointer; color:#71717a;
+  font-size:20px; width:32px; height:32px; border-radius:8px;
+  display:flex; align-items:center; justify-content:center; transition:.15s;
+}
+#admin-card .ph-close:hover { background:#1a1a1a; color:#f1f5f9; }
+
+.adm-section-title{
+  font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;
+  color:#71717a;margin:20px 0 10px;
+}
+.adm-section-title:first-child{margin-top:0;}
+.adm-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;}
+.adm-card{
+  background:#141414;border:1px solid #262626;border-radius:12px;padding:14px;
+}
+.adm-card-value{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:#f1f5f9;line-height:1.1;}
+.adm-card-label{font-size:10.5px;color:#94a3b8;margin-top:5px;}
+.adm-card-sub{font-size:10px;color:#6366f1;margin-top:3px;font-weight:600;}
+
+.adm-fb-item{
+  background:#141414;border:1px solid #262626;border-radius:10px;
+  padding:11px 13px;margin-bottom:7px;
+}
+.adm-fb-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:5px;}
+.adm-fb-email{font-size:11px;font-weight:700;color:#a5b4fc;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.adm-fb-badge{
+  font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;
+  padding:3px 7px;border-radius:100px;background:#1e293b;color:#94a3b8;flex-shrink:0;
+}
+.adm-fb-badge.adm-unread{background:rgba(251,191,36,.15);color:#fbbf24;}
+.adm-fb-msg{font-size:11.5px;color:#a1a1aa;line-height:1.55;}
+.adm-fb-date{font-size:9.5px;color:#52525b;margin-top:5px;}
+.adm-empty{text-align:center;padding:26px;color:#52525b;font-size:12px;}
+
 #sync-indicator {
   display:flex; align-items:center; gap:5px; font-size:11px;
   color:var(--ui-muted, #7a7a9a); padding:4px 10px; border-radius:20px;
@@ -3266,6 +3478,9 @@ radial-gradient(circle at 50% 50%,rgba(255,183,77,.06) 0%,transparent 50%);}
                             <button class="account-menu-item" onclick="openFeedbackModal();closeAccountMenu();">
                                 <i class="ri-chat-quote-line"></i> Donner mon avis
                             </button>
+                            <button class="account-menu-item" id="account-admin-btn" onclick="openAdminDashboard();closeAccountMenu();" style="display:none;color:#fbbf24;">
+                                <i class="ri-dashboard-3-line"></i> Tableau de bord admin
+                            </button>
 
                             <div style="height:1px;background:#262626;"></div>
 
@@ -3329,6 +3544,31 @@ radial-gradient(circle at 50% 50%,rgba(255,183,77,.06) 0%,transparent 50%);}
                     <div class="stat-card"><div class="stat-number" id="stat-theme">Gold</div><div class="stat-label">Thème</div></div>
                 </div>
                 <div class="info-banner"><i class="ri-magic-line"></i> <strong>Astuce :</strong> Cliquez directement sur les photos dans l'aperçu pour les remplacer.</div>
+
+                <!-- ═══ MODÈLES PAR MÉTIER ═══ -->
+                <div class="section-label"><i class="ri-shapes-line"></i> Démarrage rapide<div class="section-label-line"></div></div>
+                <div class="input-group">
+                    <label>Choisir un modèle selon votre métier</label>
+                    <select id="inp-profession" class="input-control" onchange="applyProfessionTemplate(this.value)">
+                        <option value="">— Sélectionner un métier —</option>
+                        <option value="developpeur">Développeur / Ingénieur logiciel</option>
+                        <option value="designer">Designer graphique / UI-UX</option>
+                        <option value="photographe">Photographe</option>
+                        <option value="consultant">Consultant / Coach</option>
+                        <option value="redacteur">Rédacteur / Journaliste</option>
+                        <option value="architecte">Architecte / Décorateur</option>
+                        <option value="marketeur">Marketing digital</option>
+                        <option value="artiste">Artiste / Créatif</option>
+                        <option value="avocat">Avocat / Juriste</option>
+                        <option value="medecin">Santé / Médecine</option>
+                        <option value="etudiant">Étudiant / Jeune diplômé</option>
+                        <option value="entrepreneur">Entrepreneur / Fondateur</option>
+                    </select>
+                    <span style="font-size:10px;color:var(--ui-muted);display:block;margin-top:6px;">
+                        Remplit automatiquement le texte, les compétences, les projets et le thème. Vos photos et vos coordonnées ne sont pas touchées.
+                    </span>
+                </div>
+
                 <div class="section-label"><i class="ri-user-3-line"></i> Profil<div class="section-label-line"></div></div>
                 <div class="input-group"><label>Nom Complet</label><input type="text" id="inp-name" class="input-control" oninput="updateData('name',this.value)"></div>
                 <div class="input-group"><label>Titre / Spécialité</label><input type="text" id="inp-role" class="input-control" oninput="updateData('role',this.value)"></div>
@@ -3388,6 +3628,14 @@ radial-gradient(circle at 50% 50%,rgba(255,183,77,.06) 0%,transparent 50%);}
                 <div class="section-label" style="margin-top:18px;"><i class="ri-award-line"></i> Certifications<div class="section-label-line"></div></div>
                 <div id="editor-certifications-list"></div>
                 <button class="btn btn-ghost" onclick="addCertification()"><i class="ri-add-circle-line"></i> Ajouter une certification</button>
+
+                <!-- CHIFFRES CLÉS -->
+                <div class="section-label" style="margin-top:18px;"><i class="ri-bar-chart-box-line"></i> Chiffres clés<div class="section-label-line"></div></div>
+                <div style="font-size:10px;color:var(--ui-muted);margin-bottom:8px;">
+                    Vos chiffres marquants (années d'expérience, projets livrés, clients…). Ils s'animeront en comptant à l'écran.
+                </div>
+                <div id="editor-stats-list"></div>
+                <button class="btn btn-ghost" onclick="addStat()"><i class="ri-add-circle-line"></i> Ajouter un chiffre</button>
             </div>
 
             <div id="tab-style" class="tab-pane">
@@ -3605,17 +3853,39 @@ radial-gradient(circle at 50% 50%,rgba(255,183,77,.06) 0%,transparent 50%);}
                     <i class="ri-information-line"></i> Un menu de navigation apparaîtra sur votre portfolio avec les sections : Accueil, Compétences, Projets, Expériences, Contact.
             </div>
 
+                <!-- ═══ EFFETS VISUELS AVANCÉS ═══ -->
+                <div class="section-label" style="margin-top:18px;"><i class="ri-sparkling-2-line"></i> Effets visuels<div class="section-label-line"></div></div>
+                <div class="input-group" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                    <div>
+                        <label style="margin:0;font-size:12px;font-weight:700;display:block;">Curseur lumineux</label>
+                        <span style="font-size:10px;color:var(--ui-muted);">Un halo suit la souris des visiteurs</span>
+                    </div>
+                    <label class="toggle-switch"><input type="checkbox" id="toggle-cursorglow" onchange="toggleCursorGlow(this.checked)"><span class="toggle-thumb"></span></label>
+                </div>
+                <div class="input-group" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                    <div>
+                        <label style="margin:0;font-size:12px;font-weight:700;display:block;">Effet parallaxe</label>
+                        <span style="font-size:10px;color:var(--ui-muted);">Les sections défilent en profondeur</span>
+                    </div>
+                    <label class="toggle-switch"><input type="checkbox" id="toggle-parallax" onchange="toggleParallax(this.checked)"><span class="toggle-thumb"></span></label>
+                </div>
+
         </div>
     </aside>
 
     <main class="preview-wrapper">
         <div class="preview-bg-pattern"></div>
-        <div class="browser-mockup">
+        <div class="browser-mockup" id="browser-mockup">
             <div class="browser-header">
                 <div class="browser-dot" style="background:#ff5f56;"></div>
                 <div class="browser-dot" style="background:#ffbd2e;"></div>
                 <div class="browser-dot" style="background:#27c93f;"></div>
                 <div class="browser-url-bar">portfolio.studio/preview</div>
+                <div id="device-preview-switch">
+                    <button type="button" class="device-btn device-btn-active" data-device="desktop" onclick="setPreviewDevice('desktop')" title="Aperçu ordinateur"><i class="ri-computer-line"></i></button>
+                    <button type="button" class="device-btn" data-device="tablet" onclick="setPreviewDevice('tablet')" title="Aperçu tablette"><i class="ri-tablet-line"></i></button>
+                    <button type="button" class="device-btn" data-device="mobile" onclick="setPreviewDevice('mobile')" title="Aperçu mobile"><i class="ri-smartphone-line"></i></button>
+                </div>
             </div>
             <div class="portfolio-viewport theme-luxury layout-classic anim-blur" id="portfolio-viewport"></div>
         </div>
@@ -4069,6 +4339,7 @@ const state={
     showSkills:true,showSocials:true,profileShape:'portrait',
     experiences:[],
     certifications:[],
+    stats:[],
     booking:{enabled:false,title:'Réserver un créneau',desc:'Choisissez un horaire pour discuter de votre projet.',link:'',phone:''},
     chat:{enabled:false,platform:'whatsapp',link:'',welcomeMsg:'Bonjour ! Comment puis-je vous aider ?'},
     multilang:{enabled:false,langs:['fr','en']},
@@ -4077,7 +4348,9 @@ const state={
     projects:[],
     custom:{font:"'DM Sans',sans-serif",radius:'16px',heroDir:'row',bg:'#ffffff',text:'#111111',accent:'#6366f1',card:'#f3f4f6',bgImage:'',bgAnim:'none',overlayOpacity:60,frameColor:'#6366f1',frameSize:'4px',frameStyle:'solid'},
     footer:{enabled:false,copyright:'',email:'',location:''},
-    multiPage:false
+    multiPage:false,
+    cursorGlow:false,
+    parallax:false
 };
 
 // Instantané figé des animations de section d'origine — sert
@@ -4397,7 +4670,14 @@ let scrollObserver=null,scrollResetObserver=null,activeImageContext={type:null,i
 
 function render(){
     const vp=document.getElementById('portfolio-viewport');
+    // Le mode d'aperçu par appareil doit survivre au re-rendu :
+    // render() réécrit toutes les classes du viewport, ce qui
+    // effacerait sinon le mode mobile/tablette à chaque modification.
+    const keptDevice = ['device-desktop','device-tablet','device-mobile']
+        .find(function(c){ return vp.classList.contains(c); });
     vp.className=`portfolio-viewport theme-${state.activeTheme} layout-${state.activeLayout} anim-${state.activeAnim}`;
+    if(keptDevice) vp.classList.add(keptDevice);
+    if(state.parallax) vp.classList.add('pf-parallax-on');
     if(state.activeTheme==='custom'||state.activeLayout==='custom'){
         vp.style.setProperty('--pf-font',state.custom.font);vp.style.setProperty('--pf-radius',state.custom.radius);
         vp.style.setProperty('--pf-hero-dir',state.custom.heroDir);vp.style.setProperty('--pf-bg',state.custom.bg);
@@ -4567,6 +4847,20 @@ function render(){
     })() : '';
 
     const skillsH=state.showSkills&&state.skills.length>0?`<div class="pf-skills-section anim-el"><h3>Compétences</h3><div class="pf-skills-grid">${state.skills.map(s=>`<span class="pf-skill-chip">${s}</span>`).join('')}</div></div>`:'';
+
+    // Chiffres clés — la valeur cible est portée en attribut pour
+    // que l'animation de comptage puisse la lire sans la recalculer.
+    const statsH = (state.stats && state.stats.length > 0)
+        ? `<div class="pf-stats-section anim-el"><div class="pf-stats-grid">${
+            state.stats.map(function(s){
+                const num = parseFloat(String(s.value).replace(/[^0-9.]/g,'')) || 0;
+                return `<div class="pf-stat-item">
+                    <div class="pf-stat-value"><span class="pf-stat-num" data-target="${num}">0</span><span class="pf-stat-suffix">${s.suffix||''}</span></div>
+                    <div class="pf-stat-label">${s.label||''}</div>
+                </div>`;
+            }).join('')
+          }</div></div>`
+        : '';
     const projH=state.projects.map((p,i)=>{
         const hasLink = p.link && p.link.trim() !== '';
         const linkAttrs = hasLink ? ` href="${p.link}" target="_blank" rel="noopener noreferrer"` : '';
@@ -4575,12 +4869,15 @@ function render(){
     }).join('');
     const cvButtonH = (typeof cvData !== 'undefined' && cvData) ? `<a id="pf-cv-download-btn" href="${cvData}" download="CV_${(state.data.name||'Portfolio').replace(/\s+/g,'_')}.pdf" class="pf-cv-btn" onclick="event.stopPropagation();"><i class="ri-file-pdf-2-fill"></i> Mon CV</a>` : '';
     vp.innerHTML=`
+<div id="pf-read-progress"><div id="pf-read-progress-fill"></div></div>
+${state.cursorGlow ? '<div id="pf-cursor-glow"></div>' : ''}
 <div class="pf-container" style="padding:${state.spacing}px 40px;">
 ${state.multiPage ? buildMultiPageNav() : ''}
 <div id="pf-sec-hero" data-page="pf-sec-hero" class="pf-section-page">
 <section class="pf-hero"><div class="pf-hero-content anim-el"><span class="pf-role">${state.data.role}</span><h1 class="pf-name">${state.data.name}</h1><p class="pf-bio">${state.data.bio}</p><a href="${ctaHref}" class="pf-contact-btn" ${state.data.ctaType==='whatsapp'||state.data.ctaType==='email'?'target="_blank"':''}>${state.data.cta||'Contact'}</a>${cvButtonH}${socialsH}</div><div class="pf-hero-img-wrap anim-el"><div class="editable-img-wrapper profile-wrap" onclick="openCanvasImagePicker('profile')" style="${shapeStyles[state.profileShape]||''}"><img src="${state.data.profileImg}" class="pf-profile-img" style="${imgStyles[state.profileShape]||''}"></div></div></section>
 </div>
 <div id="pf-sec-skills" data-page="pf-sec-skills" class="pf-section-page">${skillsH}</div>
+<div id="pf-sec-stats" data-page="pf-sec-stats" class="pf-section-page">${statsH}</div>
 <div id="pf-sec-exp" data-page="pf-sec-exp" class="pf-section-page">${expH}</div>
 <div id="pf-sec-cert" data-page="pf-sec-cert" class="pf-section-page">${certH}</div>
 <div id="pf-sec-booking-w" data-page="pf-sec-booking" class="pf-section-page">${bookingH}</div>
@@ -4599,6 +4896,9 @@ ${buildEditorSignatureHTML()}
     if(typeof inlineToolbar !== 'undefined' && inlineToolbar) inlineToolbar.style.display = 'none';
     bindScrollAnimations();updateStats();
     if(typeof initInlineTextEdit==='function') initInlineTextEdit();
+    if(typeof initReadProgress==='function') initReadProgress();
+    if(typeof initVisualEffects==='function') initVisualEffects();
+    if(typeof initCounters==='function') initCounters();
     if(typeof updatePhotoAnimBtn==='function') updatePhotoAnimBtn();
     // Multi-pages: afficher seulement la section active
     if(state.multiPage && typeof showOnlySection==='function'){
@@ -4798,6 +5098,13 @@ function getAnimVisibleCSS(){
 }
 
 function initEditor(){
+    // Les nouveaux interrupteurs d'effets reflètent l'état restauré
+    // (brouillon local ou portfolio chargé depuis le cloud).
+    var tgGlow = document.getElementById('toggle-cursorglow');
+    if(tgGlow) tgGlow.checked = !!state.cursorGlow;
+    var tgPara = document.getElementById('toggle-parallax');
+    if(tgPara) tgPara.checked = !!state.parallax;
+
     document.getElementById('inp-name').value=state.data.name;
     document.getElementById('inp-role').value=state.data.role;
     document.getElementById('inp-bio').value=state.data.bio;
@@ -4815,7 +5122,7 @@ function initEditor(){
         ${renderAnimCards(simpleAnims)}
         <div style="grid-column:1/-1;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:#f59e0b;padding:8px 0 6px;border-bottom:1px solid var(--ui-border);margin-bottom:4px;margin-top:4px;">🚀 Animations Avancées</div>
         ${renderAnimCards(advAnims)}`;
-    renderEditorProjects();renderSkillTags();renderExperiences();renderCertifications();renderSectionAnims();
+    renderEditorProjects();renderSkillTags();renderExperiences();renderCertifications();renderStatsEditor();renderSectionAnims();
 }
 
 function renderEditorProjects(){
@@ -4840,6 +5147,17 @@ function toggleMultiPage(val){
     state.multiPage = val;
     var info = document.getElementById('multipage-info');
     if(info) info.style.display = val ? 'block' : 'none';
+    render();
+}
+
+// ── EFFETS VISUELS AVANCÉS ────────────────────────────────
+function toggleCursorGlow(val){
+    state.cursorGlow = val;
+    render();
+}
+
+function toggleParallax(val){
+    state.parallax = val;
     render();
 }
 
@@ -5230,6 +5548,208 @@ document.addEventListener('click', function(e){
 });
 
 function updateStats(){document.getElementById('stat-projects').textContent=state.projects.length;document.getElementById('stat-skills').textContent=state.skills.length;const t=themeCatalogData.find(t=>t.id===state.activeTheme);document.getElementById('stat-theme').textContent=t?t.name.split(' ')[0]:state.activeTheme;}
+// ── MODÈLES PAR MÉTIER ────────────────────────────────────
+const PROFESSION_TEMPLATES = {
+    developpeur:{
+        role:'Développeur Full-Stack',
+        bio:"Je conçois et développe des applications web performantes, de l'architecture back-end jusqu'à l'interface utilisateur. Passionné par le code propre et les solutions durables.",
+        cta:'Discutons de votre projet',
+        sectionTitle:'Projets & Réalisations',
+        skills:['JavaScript','React','Node.js','Python','SQL','Git','API REST','Docker'],
+        projects:[
+            {title:'Plateforme e-commerce',desc:"Application complète avec paiement en ligne, gestion de stock et tableau de bord vendeur."},
+            {title:'API de gestion',desc:"Service back-end sécurisé traitant plusieurs milliers de requêtes par jour."}
+        ],
+        theme:'cyber', layout:'classic'
+    },
+    designer:{
+        role:'Designer UI/UX',
+        bio:"Je crée des interfaces claires et des identités visuelles qui racontent une histoire. Mon approche part toujours de l'utilisateur pour aboutir à un design qui sert vraiment.",
+        cta:'Voir mes créations',
+        sectionTitle:'Sélection de Travaux',
+        skills:['Figma','Adobe XD','Illustrator','Photoshop','Design System','Prototypage','Identité visuelle'],
+        projects:[
+            {title:'Refonte application mobile',desc:"Repensée de zéro autour des usages réels, avec une navigation simplifiée."},
+            {title:'Identité de marque',desc:"Logo, charte graphique et déclinaisons pour une marque en lancement."}
+        ],
+        theme:'bento', layout:'magazine'
+    },
+    photographe:{
+        role:'Photographe Professionnel',
+        bio:"Je capture des instants qui durent. Portrait, événement ou projet éditorial — chaque série est pensée pour raconter quelque chose de juste.",
+        cta:'Réserver une séance',
+        sectionTitle:'Portfolio Photo',
+        skills:['Portrait','Événementiel','Retouche','Lightroom','Photoshop','Direction artistique','Studio'],
+        projects:[
+            {title:'Série portraits',desc:"Travail en lumière naturelle, réalisé sur plusieurs mois."},
+            {title:'Reportage événementiel',desc:"Couverture complète d'un événement, de la préparation au montage final."}
+        ],
+        theme:'noir', layout:'fullhero'
+    },
+    consultant:{
+        role:'Consultant Stratégie',
+        bio:"J'accompagne les organisations dans leurs décisions structurantes. Diagnostic, plan d'action, mise en œuvre — avec des résultats mesurables à chaque étape.",
+        cta:'Prendre rendez-vous',
+        sectionTitle:'Missions & Résultats',
+        skills:['Stratégie','Analyse','Gestion de projet','Formation','Négociation','Reporting'],
+        projects:[
+            {title:'Restructuration commerciale',desc:"Refonte de l'organisation des ventes et accompagnement des équipes."},
+            {title:'Plan de croissance',desc:"Étude de marché et feuille de route sur trois ans."}
+        ],
+        theme:'corpBlue', layout:'classic'
+    },
+    redacteur:{
+        role:'Rédacteur & Journaliste',
+        bio:"J'écris pour être lu et compris. Articles de fond, contenus de marque ou enquêtes — je travaille la clarté autant que le style.",
+        cta:'Me confier un sujet',
+        sectionTitle:'Publications',
+        skills:['Rédaction web','SEO','Enquête','Interview','Relecture','Storytelling'],
+        projects:[
+            {title:'Série d\'enquêtes',desc:"Travail d'investigation publié en plusieurs volets."},
+            {title:'Contenus de marque',desc:"Ligne éditoriale et production régulière pour une entreprise."}
+        ],
+        theme:'editorial', layout:'story'
+    },
+    architecte:{
+        role:'Architecte d\'Intérieur',
+        bio:"Je transforme les espaces en lieux de vie cohérents. De la première esquisse au chantier, j'accompagne chaque projet avec exigence.",
+        cta:'Parlons de votre espace',
+        sectionTitle:'Réalisations',
+        skills:['AutoCAD','SketchUp','3D','Aménagement','Suivi de chantier','Matériaux'],
+        projects:[
+            {title:'Rénovation appartement',desc:"Réagencement complet pour gagner en lumière et en circulation."},
+            {title:'Aménagement bureaux',desc:"Espace de travail conçu autour du confort et de la collaboration."}
+        ],
+        theme:'marble', layout:'asymmetric'
+    },
+    marketeur:{
+        role:'Spécialiste Marketing Digital',
+        bio:"Je construis des stratégies d'acquisition qui transforment l'attention en résultats. Publicité, contenu, données — tout est pensé pour la performance.",
+        cta:'Booster ma visibilité',
+        sectionTitle:'Campagnes & Résultats',
+        skills:['SEO','Google Ads','Meta Ads','Analytics','Email marketing','Copywriting','Réseaux sociaux'],
+        projects:[
+            {title:'Campagne d\'acquisition',desc:"Stratégie multicanale ayant nettement augmenté le volume de prospects."},
+            {title:'Refonte SEO',desc:"Travail technique et éditorial pour améliorer la visibilité organique."}
+        ],
+        theme:'sunset', layout:'cards3d'
+    },
+    artiste:{
+        role:'Artiste Plasticien',
+        bio:"Mon travail explore la matière et la couleur comme langage. Chaque pièce est une recherche, une tentative de dire autrement.",
+        cta:'Découvrir mon univers',
+        sectionTitle:'Œuvres',
+        skills:['Peinture','Illustration','Techniques mixtes','Exposition','Sculpture'],
+        projects:[
+            {title:'Série récente',desc:"Ensemble de pièces travaillées autour d'un même thème."},
+            {title:'Exposition collective',desc:"Participation à un accrochage réunissant plusieurs artistes."}
+        ],
+        theme:'aurora', layout:'glass'
+    },
+    avocat:{
+        role:'Avocat au Barreau',
+        bio:"Je défends vos intérêts avec rigueur et clarté. Conseil, rédaction d'actes ou contentieux — vous êtes accompagné à chaque étape de la procédure.",
+        cta:'Demander une consultation',
+        sectionTitle:'Domaines d\'Intervention',
+        skills:['Droit des affaires','Droit social','Contentieux','Rédaction d\'actes','Médiation'],
+        projects:[
+            {title:'Conseil aux entreprises',desc:"Accompagnement juridique régulier de structures de toutes tailles."},
+            {title:'Défense contentieuse',desc:"Représentation devant les juridictions compétentes."}
+        ],
+        theme:'lawyer', layout:'classic'
+    },
+    medecin:{
+        role:'Professionnel de Santé',
+        bio:"Je place l'écoute au cœur de ma pratique. Chaque patient est unique, et mon rôle est de proposer un accompagnement adapté à sa situation.",
+        cta:'Prendre rendez-vous',
+        sectionTitle:'Domaines de Pratique',
+        skills:['Consultation','Diagnostic','Suivi patient','Prévention','Éducation thérapeutique'],
+        projects:[
+            {title:'Consultation générale',desc:"Prise en charge globale, du diagnostic au suivi."},
+            {title:'Actions de prévention',desc:"Interventions et sensibilisation auprès du public."}
+        ],
+        theme:'eco', layout:'centered'
+    },
+    etudiant:{
+        role:'Étudiant en recherche d\'opportunité',
+        bio:"Curieux et motivé, je cherche à mettre en pratique ce que j'apprends. Mes projets académiques et personnels reflètent mon envie de progresser vite.",
+        cta:'Me contacter',
+        sectionTitle:'Projets Académiques',
+        skills:['Travail en équipe','Recherche','Analyse','Communication','Adaptabilité'],
+        projects:[
+            {title:'Projet de fin d\'études',desc:"Travail de recherche mené sur plusieurs mois, avec restitution."},
+            {title:'Projet personnel',desc:"Initiative menée en autonomie pour approfondir un sujet qui me passionne."}
+        ],
+        theme:'pastel', layout:'centered'
+    },
+    entrepreneur:{
+        role:'Fondateur & Entrepreneur',
+        bio:"Je construis des projets qui répondent à de vrais besoins. De l'idée à l'exécution, j'avance vite tout en gardant le cap sur l'essentiel.",
+        cta:'Échangeons',
+        sectionTitle:'Projets & Ventures',
+        skills:['Stratégie','Levée de fonds','Management','Produit','Développement commercial'],
+        projects:[
+            {title:'Lancement de produit',desc:"De la conception initiale à la mise sur le marché."},
+            {title:'Développement d\'activité',desc:"Croissance structurée avec constitution d'une équipe."}
+        ],
+        theme:'agency', layout:'bold'
+    }
+};
+
+// Applique un modèle métier. Remplace uniquement les contenus
+// textuels, compétences, projets et l'habillage visuel — la photo
+// de profil, le nom et les coordonnées de l'utilisateur ne sont
+// jamais touchés, car ils lui appartiennent.
+function applyProfessionTemplate(key){
+    if(!key) return;
+    const tpl = PROFESSION_TEMPLATES[key];
+    if(!tpl) return;
+
+    const hasContent = (state.projects && state.projects.length > 0)
+        || (state.skills && state.skills.length > 0);
+
+    if(hasContent){
+        const ok = window.confirm(
+            "Appliquer le modèle « " + (document.getElementById('inp-profession').selectedOptions[0].text) + " » ?\n\n"
+            + "Vos compétences et projets actuels seront remplacés par ceux du modèle.\n"
+            + "Votre nom, votre photo et vos coordonnées ne seront pas modifiés."
+        );
+        if(!ok){
+            document.getElementById('inp-profession').value = '';
+            return;
+        }
+    }
+
+    state.data.role = tpl.role;
+    state.data.bio = tpl.bio;
+    state.data.cta = tpl.cta;
+    state.data.sectionTitle = tpl.sectionTitle;
+
+    state.skills = tpl.skills.slice();
+
+    state.projects = tpl.projects.map(function(p, i){
+        return {
+            id: Date.now() + i,
+            title: p.title,
+            desc: p.desc,
+            img: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80',
+            link: ''
+        };
+    });
+
+    state.activeTheme = tpl.theme;
+    state.activeLayout = tpl.layout;
+
+    initEditor();
+    if(typeof renderEditorProjects === 'function') renderEditorProjects();
+    if(typeof renderSkillTags === 'function') renderSkillTags();
+    render();
+
+    if(typeof showToast === 'function'){
+        showToast('✨ Modèle appliqué — personnalisez maintenant le contenu.');
+    }
+}
+
 function updateData(k,v){state.data[k]=v;render();}
 function updateCustom(k,v){state.custom[k]=v;render();}
 function updateProjectData(id,f,v){const p=state.projects.find(p=>p.id===id);if(p){p[f]=v;renderEditorProjects();render();}}
@@ -5321,6 +5841,119 @@ window.onclick=function(e){
 };
 
 /* BOUTON DARK MODE — synchronise header + sidebar */
+// ── COMPTEURS ANIMÉS ──────────────────────────────────────
+function animateCounter(el){
+    const target = parseFloat(el.getAttribute('data-target')) || 0;
+    const duration = 1400;
+    const start = performance.now();
+    const isInt = Number.isInteger(target);
+    function step(now){
+        const p = Math.min((now - start) / duration, 1);
+        // Décélération douce en fin de comptage
+        const eased = 1 - Math.pow(1 - p, 3);
+        const val = target * eased;
+        el.textContent = isInt ? Math.round(val) : val.toFixed(1);
+        if(p < 1) requestAnimationFrame(step);
+        else el.textContent = isInt ? target : target.toFixed(1);
+    }
+    requestAnimationFrame(step);
+}
+
+function initCounters(){
+    const vp = document.getElementById('portfolio-viewport');
+    if(!vp) return;
+    const nums = vp.querySelectorAll('.pf-stat-num');
+    if(!nums.length) return;
+
+    if(window.__statObserver) window.__statObserver.disconnect();
+    window.__statObserver = new IntersectionObserver(function(entries){
+        entries.forEach(function(e){
+            if(e.isIntersecting && !e.target.dataset.counted){
+                e.target.dataset.counted = '1';
+                animateCounter(e.target);
+            } else if(!e.isIntersecting){
+                // Réinitialise pour que le comptage rejoue au
+                // prochain passage, comme les autres animations.
+                delete e.target.dataset.counted;
+                e.target.textContent = '0';
+            }
+        });
+    },{ root:vp, threshold:0.4 });
+
+    nums.forEach(function(n){ window.__statObserver.observe(n); });
+}
+
+// ── EFFETS VISUELS — suivi souris et parallaxe (aperçu) ───
+function initVisualEffects(){
+    const vp = document.getElementById('portfolio-viewport');
+    if(!vp) return;
+
+    // Curseur lumineux : le halo suit la souris dans l'aperçu.
+    const glow = document.getElementById('pf-cursor-glow');
+    if(glow){
+        const moveGlow = function(e){
+            const r = vp.getBoundingClientRect();
+            glow.style.transform = 'translate(' + (e.clientX - r.left) + 'px,' + (e.clientY - r.top) + 'px)';
+        };
+        vp.removeEventListener('mousemove', moveGlow);
+        vp.addEventListener('mousemove', moveGlow, { passive:true });
+    }
+
+    // Parallaxe : chaque section se décale légèrement selon sa
+    // position à l'écran, créant une sensation de profondeur.
+    if(vp.classList.contains('pf-parallax-on')){
+        const sections = vp.querySelectorAll('.pf-section-page');
+        const applyParallax = function(){
+            const vpH = vp.clientHeight || 1;
+            sections.forEach(function(sec, i){
+                const r = sec.getBoundingClientRect();
+                const vr = vp.getBoundingClientRect();
+                const rel = (r.top - vr.top) / vpH;
+                const depth = (i % 2 === 0) ? 14 : 22;
+                sec.style.transform = 'translateY(' + (rel * depth).toFixed(1) + 'px)';
+            });
+        };
+        vp.removeEventListener('scroll', applyParallax);
+        vp.addEventListener('scroll', applyParallax, { passive:true });
+        applyParallax();
+    }
+}
+
+// ── BARRE DE PROGRESSION DE LECTURE (aperçu éditeur) ──────
+function initReadProgress(){
+    const vp = document.getElementById('portfolio-viewport');
+    if(!vp) return;
+    const update = function(){
+        const fill = document.getElementById('pf-read-progress-fill');
+        if(!fill) return;
+        const max = vp.scrollHeight - vp.clientHeight;
+        const pct = max > 0 ? (vp.scrollTop / max) * 100 : 0;
+        fill.style.width = Math.min(100, Math.max(0, pct)) + '%';
+    };
+    vp.removeEventListener('scroll', update);
+    vp.addEventListener('scroll', update, { passive:true });
+    update();
+}
+
+// ── APERÇU PAR APPAREIL ───────────────────────────────────
+function setPreviewDevice(device){
+    const mockup = document.getElementById('browser-mockup');
+    const vp = document.getElementById('portfolio-viewport');
+    if(!mockup) return;
+
+    ['device-desktop','device-tablet','device-mobile'].forEach(function(c){
+        mockup.classList.remove(c);
+        if(vp) vp.classList.remove(c);
+    });
+
+    mockup.classList.add('device-'+device);
+    if(vp) vp.classList.add('device-'+device);
+
+    document.querySelectorAll('.device-btn').forEach(function(btn){
+        btn.classList.toggle('device-btn-active', btn.getAttribute('data-device') === device);
+    });
+}
+
 function toggleEditorTheme(){
     document.body.classList.toggle('editor-dark-mode');
     const isDark=document.body.classList.contains('editor-dark-mode');
@@ -5843,6 +6476,82 @@ document.querySelectorAll('.anim-el').forEach(function(el){
     obsReset.observe(el);
 });
 
+// Barre de progression de lecture — suit le défilement de la page.
+(function(){
+    var fill = document.getElementById('pf-read-progress-fill');
+    if(!fill) return;
+    function update(){
+        var doc = document.documentElement;
+        var max = doc.scrollHeight - doc.clientHeight;
+        var pct = max > 0 ? (doc.scrollTop / max) * 100 : 0;
+        fill.style.width = Math.min(100, Math.max(0, pct)) + '%';
+    }
+    window.addEventListener('scroll', update, { passive:true });
+    window.addEventListener('resize', update, { passive:true });
+    update();
+})();
+
+// Compteurs animés — comptent à l'entrée dans l'écran.
+(function(){
+    var nums = document.querySelectorAll('.pf-stat-num');
+    if(!nums.length) return;
+    function animate(el){
+        var target = parseFloat(el.getAttribute('data-target')) || 0;
+        var duration = 1400, start = performance.now();
+        var isInt = Number.isInteger(target);
+        function step(now){
+            var p = Math.min((now - start)/duration, 1);
+            var eased = 1 - Math.pow(1-p, 3);
+            var val = target * eased;
+            el.textContent = isInt ? Math.round(val) : val.toFixed(1);
+            if(p < 1) requestAnimationFrame(step);
+            else el.textContent = isInt ? target : target.toFixed(1);
+        }
+        requestAnimationFrame(step);
+    }
+    var so = new IntersectionObserver(function(entries){
+        entries.forEach(function(e){
+            if(e.isIntersecting && !e.target.dataset.counted){
+                e.target.dataset.counted = '1';
+                animate(e.target);
+            } else if(!e.isIntersecting){
+                delete e.target.dataset.counted;
+                e.target.textContent = '0';
+            }
+        });
+    },{ threshold:0.4 });
+    for(var i=0;i<nums.length;i++){ so.observe(nums[i]); }
+})();
+
+// Curseur lumineux — le halo suit la souris du visiteur.
+(function(){
+    var glow = document.getElementById('pf-cursor-glow');
+    if(!glow) return;
+    window.addEventListener('mousemove', function(e){
+        glow.style.transform = 'translate(' + e.clientX + 'px,' + e.clientY + 'px)';
+    }, { passive:true });
+})();
+
+// Parallaxe — les sections se décalent légèrement au défilement.
+(function(){
+    var wrap = document.querySelector('.pf-parallax-on');
+    if(!wrap) return;
+    var sections = wrap.querySelectorAll('.pf-section-page');
+    if(!sections.length) return;
+    function apply(){
+        var h = window.innerHeight || 1;
+        for(var i=0;i<sections.length;i++){
+            var r = sections[i].getBoundingClientRect();
+            var rel = r.top / h;
+            var depth = (i % 2 === 0) ? 14 : 22;
+            sections[i].style.transform = 'translateY(' + (rel * depth).toFixed(1) + 'px)';
+        }
+    }
+    window.addEventListener('scroll', apply, { passive:true });
+    window.addEventListener('resize', apply, { passive:true });
+    apply();
+})();
+
 // Compteur de vues GLOBAL — partagé entre tous les visiteurs (via CountAPI, gratuit, sans backend)
 (function(){
     const el = document.getElementById('pf-view-count');
@@ -6331,6 +7040,44 @@ function renderExperiences(){
 }
 
 // ── CERTIFICATIONS ──────────────────────────────────
+// ── CHIFFRES CLÉS ─────────────────────────────────────────
+function addStat(){
+    if(!state.stats) state.stats = [];
+    if(state.stats.length >= 6){
+        if(typeof showToast==='function') showToast('6 chiffres maximum — au-delà, l\'effet se dilue.');
+        return;
+    }
+    state.stats.push({ id:Date.now(), value:'10', suffix:'+', label:'Projets livrés' });
+    renderStatsEditor();
+    render();
+}
+
+function updateStatData(id, field, value){
+    const s = state.stats.find(function(x){ return x.id === id; });
+    if(s){ s[field] = value; render(); }
+}
+
+function deleteStat(id){
+    state.stats = state.stats.filter(function(x){ return x.id !== id; });
+    renderStatsEditor();
+    render();
+}
+
+function renderStatsEditor(){
+    const el = document.getElementById('editor-stats-list');
+    if(!el) return;
+    if(!state.stats) state.stats = [];
+    el.innerHTML = state.stats.map(function(s){
+        return '<div style="background:var(--ui-surface);border:1px solid var(--ui-border);border-radius:10px;padding:12px;margin-bottom:9px;">'
+            + '<div style="display:grid;grid-template-columns:80px 60px 1fr auto;gap:6px;align-items:center;">'
+            + '<input type="text" class="input-control" style="font-size:12px;" value="' + (s.value||'') + '" oninput="updateStatData(' + s.id + ',\'value\',this.value)" placeholder="10">'
+            + '<input type="text" class="input-control" style="font-size:12px;" value="' + (s.suffix||'') + '" oninput="updateStatData(' + s.id + ',\'suffix\',this.value)" placeholder="+">'
+            + '<input type="text" class="input-control" style="font-size:12px;" value="' + (s.label||'') + '" oninput="updateStatData(' + s.id + ',\'label\',this.value)" placeholder="Projets livrés">'
+            + '<button class="btn-icon" onclick="deleteStat(' + s.id + ')" title="Supprimer" style="width:28px;height:28px;font-size:13px;color:#ef4444;"><i class="ri-delete-bin-line"></i></button>'
+            + '</div></div>';
+    }).join('');
+}
+
 function addCertification(){
     state.certifications.push({id:Date.now(),name:'Nom de la certification',issuer:'Organisme',year:'',fileData:null,fileName:''});
     renderCertifications(); render();
@@ -6968,6 +7715,13 @@ function setAccountMenuGuestState() {
   if (savedBtn) savedBtn.style.display = 'none';
   if (historyBtn) historyBtn.style.display = 'none';
   if (sync) sync.style.display = 'none';
+
+  // L'entrée admin et ses données en cache disparaissent à la
+  // déconnexion — elles seront revérifiées auprès du serveur
+  // à la prochaine connexion.
+  const adminBtn = document.getElementById('account-admin-btn');
+  if (adminBtn) adminBtn.style.display = 'none';
+  window.__adminStatsCache = null;
 }
 
 function setAccountMenuConnectedState() {
@@ -7057,6 +7811,7 @@ async function loadUserProfile(user) {
   if (emailEl) emailEl.textContent = email;
 
   setAccountMenuConnectedState();
+  checkAdminAccess();
 
   // Un brouillon local présent signifie que le visiteur travaillait
   // déjà activement (connecté ou non) avant cette connexion — ce
@@ -7379,6 +8134,132 @@ function closeSavedPortfolios() {
 // ── AVIS UTILISATEUR ──────────────────────────────────────
 let feedbackCategory = 'avis';
 let feedbackRating = 0;
+
+// ── TABLEAU DE BORD ADMINISTRATEUR ────────────────────────
+function fmtMoney(n){
+    return (n||0).toLocaleString('fr-FR') + ' FCFA';
+}
+
+// Révèle l'entrée de menu si le serveur confirme que ce compte
+// est administrateur. Le simple masquage visuel ne protège rien :
+// la vraie protection est la vérification côté serveur à chaque
+// appel de admin-stats.
+async function checkAdminAccess(){
+    const btn = document.getElementById('account-admin-btn');
+    if(!btn || !supabaseClient || !currentUser) return;
+    try{
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if(!session || !session.access_token) return;
+
+        const res = await fetch(PAYMENT_API_BASE + '/admin-stats', {
+            method:'POST',
+            headers:{ 'Content-Type':'application/json', 'apikey': PAYMENT_ANON_KEY },
+            body: JSON.stringify({ accessToken: session.access_token })
+        });
+        if(res.ok){
+            btn.style.display = 'flex';
+            window.__adminStatsCache = await res.json();
+        }
+    } catch(err){
+        // Pas administrateur, ou service indisponible : l'entrée
+        // reste simplement masquée, sans gêner l'utilisation.
+    }
+}
+
+function openAdminDashboard(){
+    const modal = document.getElementById('admin-modal');
+    if(!modal) return;
+    modal.classList.add('open');
+    if(window.__adminStatsCache){
+        renderAdminStats(window.__adminStatsCache);
+    } else {
+        loadAdminStats();
+    }
+}
+
+function closeAdminDashboard(){
+    const modal = document.getElementById('admin-modal');
+    if(modal) modal.classList.remove('open');
+}
+
+async function loadAdminStats(){
+    const body = document.getElementById('admin-body');
+    if(!body) return;
+    body.innerHTML = '<div class="adm-empty">Chargement…</div>';
+
+    if(!supabaseClient || !currentUser){
+        body.innerHTML = '<div class="adm-empty">Connectez-vous pour accéder au tableau de bord.</div>';
+        return;
+    }
+
+    try{
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if(!session || !session.access_token) throw new Error('Session introuvable.');
+
+        const res = await fetch(PAYMENT_API_BASE + '/admin-stats', {
+            method:'POST',
+            headers:{ 'Content-Type':'application/json', 'apikey': PAYMENT_ANON_KEY },
+            body: JSON.stringify({ accessToken: session.access_token })
+        });
+        const data = await res.json();
+        if(!res.ok) throw new Error(data.error || 'Accès refusé.');
+
+        window.__adminStatsCache = data;
+        renderAdminStats(data);
+    } catch(err){
+        body.innerHTML = '<div class="adm-empty">' + (err.message || 'Impossible de charger les statistiques.') + '</div>';
+    }
+}
+
+function renderAdminStats(d){
+    const body = document.getElementById('admin-body');
+    if(!body || !d) return;
+
+    const catLabels = { avis:'Avis', suggestion:'Suggestion', probleme:'Souci', question:'Question' };
+
+    let html = '';
+
+    html += '<div class="adm-section-title">Activité</div><div class="adm-grid">';
+    html += '<div class="adm-card"><div class="adm-card-value">' + d.users.total + '</div><div class="adm-card-label">Comptes créés</div><div class="adm-card-sub">+' + d.users.week + ' cette semaine</div></div>';
+    html += '<div class="adm-card"><div class="adm-card-value">' + d.portfolios.total + '</div><div class="adm-card-label">Portfolios sauvegardés</div></div>';
+    html += '<div class="adm-card"><div class="adm-card-value">' + d.freeAccess.active + '</div><div class="adm-card-label">Accès gratuits actifs</div></div>';
+    html += '</div>';
+
+    html += '<div class="adm-section-title">Paiements</div><div class="adm-grid">';
+    html += '<div class="adm-card"><div class="adm-card-value">' + fmtMoney(d.payments.revenueMonth) + '</div><div class="adm-card-label">Ce mois-ci</div><div class="adm-card-sub">' + d.payments.paidMonth + ' paiement' + (d.payments.paidMonth > 1 ? 's' : '') + '</div></div>';
+    html += '<div class="adm-card"><div class="adm-card-value">' + fmtMoney(d.payments.revenueTotal) + '</div><div class="adm-card-label">Total encaissé</div><div class="adm-card-sub">' + d.payments.paidCount + ' au total</div></div>';
+    html += '<div class="adm-card"><div class="adm-card-value">' + d.payments.pending + '</div><div class="adm-card-label">En attente</div></div>';
+    html += '</div>';
+
+    html += '<div class="adm-section-title">Avis reçus';
+    if(d.feedback.unread > 0){
+        html += ' <span class="adm-fb-badge adm-unread" style="margin-left:6px;">' + d.feedback.unread + ' non lu' + (d.feedback.unread > 1 ? 's' : '') + '</span>';
+    }
+    html += '</div>';
+
+    if(d.feedback.recent && d.feedback.recent.length > 0){
+        d.feedback.recent.forEach(function(f){
+            const date = new Date(f.created_at).toLocaleDateString('fr-FR', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' });
+            const stars = f.rating ? ' · ' + '★'.repeat(f.rating) : '';
+            html += '<div class="adm-fb-item">'
+                + '<div class="adm-fb-top">'
+                + '<span class="adm-fb-email">' + f.email + '</span>'
+                + '<span class="adm-fb-badge' + (f.is_read ? '' : ' adm-unread') + '">' + (catLabels[f.category] || f.category) + '</span>'
+                + '</div>'
+                + '<div class="adm-fb-msg">' + (f.message.length > 180 ? f.message.substring(0,180) + '…' : f.message) + '</div>'
+                + '<div class="adm-fb-date">' + date + stars + '</div>'
+                + '</div>';
+        });
+        html += '<div style="font-size:10.5px;color:#52525b;margin-top:10px;text-align:center;">'
+              + d.feedback.total + ' avis au total — consultez-les tous dans Supabase → Table Editor → feedback</div>';
+    } else {
+        html += '<div class="adm-empty">Aucun avis pour le moment.</div>';
+    }
+
+    html += '<button onclick="loadAdminStats()" style="width:100%;margin-top:16px;padding:11px;background:#141414;color:#a1a1aa;border:1px solid #262626;border-radius:10px;font-size:12px;font-weight:600;cursor:pointer;">Actualiser</button>';
+
+    body.innerHTML = html;
+}
 
 function openFeedbackModal(){
   const modal = document.getElementById('feedback-modal');
@@ -7801,6 +8682,23 @@ function endTutorial(){
         style="padding:11px 28px;background:#1a1a1a;color:#f1f5f9;border:1px solid #333;border-radius:100px;font-size:12px;font-weight:700;cursor:pointer;">
         Fermer
       </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     TABLEAU DE BORD ADMINISTRATEUR — visible uniquement pour
+     le compte marqué 'permanent' dans free_access. L'accès est
+     vérifié côté serveur, pas seulement masqué visuellement.
+     ═══════════════════════════════════════════════════════ -->
+<div id="admin-modal" onclick="if(event.target===this)closeAdminDashboard()">
+  <div id="admin-card">
+    <div class="ph-head">
+      <span><i class="ri-dashboard-3-line" style="color:#fbbf24;"></i> Tableau de bord</span>
+      <button class="ph-close" onclick="closeAdminDashboard()">✕</button>
+    </div>
+    <div class="ph-body" id="admin-body" style="padding:20px;overflow-y:auto;">
+      <div style="text-align:center;padding:40px 20px;color:#71717a;font-size:13px;">Chargement…</div>
     </div>
   </div>
 </div>
