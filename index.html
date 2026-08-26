@@ -3032,6 +3032,55 @@ radial-gradient(circle at 50% 50%,rgba(255,183,77,.06) 0%,transparent 50%);}
 }
 .sp-load-btn:hover { opacity:.85; }
 
+/* ── MODAL AVIS UTILISATEUR ── */
+#feedback-modal {
+  display:none; position:fixed; inset:0; background:rgba(0,0,0,0.78);
+  z-index:99998; align-items:center; justify-content:center; padding:20px;
+  overflow-y:auto;
+}
+#feedback-modal.open { display:flex; }
+#feedback-card {
+  background:#0a0a0a; border:1px solid #262626;
+  border-radius:20px; width:100%; max-width:480px; max-height:88vh;
+  overflow-y:auto; display:flex; flex-direction:column;
+  animation:authIn .3s ease; margin:auto;
+}
+#feedback-card .ph-head {
+  padding:18px 22px; font-size:15px; font-weight:700; color:#f1f5f9;
+  border-bottom:1px solid #262626; display:flex;
+  align-items:center; justify-content:space-between; flex-shrink:0;
+}
+#feedback-card .ph-close {
+  background:transparent; border:none; cursor:pointer; color:#71717a;
+  font-size:20px; width:32px; height:32px; border-radius:8px;
+  display:flex; align-items:center; justify-content:center; transition:.15s;
+}
+#feedback-card .ph-close:hover { background:#1a1a1a; color:#f1f5f9; }
+
+.fb-cat-btn {
+  padding:7px 14px; border-radius:100px; font-size:11.5px; font-weight:600;
+  background:#141414; color:#a1a1aa; border:1px solid #262626;
+  cursor:pointer; transition:.18s; font-family:'DM Sans',sans-serif;
+}
+.fb-cat-btn:hover { border-color:#3f3f46; color:#f1f5f9; }
+.fb-cat-btn.fb-cat-active {
+  background:rgba(99,102,241,.15); border-color:#6366f1; color:#a5b4fc;
+}
+
+.fb-star {
+  font-size:24px; color:#3f3f46; cursor:pointer;
+  transition:color .15s, transform .15s;
+  user-select:none; line-height:1;
+}
+.fb-star:hover { transform:scale(1.15); }
+.fb-star.fb-star-on { color:#fbbf24; }
+
+#fb-email:focus, #fb-message:focus {
+  outline:none; border-color:#6366f1;
+}
+#fb-submit-btn:hover { opacity:.9; transform:translateY(-1px); }
+#fb-submit-btn:disabled { opacity:.55; cursor:not-allowed; transform:none; }
+
 #sync-indicator {
   display:flex; align-items:center; gap:5px; font-size:11px;
   color:var(--ui-muted, #7a7a9a); padding:4px 10px; border-radius:20px;
@@ -3213,6 +3262,9 @@ radial-gradient(circle at 50% 50%,rgba(255,183,77,.06) 0%,transparent 50%);}
                             </button>
                             <button class="account-menu-item" id="account-saved-portfolios-btn" onclick="openSavedPortfolios();closeAccountMenu();" style="display:none;">
                                 <i class="ri-folder-line"></i> Mes portfolios sauvegardés
+                            </button>
+                            <button class="account-menu-item" onclick="openFeedbackModal();closeAccountMenu();">
+                                <i class="ri-chat-quote-line"></i> Donner mon avis
                             </button>
 
                             <div style="height:1px;background:#262626;"></div>
@@ -7324,6 +7376,121 @@ function closeSavedPortfolios() {
   if (modal) modal.classList.remove('open');
 }
 
+// ── AVIS UTILISATEUR ──────────────────────────────────────
+let feedbackCategory = 'avis';
+let feedbackRating = 0;
+
+function openFeedbackModal(){
+  const modal = document.getElementById('feedback-modal');
+  if (!modal) return;
+
+  // Réinitialise le formulaire à chaque ouverture
+  const form = document.getElementById('feedback-form-body');
+  const thanks = document.getElementById('feedback-thanks');
+  if (form) form.style.display = 'block';
+  if (thanks) thanks.style.display = 'none';
+
+  const err = document.getElementById('fb-error');
+  if (err) err.style.display = 'none';
+
+  const msg = document.getElementById('fb-message');
+  if (msg) msg.value = '';
+
+  feedbackCategory = 'avis';
+  selectFeedbackCategory('avis');
+  setFeedbackRating(0);
+
+  // Pré-remplit l'email si l'utilisateur est déjà connecté
+  const emailField = document.getElementById('fb-email');
+  if (emailField) {
+    emailField.value = (currentUser && currentUser.email) ? currentUser.email : '';
+  }
+
+  modal.classList.add('open');
+}
+
+function closeFeedbackModal(){
+  const modal = document.getElementById('feedback-modal');
+  if (modal) modal.classList.remove('open');
+}
+
+function selectFeedbackCategory(cat){
+  feedbackCategory = cat;
+  document.querySelectorAll('.fb-cat-btn').forEach(function(btn){
+    btn.classList.toggle('fb-cat-active', btn.getAttribute('data-cat') === cat);
+  });
+}
+
+function setFeedbackRating(val){
+  feedbackRating = val;
+  document.querySelectorAll('.fb-star').forEach(function(star){
+    const v = parseInt(star.getAttribute('data-val'), 10);
+    star.classList.toggle('fb-star-on', v <= val);
+  });
+}
+
+function showFeedbackError(message){
+  const err = document.getElementById('fb-error');
+  if (err) {
+    err.textContent = message;
+    err.style.display = 'block';
+  }
+}
+
+async function submitFeedback(){
+  const btn = document.getElementById('fb-submit-btn');
+  const err = document.getElementById('fb-error');
+  if (err) err.style.display = 'none';
+
+  const emailField = document.getElementById('fb-email');
+  const msgField = document.getElementById('fb-message');
+  const email = emailField ? emailField.value.trim() : '';
+  const message = msgField ? msgField.value.trim() : '';
+
+  if (!email || !email.includes('@')) {
+    showFeedbackError('Veuillez saisir une adresse email valide.');
+    return;
+  }
+  if (message.length < 5) {
+    showFeedbackError('Votre message est un peu court — dites-nous en un peu plus.');
+    return;
+  }
+
+  if (btn) { btn.disabled = true; btn.textContent = 'Envoi en cours…'; }
+
+  try {
+    const res = await fetch(PAYMENT_API_BASE + '/submit-feedback', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'apikey': PAYMENT_ANON_KEY },
+      body: JSON.stringify({
+        email: email,
+        name: (currentUser && currentUser.user_metadata && currentUser.user_metadata.full_name) || null,
+        category: feedbackCategory,
+        message: message,
+        rating: feedbackRating > 0 ? feedbackRating : null
+      })
+    });
+
+    const data = await res.json().catch(function(){ return {}; });
+
+    if (!res.ok) {
+      throw new Error(data.error || 'Impossible d\'envoyer votre message pour le moment.');
+    }
+
+    // Affiche l'écran de remerciement
+    const form = document.getElementById('feedback-form-body');
+    const thanks = document.getElementById('feedback-thanks');
+    if (form) form.style.display = 'none';
+    if (thanks) thanks.style.display = 'block';
+
+  } catch (e) {
+    console.error('[Avis] Erreur envoi:', e);
+    showFeedbackError(e.message || 'Erreur réseau. Vérifiez votre connexion et réessayez.');
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = 'Envoyer mon message'; }
+  }
+}
+
 let authInitDone = false;
 let authRetryCount = 0;
 const AUTH_MAX_RETRIES = 20; // 20 x 250ms = 5 secondes max d'attente du SDK
@@ -7567,6 +7734,74 @@ function endTutorial(){
       <button class="ph-close" onclick="closeSavedPortfolios()">✕</button>
     </div>
     <div class="ph-body" id="sp-body-content" style="overflow-y:auto;padding:16px;"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     AVIS UTILISATEUR — permet à chacun de laisser un retour,
+     une suggestion ou de signaler un souci. Consultable par
+     l'administrateur dans Supabase → Table Editor → feedback.
+     ═══════════════════════════════════════════════════════ -->
+<div id="feedback-modal" onclick="if(event.target===this)closeFeedbackModal()">
+  <div id="feedback-card">
+    <div class="ph-head">
+      <span>Donner mon avis</span>
+      <button class="ph-close" onclick="closeFeedbackModal()">✕</button>
+    </div>
+
+    <div class="ph-body" id="feedback-form-body" style="padding:20px;">
+      <div style="font-size:12px;color:#94a3b8;line-height:1.6;margin-bottom:18px;">
+        Votre retour nous aide à améliorer l'éditeur. Dites-nous ce que vous en pensez,
+        proposez une amélioration, ou signalez un souci rencontré.
+      </div>
+
+      <label style="font-size:11px;font-weight:700;color:#94a3b8;display:block;margin-bottom:6px;">Type de message</label>
+      <div id="fb-categories" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;">
+        <button type="button" class="fb-cat-btn fb-cat-active" data-cat="avis" onclick="selectFeedbackCategory('avis')">Mon avis</button>
+        <button type="button" class="fb-cat-btn" data-cat="suggestion" onclick="selectFeedbackCategory('suggestion')">Suggestion</button>
+        <button type="button" class="fb-cat-btn" data-cat="probleme" onclick="selectFeedbackCategory('probleme')">Un souci</button>
+        <button type="button" class="fb-cat-btn" data-cat="question" onclick="selectFeedbackCategory('question')">Question</button>
+      </div>
+
+      <label style="font-size:11px;font-weight:700;color:#94a3b8;display:block;margin-bottom:6px;">Votre note (optionnel)</label>
+      <div id="fb-stars" style="display:flex;gap:6px;margin-bottom:16px;">
+        <span class="fb-star" data-val="1" onclick="setFeedbackRating(1)">★</span>
+        <span class="fb-star" data-val="2" onclick="setFeedbackRating(2)">★</span>
+        <span class="fb-star" data-val="3" onclick="setFeedbackRating(3)">★</span>
+        <span class="fb-star" data-val="4" onclick="setFeedbackRating(4)">★</span>
+        <span class="fb-star" data-val="5" onclick="setFeedbackRating(5)">★</span>
+      </div>
+
+      <label style="font-size:11px;font-weight:700;color:#94a3b8;display:block;margin-bottom:6px;">Email *</label>
+      <input type="email" id="fb-email" placeholder="votre@email.com"
+        style="width:100%;padding:11px 14px;border:1.5px solid #262626;border-radius:10px;background:#0a0a0a;color:#f1f5f9;font-size:13px;font-family:'DM Sans',sans-serif;margin-bottom:14px;">
+
+      <label style="font-size:11px;font-weight:700;color:#94a3b8;display:block;margin-bottom:6px;">Votre message *</label>
+      <textarea id="fb-message" rows="5" placeholder="Écrivez votre message ici…"
+        style="width:100%;padding:11px 14px;border:1.5px solid #262626;border-radius:10px;background:#0a0a0a;color:#f1f5f9;font-size:13px;font-family:'DM Sans',sans-serif;resize:vertical;line-height:1.6;"></textarea>
+
+      <div id="fb-error" style="display:none;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:#f87171;padding:10px 14px;border-radius:10px;font-size:12px;margin-top:12px;"></div>
+
+      <button type="button" id="fb-submit-btn" onclick="submitFeedback()"
+        style="width:100%;margin-top:16px;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);color:#fff;border:none;border-radius:12px;font-family:'Syne',sans-serif;font-size:13px;font-weight:800;cursor:pointer;transition:.2s;">
+        Envoyer mon message
+      </button>
+    </div>
+
+    <div id="feedback-thanks" style="display:none;padding:36px 24px;text-align:center;">
+      <div style="width:64px;height:64px;margin:0 auto 18px;border-radius:50%;background:rgba(16,185,129,.12);display:flex;align-items:center;justify-content:center;">
+        <i class="ri-heart-3-fill" style="font-size:30px;color:#10b981;"></i>
+      </div>
+      <div style="font-family:'Syne',sans-serif;font-size:17px;font-weight:800;color:#f1f5f9;margin-bottom:10px;">Merci beaucoup !</div>
+      <div style="font-size:13px;color:#94a3b8;line-height:1.7;margin-bottom:24px;">
+        Votre message a bien été transmis. Chaque retour compte et nous aide à rendre
+        l'éditeur meilleur pour tout le monde.
+      </div>
+      <button type="button" onclick="closeFeedbackModal()"
+        style="padding:11px 28px;background:#1a1a1a;color:#f1f5f9;border:1px solid #333;border-radius:100px;font-size:12px;font-weight:700;cursor:pointer;">
+        Fermer
+      </button>
+    </div>
   </div>
 </div>
 
