@@ -526,6 +526,13 @@ textarea.input-control{min-height:75px;resize:none;line-height:1.6;}
    simulé (36px) pour rester visible. Dans le portfolio exporté,
    ce conteneur n'existe pas : elle reste tout en haut de la page. */
 #app-container #pf-read-progress{top:36px;}
+
+/* Le sélecteur de langue et la bulle du chat sont en position
+   fixed : dans l'éditeur ils se placent par rapport au cadre du
+   navigateur simulé et passeraient derrière sa barre (36px).
+   On les décale dessous. Dans le portfolio exporté, ce cadre
+   n'existe pas : ils gardent leur position d'origine. */
+#app-container #pf-lang-widget{top:48px;}
 #pf-read-progress-fill{
     height:100%;width:0%;
     background:currentColor;
@@ -624,6 +631,60 @@ a.pf-project-info:hover .pf-project-title{text-decoration:underline;}
 .pf-skills-section{margin-top:50px;}
 .pf-skills-section h3{font-size:20px;font-weight:700;margin-bottom:16px;}
 .pf-skills-grid{display:flex;flex-wrap:wrap;gap:10px;}
+
+/* ── VIDÉO DANS LES PROJETS ── */
+.pf-project-video{
+    position:relative;
+    width:100%;
+    aspect-ratio:16/9;
+    overflow:hidden;
+    background:#000;
+}
+.pf-project-video iframe{
+    position:absolute;inset:0;
+    width:100%;height:100%;
+    border:0;
+}
+
+/* ── TÉMOIGNAGES ── */
+.pf-testimonials-section{margin:48px 0;}
+.pf-testi-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+    gap:18px;
+}
+.pf-testi-card{
+    position:relative;
+    margin:0;
+    padding:26px 22px 22px;
+    border-radius:16px;
+    border:1px solid color-mix(in srgb, currentColor 16%, transparent);
+    background:color-mix(in srgb, currentColor 4%, transparent);
+    transition:transform .35s cubic-bezier(.34,1.56,.64,1),box-shadow .35s ease;
+}
+.pf-testi-card:hover{
+    transform:translateY(-4px);
+    box-shadow:0 14px 30px -12px currentColor;
+}
+.pf-testi-mark{
+    position:absolute;top:6px;left:18px;
+    font-size:52px;line-height:1;
+    opacity:.16;font-family:Georgia,serif;
+    pointer-events:none;
+}
+.pf-testi-text{
+    margin:0 0 16px;
+    font-size:14px;line-height:1.7;
+    opacity:.9;font-style:italic;
+    position:relative;
+}
+.pf-testi-author{display:flex;flex-direction:column;gap:2px;}
+.pf-testi-name{font-size:13px;font-weight:700;}
+.pf-testi-role{font-size:11.5px;opacity:.65;}
+@media(max-width:768px){
+    .pf-testi-grid{grid-template-columns:1fr;gap:12px;}
+}
+.device-mobile .pf-testi-grid{grid-template-columns:1fr!important;gap:12px!important;}
 
 /* ── CHIFFRES CLÉS ── */
 .pf-stats-section{margin:48px 0;}
@@ -3293,6 +3354,101 @@ radial-gradient(circle at 50% 50%,rgba(255,183,77,.06) 0%,transparent 50%);}
 .adm-fb-date{font-size:9.5px;color:#52525b;margin-top:5px;}
 .adm-empty{text-align:center;padding:26px;color:#52525b;font-size:12px;}
 
+/* ── QR CODE ── */
+#qr-modal {
+  display:none; position:fixed; inset:0; background:rgba(0,0,0,0.82);
+  z-index:99998; align-items:center; justify-content:center; padding:20px;
+  overflow-y:auto;
+}
+#qr-modal.open { display:flex; }
+#qr-card {
+  background:#0a0a0a; border:1px solid #262626;
+  border-radius:20px; width:100%; max-width:420px; max-height:88vh;
+  overflow:hidden; display:flex; flex-direction:column;
+  animation:authIn .3s ease; margin:auto;
+}
+#qr-card .ph-head {
+  padding:18px 22px; font-size:15px; font-weight:700; color:#f1f5f9;
+  border-bottom:1px solid #262626; display:flex;
+  align-items:center; justify-content:space-between; flex-shrink:0; gap:8px;
+}
+#qr-card .ph-close {
+  background:transparent; border:none; cursor:pointer; color:#71717a;
+  font-size:20px; width:32px; height:32px; border-radius:8px;
+  display:flex; align-items:center; justify-content:center; transition:.15s;
+}
+#qr-card .ph-close:hover { background:#1a1a1a; color:#f1f5f9; }
+#qr-image-wrap{
+  background:#fff;border-radius:14px;padding:16px;display:inline-block;margin-bottom:14px;
+}
+#qr-image-wrap img{display:block;width:200px;height:200px;}
+.qr-dl-btn{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:11px 22px;background:#6366f1;color:#fff;border:none;
+  border-radius:100px;font-size:12.5px;font-weight:700;cursor:pointer;
+  text-decoration:none;transition:.18s;
+}
+.qr-dl-btn:hover{background:#818cf8;}
+
+/* ── PARRAINAGE ── */
+#referral-modal {
+  display:none; position:fixed; inset:0; background:rgba(0,0,0,0.82);
+  z-index:99998; align-items:center; justify-content:center; padding:20px;
+  overflow-y:auto;
+}
+#referral-modal.open { display:flex; }
+#referral-card {
+  background:#0a0a0a; border:1px solid #262626;
+  border-radius:20px; width:100%; max-width:460px; max-height:88vh;
+  overflow:hidden; display:flex; flex-direction:column;
+  animation:authIn .3s ease; margin:auto;
+}
+#referral-card .ph-head {
+  padding:18px 22px; font-size:15px; font-weight:700; color:#f1f5f9;
+  border-bottom:1px solid #262626; display:flex;
+  align-items:center; justify-content:space-between; flex-shrink:0; gap:8px;
+}
+#referral-card .ph-close {
+  background:transparent; border:none; cursor:pointer; color:#71717a;
+  font-size:20px; width:32px; height:32px; border-radius:8px;
+  display:flex; align-items:center; justify-content:center; transition:.15s;
+}
+#referral-card .ph-close:hover { background:#1a1a1a; color:#f1f5f9; }
+
+.ref-link-box{
+  display:flex;gap:6px;align-items:stretch;margin-bottom:16px;
+}
+.ref-link-input{
+  flex:1;min-width:0;padding:11px 13px;
+  background:#141414;border:1px solid #262626;border-radius:10px;
+  color:#a5b4fc;font-size:11.5px;font-family:monospace;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.ref-copy-btn{
+  padding:0 16px;background:#6366f1;color:#fff;border:none;
+  border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;
+  transition:.18s;flex-shrink:0;
+}
+.ref-copy-btn:hover{background:#818cf8;}
+.ref-share-row{display:flex;gap:7px;margin-bottom:18px;}
+.ref-share-btn{
+  flex:1;padding:10px;border-radius:10px;border:1px solid #262626;
+  background:#141414;color:#a1a1aa;font-size:11.5px;font-weight:600;
+  cursor:pointer;transition:.18s;display:flex;align-items:center;
+  justify-content:center;gap:5px;
+}
+.ref-share-btn:hover{border-color:#3f3f46;color:#f1f5f9;}
+.ref-stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px;}
+.ref-stat{background:#141414;border:1px solid #262626;border-radius:12px;padding:13px 8px;text-align:center;}
+.ref-stat-num{font-family:'Syne',sans-serif;font-size:21px;font-weight:800;color:#f1f5f9;line-height:1;}
+.ref-stat-lbl{font-size:9.5px;color:#94a3b8;margin-top:5px;line-height:1.3;}
+.ref-reward{
+  background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.35);
+  border-radius:12px;padding:14px;text-align:center;margin-bottom:14px;
+}
+.ref-reward-title{font-size:13px;font-weight:700;color:#10b981;margin-bottom:4px;}
+.ref-reward-sub{font-size:11.5px;color:#a1a1aa;line-height:1.5;}
+
 #sync-indicator {
   display:flex; align-items:center; gap:5px; font-size:11px;
   color:var(--ui-muted, #7a7a9a); padding:4px 10px; border-radius:20px;
@@ -3478,6 +3634,12 @@ radial-gradient(circle at 50% 50%,rgba(255,183,77,.06) 0%,transparent 50%);}
                             <button class="account-menu-item" onclick="openFeedbackModal();closeAccountMenu();">
                                 <i class="ri-chat-quote-line"></i> Donner mon avis
                             </button>
+                            <button class="account-menu-item" onclick="openQrModal();closeAccountMenu();">
+                                <i class="ri-qr-code-line"></i> QR code de mon portfolio
+                            </button>
+                            <button class="account-menu-item" id="account-referral-btn" onclick="openReferralModal();closeAccountMenu();" style="display:none;">
+                                <i class="ri-gift-line"></i> Parrainer un ami
+                            </button>
                             <button class="account-menu-item" id="account-admin-btn" onclick="openAdminDashboard();closeAccountMenu();" style="display:none;color:#fbbf24;">
                                 <i class="ri-dashboard-3-line"></i> Tableau de bord admin
                             </button>
@@ -3628,6 +3790,14 @@ radial-gradient(circle at 50% 50%,rgba(255,183,77,.06) 0%,transparent 50%);}
                 <div class="section-label" style="margin-top:18px;"><i class="ri-award-line"></i> Certifications<div class="section-label-line"></div></div>
                 <div id="editor-certifications-list"></div>
                 <button class="btn btn-ghost" onclick="addCertification()"><i class="ri-add-circle-line"></i> Ajouter une certification</button>
+
+                <!-- TÉMOIGNAGES -->
+                <div class="section-label" style="margin-top:18px;"><i class="ri-double-quotes-l"></i> Témoignages<div class="section-label-line"></div></div>
+                <div style="font-size:10px;color:var(--ui-muted);margin-bottom:8px;">
+                    Ce que vos clients disent de vous. Rien ne convainc mieux qu'un avis authentique.
+                </div>
+                <div id="editor-testimonials-list"></div>
+                <button class="btn btn-ghost" onclick="addTestimonial()"><i class="ri-add-circle-line"></i> Ajouter un témoignage</button>
 
                 <!-- CHIFFRES CLÉS -->
                 <div class="section-label" style="margin-top:18px;"><i class="ri-bar-chart-box-line"></i> Chiffres clés<div class="section-label-line"></div></div>
@@ -3790,8 +3960,12 @@ radial-gradient(circle at 50% 50%,rgba(255,183,77,.06) 0%,transparent 50%);}
                             <input type="checkbox" id="lang-es" onchange="updateLangs()" style="accent-color:var(--ui-accent);"> 🇪🇸 Español
                         </label>
                     </div>
-                    <div style="font-size:10px;color:var(--ui-muted);margin-top:8px;padding:8px 10px;background:var(--ui-surface);border-radius:8px;border-left:2px solid var(--ui-accent);">
-                        💡 Le sélecteur de langue sera visible sur le portfolio publié. Les traductions s'adaptent automatiquement aux textes standards (navigation, boutons, labels).
+                    <button class="btn btn-ghost" style="width:100%;margin-top:10px;" onclick="translatePortfolio()" id="btn-translate">
+                        <i class="ri-translate-2"></i> Traduire tout mon contenu
+                    </button>
+                    <div id="translate-status" style="font-size:10.5px;color:var(--ui-muted);margin-top:8px;padding:8px 10px;background:var(--ui-surface);border-radius:8px;border-left:2px solid var(--ui-accent);line-height:1.5;">
+                        Traduit votre biographie, vos projets, vos témoignages — pas seulement les libellés.
+                        La traduction se fait une seule fois : le portfolio publié embarque toutes les langues.
                     </div>
                 </div>
 
@@ -4339,10 +4513,12 @@ const state={
     showSkills:true,showSocials:true,profileShape:'portrait',
     experiences:[],
     certifications:[],
+    testimonials:[],
     stats:[],
     booking:{enabled:false,title:'Réserver un créneau',desc:'Choisissez un horaire pour discuter de votre projet.',link:'',phone:''},
     chat:{enabled:false,platform:'whatsapp',link:'',welcomeMsg:'Bonjour ! Comment puis-je vous aider ?'},
     multilang:{enabled:false,langs:['fr','en']},
+    translations:{},
     data:{name:'Brandon Mballa',role:'CEO @ Mental Trading | Stratégie Digitale',bio:"Je développe des architectures de trading institutionnel et des stratégies d'acquisition ciblées. Spécialisé en analyse on-chain.",profileImg:'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=800&q=80',cta:'Démarrer le projet',ctaLink:'#',linkedin:'',twitter:'',github:'',instagram:'',sectionTitle:'Travaux & Projets'},
     skills:[],
     projects:[],
@@ -4791,6 +4967,23 @@ function render(){
     </div>
 </div>` : '';
 
+    // Témoignages clients
+    const testiH = (state.testimonials && state.testimonials.length > 0) ? `
+<div class="pf-testimonials-section anim-el">
+    <h3 class="pf-section-sub-title">Ils en parlent</h3>
+    <div class="pf-testi-grid">
+        ${state.testimonials.map(function(t){ return `
+        <figure class="pf-testi-card">
+            <div class="pf-testi-mark">"</div>
+            <blockquote class="pf-testi-text">${t.text||''}</blockquote>
+            <figcaption class="pf-testi-author">
+                <span class="pf-testi-name">${t.name||''}</span>
+                ${t.role?`<span class="pf-testi-role">${t.role}</span>`:''}
+            </figcaption>
+        </figure>`; }).join('')}
+    </div>
+</div>` : '';
+
     // Réservation en ligne
     const bookingH = state.booking.enabled ? (() => {
         const link = state.booking.link || (state.booking.phone ? `https://wa.me/${state.booking.phone.replace(/\D/g,'')}` : '#');
@@ -4861,11 +5054,28 @@ function render(){
             }).join('')
           }</div></div>`
         : '';
+    // Convertit une adresse YouTube ou Vimeo en adresse d'intégration.
+    // Retourne null si ce n'est pas une vidéo reconnue, auquel cas
+    // la carte garde son image comme avant.
+    const toEmbedUrl = function(url){
+        if(!url) return null;
+        const u = String(url).trim();
+        let m = u.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([A-Za-z0-9_-]{6,})/);
+        if(m) return 'https://www.youtube.com/embed/' + m[1];
+        m = u.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+        if(m) return 'https://player.vimeo.com/video/' + m[1];
+        return null;
+    };
+
     const projH=state.projects.map((p,i)=>{
         const hasLink = p.link && p.link.trim() !== '';
         const linkAttrs = hasLink ? ` href="${p.link}" target="_blank" rel="noopener noreferrer"` : '';
         const infoTag = hasLink ? 'a' : 'div';
-        return `<article class="pf-project-card anim-el" style="animation-delay:${i*state.animStagger}ms;"><div class="editable-img-wrapper" onclick="openCanvasImagePicker('project',${p.id})"><img src="${p.img}" class="pf-project-img" style="height:220px;object-fit:cover;width:100%;"></div><${infoTag} class="pf-project-info"${linkAttrs}><h3 class="pf-project-title">${p.title||'Titre'}</h3><p class="pf-project-desc">${p.desc||''}</p>${hasLink?'<span class="pf-project-link-hint"><i class="ri-external-link-line"></i> Voir le projet</span>':''}</${infoTag}></article>`;
+        const embed = toEmbedUrl(p.video);
+        const mediaH = embed
+            ? `<div class="pf-project-video"><iframe src="${embed}" title="${(p.title||'Vidéo').replace(/"/g,'&quot;')}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>`
+            : `<div class="editable-img-wrapper" onclick="openCanvasImagePicker('project',${p.id})"><img src="${p.img}" class="pf-project-img" style="height:220px;object-fit:cover;width:100%;"></div>`;
+        return `<article class="pf-project-card anim-el" style="animation-delay:${i*state.animStagger}ms;">${mediaH}<${infoTag} class="pf-project-info"${linkAttrs}><h3 class="pf-project-title">${p.title||'Titre'}</h3><p class="pf-project-desc">${p.desc||''}</p>${hasLink?'<span class="pf-project-link-hint"><i class="ri-external-link-line"></i> Voir le projet</span>':''}</${infoTag}></article>`;
     }).join('');
     const cvButtonH = (typeof cvData !== 'undefined' && cvData) ? `<a id="pf-cv-download-btn" href="${cvData}" download="CV_${(state.data.name||'Portfolio').replace(/\s+/g,'_')}.pdf" class="pf-cv-btn" onclick="event.stopPropagation();"><i class="ri-file-pdf-2-fill"></i> Mon CV</a>` : '';
     vp.innerHTML=`
@@ -4880,6 +5090,7 @@ ${state.multiPage ? buildMultiPageNav() : ''}
 <div id="pf-sec-stats" data-page="pf-sec-stats" class="pf-section-page">${statsH}</div>
 <div id="pf-sec-exp" data-page="pf-sec-exp" class="pf-section-page">${expH}</div>
 <div id="pf-sec-cert" data-page="pf-sec-cert" class="pf-section-page">${certH}</div>
+<div id="pf-sec-testi" data-page="pf-sec-testi" class="pf-section-page">${testiH}</div>
 <div id="pf-sec-booking-w" data-page="pf-sec-booking" class="pf-section-page">${bookingH}</div>
 <div id="pf-sec-projects" data-page="pf-sec-projects" class="pf-section-page">
 <div class="pf-projects-wrap"><h2 class="pf-section-title anim-el">${state.data.sectionTitle||'Travaux & Projets'}</h2><div class="pf-projects" style="grid-template-columns:${gridMap[state.gridCols]||'1fr 1fr'};">${projH}</div></div>
@@ -5122,11 +5333,11 @@ function initEditor(){
         ${renderAnimCards(simpleAnims)}
         <div style="grid-column:1/-1;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:#f59e0b;padding:8px 0 6px;border-bottom:1px solid var(--ui-border);margin-bottom:4px;margin-top:4px;">🚀 Animations Avancées</div>
         ${renderAnimCards(advAnims)}`;
-    renderEditorProjects();renderSkillTags();renderExperiences();renderCertifications();renderStatsEditor();renderSectionAnims();
+    renderEditorProjects();renderSkillTags();renderExperiences();renderCertifications();renderTestimonialsEditor();renderStatsEditor();renderSectionAnims();
 }
 
 function renderEditorProjects(){
-    document.getElementById('editor-projects-list').innerHTML=state.projects.map(p=>`<div class="project-edit-card"><div class="project-edit-header"><img src="${p.img}" class="inline-img-preview"><div class="project-edit-meta"><div class="project-edit-title-preview">${p.title||'Nouveau projet'}</div><div style="display:flex;gap:4px;margin-top:4px;"><button class="btn-sm-outline" onclick="openCanvasImagePicker('project',${p.id})"><i class="ri-image-edit-line"></i> Image</button></div></div><button class="btn btn-danger-sm" onclick="deleteProject(${p.id})"><i class="ri-delete-bin-line"></i></button></div><input type="text" class="input-control" style="margin-bottom:6px;font-size:12px;" value="${p.title}" oninput="updateProjectData(${p.id},'title',this.value)" placeholder="Titre"><textarea class="input-control" style="min-height:45px;font-size:12px;" oninput="updateProjectData(${p.id},'desc',this.value)" placeholder="Description...">${p.desc}</textarea><input type="text" class="input-control" style="margin-top:5px;font-size:12px;" value="${p.link||''}" oninput="updateProjectData(${p.id},'link',this.value)" onblur="normalizeProjectLink(${p.id})" placeholder="https://exemple.com/mon-projet"></div>`).join('');
+    document.getElementById('editor-projects-list').innerHTML=state.projects.map(p=>`<div class="project-edit-card"><div class="project-edit-header"><img src="${p.img}" class="inline-img-preview"><div class="project-edit-meta"><div class="project-edit-title-preview">${p.title||'Nouveau projet'}</div><div style="display:flex;gap:4px;margin-top:4px;"><button class="btn-sm-outline" onclick="openCanvasImagePicker('project',${p.id})"><i class="ri-image-edit-line"></i> Image</button></div></div><button class="btn btn-danger-sm" onclick="deleteProject(${p.id})"><i class="ri-delete-bin-line"></i></button></div><input type="text" class="input-control" style="margin-bottom:6px;font-size:12px;" value="${p.title}" oninput="updateProjectData(${p.id},'title',this.value)" placeholder="Titre"><textarea class="input-control" style="min-height:45px;font-size:12px;" oninput="updateProjectData(${p.id},'desc',this.value)" placeholder="Description...">${p.desc}</textarea><input type="text" class="input-control" style="margin-top:5px;font-size:12px;" value="${p.link||''}" oninput="updateProjectData(${p.id},'link',this.value)" onblur="normalizeProjectLink(${p.id})" placeholder="https://exemple.com/mon-projet"><input type="text" class="input-control" style="margin-top:5px;font-size:12px;" value="${p.video||''}" oninput="updateProjectData(${p.id},'video',this.value)" placeholder="Vidéo YouTube ou Vimeo (remplace l'image)"></div>`).join('');
 }
 
 function renderSkillTags(){document.getElementById('skills-container').innerHTML=state.skills.map((s,i)=>`<span class="skill-tag">${s}<button onclick="removeSkill(${i})">×</button></span>`).join('');}
@@ -6392,6 +6603,39 @@ function doExport(){
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta http-equiv="Permissions-Policy" content="geolocation=(), microphone=(), camera=()">`;
 
+    // ── BALISES DE PARTAGE SOCIAL ─────────────────────────
+    // Pour que le portfolio s'affiche correctement quand son
+    // propriétaire le partage sur WhatsApp, Facebook, LinkedIn ou X.
+    const escAttr = function(s){
+        return String(s||'')
+            .replace(/&/g,'&amp;').replace(/"/g,'&quot;')
+            .replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    };
+
+    const ogTitle = escAttr(state.data.name + ' — ' + state.data.role);
+    const rawBio = String(state.data.bio||'').replace(/<[^>]*>/g,'').trim();
+    const ogDesc = escAttr(rawBio.length > 155 ? rawBio.substring(0,152) + '…' : rawBio);
+
+    // Une image de partage doit être accessible publiquement par
+    // les plateformes. Une photo importée est stockée en base64
+    // (data:...) : les réseaux sociaux ne peuvent pas la récupérer,
+    // on l'omet alors plutôt que de produire une balise inutile.
+    const ogImg = (state.data.profileImg && /^https?:\/\//i.test(state.data.profileImg))
+        ? escAttr(state.data.profileImg) : '';
+
+    const socialTags = `
+<meta property="og:type" content="website">
+<meta property="og:title" content="${ogTitle}">
+<meta property="og:description" content="${ogDesc}">
+<meta property="og:site_name" content="${escAttr(state.data.name)}">${ogImg ? `
+<meta property="og:image" content="${ogImg}">
+<meta property="og:image:alt" content="${escAttr(state.data.name)}">` : ''}
+<meta name="twitter:card" content="${ogImg ? 'summary_large_image' : 'summary'}">
+<meta name="twitter:title" content="${ogTitle}">
+<meta name="twitter:description" content="${ogDesc}">${ogImg ? `
+<meta name="twitter:image" content="${ogImg}">` : ''}`;
+
+
     // Protection anti-scraping des emails/téléphones
     const antiSpamScript = `<script>
 // PROTECTION ANTI-SPAM & SÉCURITÉ
@@ -6450,6 +6694,72 @@ function doExport(){
 
     // Script responsive + animations + compteur de vues
     const scripts = `<script>
+// ── SYSTÈME MULTILINGUE DU PORTFOLIO PUBLIÉ ──────────────
+// Traductions du contenu, générées une seule fois depuis
+// l'éditeur et embarquées ici : le changement de langue est
+// instantané et fonctionne même hors ligne.
+window.__pfTranslations = ${JSON.stringify(state.translations || {})};
+
+var LANG_LABELS = ${JSON.stringify(LANG_LABELS)};
+var activeLang = 'fr';
+
+function applyContentTranslation(vp, lang){
+    var T = (window.__pfTranslations || {})[lang];
+    function setText(el, path){
+        if(!el) return;
+        if(!el.hasAttribute('data-fr')) el.setAttribute('data-fr', el.textContent);
+        if(lang === 'fr' || !T || !T[path]) el.textContent = el.getAttribute('data-fr');
+        else el.textContent = T[path];
+    }
+    setText(vp.querySelector('.pf-role'), 'role');
+    setText(vp.querySelector('.pf-bio'), 'bio');
+    var chips = vp.querySelectorAll('.pf-skill-chip');
+    for(var i=0;i<chips.length;i++){ setText(chips[i], 'skill.'+i); }
+    var cards = vp.querySelectorAll('.pf-project-card');
+    for(var j=0;j<cards.length;j++){
+        setText(cards[j].querySelector('.pf-project-title'), 'proj.'+j+'.title');
+        setText(cards[j].querySelector('.pf-project-desc'), 'proj.'+j+'.desc');
+    }
+    var testis = vp.querySelectorAll('.pf-testi-card');
+    for(var k=0;k<testis.length;k++){
+        setText(testis[k].querySelector('.pf-testi-text'), 'testi.'+k+'.text');
+        setText(testis[k].querySelector('.pf-testi-role'), 'testi.'+k+'.role');
+    }
+    var labels = vp.querySelectorAll('.pf-stat-label');
+    for(var m=0;m<labels.length;m++){ setText(labels[m], 'stat.'+m+'.label'); }
+}
+
+function switchLang(lang){
+    activeLang = lang;
+    var L = LANG_LABELS[lang] || LANG_LABELS['fr'];
+
+    var dd = document.getElementById('pf-lang-dropdown');
+    if(dd) dd.style.display = 'none';
+    var disp = document.getElementById('pf-lang-current');
+    if(disp) disp.textContent = lang.toUpperCase();
+
+    var vp = document.getElementById('portfolio-viewport') || document.body;
+    applyContentTranslation(vp, lang);
+
+    // Libellés d'interface
+    function setLabel(sel, txt){
+        var els = vp.querySelectorAll(sel);
+        for(var i=0;i<els.length;i++){
+            if(!els[i].hasAttribute('data-fr')) els[i].setAttribute('data-fr', els[i].textContent.trim());
+            els[i].textContent = (lang === 'fr') ? els[i].getAttribute('data-fr') : txt;
+        }
+    }
+    setLabel('.pf-contact-btn', L.cta);
+    setLabel('.pf-section-title', L.projects);
+    setLabel('.pf-skills-section h3', L.skills);
+    setLabel('.pf-experience-section .pf-section-sub-title', L.exp);
+    setLabel('.pf-certifications-section .pf-section-sub-title', L.cert);
+
+    var cvBtns = vp.querySelectorAll('.pf-cv-btn');
+    for(var c=0;c<cvBtns.length;c++){
+        cvBtns[c].innerHTML = '<i class="ri-file-pdf-2-fill"></i> ' + (lang==='fr' ? 'Mon CV' : L.download);
+    }
+}
 // Animations au scroll — avec zone tampon pour éviter tout
 // scintillement quand un élément se trouve pile en bordure d'écran.
 // L'élément s'anime seulement une fois franchement entré (12% de
@@ -6724,6 +7034,7 @@ body{display:block;height:auto;overflow:auto;overflow-x:hidden;}
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
 <meta name="description" content="Portfolio de ${state.data.name} — ${state.data.role}">
 ${securityHeaders}
+${socialTags}
 <title>${state.data.name} - Portfolio</title>
 ${fonts}
 ${styles}
@@ -6919,6 +7230,144 @@ function updateLangs(){
     render();
 }
 
+// ── TRADUCTION DU CONTENU RÉEL ────────────────────────────
+// Rassemble tout le texte écrit par l'utilisateur dans un ordre
+// stable, pour pouvoir replacer les traductions au bon endroit.
+function collectTranslatableTexts(){
+    const items = [];
+    const push = function(path, value){
+        if(value && String(value).trim()) items.push({ path: path, text: String(value) });
+    };
+
+    push('role', state.data.role);
+    push('bio', state.data.bio);
+    push('cta', state.data.cta);
+    push('sectionTitle', state.data.sectionTitle);
+
+    (state.skills||[]).forEach(function(s,i){ push('skill.'+i, s); });
+
+    (state.projects||[]).forEach(function(p,i){
+        push('proj.'+i+'.title', p.title);
+        push('proj.'+i+'.desc', p.desc);
+    });
+
+    (state.experiences||[]).forEach(function(e,i){
+        push('exp.'+i+'.role', e.role);
+        push('exp.'+i+'.company', e.company);
+        push('exp.'+i+'.desc', e.desc);
+    });
+
+    (state.certifications||[]).forEach(function(c,i){
+        push('cert.'+i+'.name', c.name);
+        push('cert.'+i+'.issuer', c.issuer);
+    });
+
+    (state.testimonials||[]).forEach(function(t,i){
+        push('testi.'+i+'.role', t.role);
+        push('testi.'+i+'.text', t.text);
+    });
+
+    (state.stats||[]).forEach(function(s,i){ push('stat.'+i+'.label', s.label); });
+
+    if(state.footer){
+        push('footer.copyright', state.footer.copyright);
+        push('footer.location', state.footer.location);
+    }
+    if(state.booking && state.booking.enabled){
+        push('booking.title', state.booking.title);
+        push('booking.desc', state.booking.desc);
+    }
+
+    return items;
+}
+
+async function translatePortfolio(){
+    const btn = document.getElementById('btn-translate');
+    const status = document.getElementById('translate-status');
+
+    const targets = (state.multilang.langs||[]).filter(function(l){ return l !== 'fr'; });
+    if(targets.length === 0){
+        if(status) status.textContent = 'Cochez au moins une langue autre que le français.';
+        return;
+    }
+
+    const items = collectTranslatableTexts();
+    if(items.length === 0){
+        if(status) status.textContent = 'Aucun texte à traduire pour le moment.';
+        return;
+    }
+
+    if(btn){ btn.disabled = true; btn.innerHTML = '<i class="ri-loader-4-line"></i> Traduction en cours…'; }
+    if(!state.translations) state.translations = {};
+
+    let done = 0, failed = 0;
+
+    for(const lang of targets){
+        if(status) status.textContent = 'Traduction vers ' + lang.toUpperCase() + '… (' + (done+1) + '/' + targets.length + ')';
+        try{
+            const res = await fetch(PAYMENT_API_BASE + '/translate', {
+                method:'POST',
+                headers:{ 'Content-Type':'application/json', 'apikey': PAYMENT_ANON_KEY },
+                body: JSON.stringify({ texts: items.map(function(i){ return i.text; }), targetLang: lang })
+            });
+            const data = await res.json();
+            if(!res.ok || !data.translations) throw new Error(data.error || 'Échec');
+
+            const map = {};
+            items.forEach(function(it, idx){ map[it.path] = data.translations[idx] || it.text; });
+            state.translations[lang] = map;
+            done++;
+        } catch(err){
+            console.warn('[Traduction] Échec pour ' + lang + ':', err);
+            failed++;
+        }
+    }
+
+    if(btn){ btn.disabled = false; btn.innerHTML = '<i class="ri-translate-2"></i> Traduire tout mon contenu'; }
+
+    if(status){
+        if(done > 0 && failed === 0){
+            status.textContent = '✅ Contenu traduit en ' + done + ' langue' + (done>1?'s':'') + '. Le portfolio publié embarquera toutes les langues.';
+        } else if(done > 0){
+            status.textContent = '⚠️ ' + done + ' langue(s) traduite(s), ' + failed + ' en échec. Réessayez pour les manquantes.';
+        } else {
+            status.textContent = '❌ La traduction a échoué. Vérifiez que la fonction « translate » est bien déployée.';
+        }
+    }
+    render();
+}
+
+// Applique le contenu traduit au portfolio affiché. L'original
+// français est conservé en attribut, pour que le retour au
+// français restitue exactement le texte d'origine.
+function applyContentTranslation(vp, lang){
+    const T = (window.__pfTranslations || (typeof state !== 'undefined' ? state.translations : null) || {})[lang];
+
+    const setText = function(el, path){
+        if(!el) return;
+        if(!el.hasAttribute('data-fr')) el.setAttribute('data-fr', el.textContent);
+        if(lang === 'fr' || !T || !T[path]) el.textContent = el.getAttribute('data-fr');
+        else el.textContent = T[path];
+    };
+
+    setText(vp.querySelector('.pf-role'), 'role');
+    setText(vp.querySelector('.pf-bio'), 'bio');
+
+    vp.querySelectorAll('.pf-skill-chip').forEach(function(el,i){ setText(el, 'skill.'+i); });
+
+    vp.querySelectorAll('.pf-project-card').forEach(function(card,i){
+        setText(card.querySelector('.pf-project-title'), 'proj.'+i+'.title');
+        setText(card.querySelector('.pf-project-desc'), 'proj.'+i+'.desc');
+    });
+
+    vp.querySelectorAll('.pf-testi-card').forEach(function(card,i){
+        setText(card.querySelector('.pf-testi-text'), 'testi.'+i+'.text');
+        setText(card.querySelector('.pf-testi-role'), 'testi.'+i+'.role');
+    });
+
+    vp.querySelectorAll('.pf-stat-label').forEach(function(el,i){ setText(el, 'stat.'+i+'.label'); });
+}
+
 function switchLang(lang){
     activeLang = lang;
     const L = LANG_LABELS[lang] || LANG_LABELS['fr'];
@@ -6934,6 +7383,11 @@ function switchLang(lang){
     // ── Traduction complète du portfolio ──────────────
     const vp = document.getElementById('portfolio-viewport');
     if(!vp) return;
+
+    // Applique d'abord le CONTENU traduit de l'utilisateur
+    // (biographie, projets, témoignages…), s'il a été généré.
+    // Les libellés d'interface sont traités juste après.
+    applyContentTranslation(vp, lang);
 
     // Rôle
     const roleEl = vp.querySelector('.pf-role');
@@ -7040,6 +7494,46 @@ function renderExperiences(){
 }
 
 // ── CERTIFICATIONS ──────────────────────────────────
+// ── TÉMOIGNAGES ───────────────────────────────────────────
+function addTestimonial(){
+    if(!state.testimonials) state.testimonials = [];
+    state.testimonials.push({
+        id: Date.now(),
+        name: 'Nom du client',
+        role: 'Son poste ou son entreprise',
+        text: 'Ce que cette personne a dit de votre travail.'
+    });
+    renderTestimonialsEditor();
+    render();
+}
+
+function updateTestimonialData(id, field, value){
+    const t = state.testimonials.find(function(x){ return x.id === id; });
+    if(t){ t[field] = value; render(); }
+}
+
+function deleteTestimonial(id){
+    state.testimonials = state.testimonials.filter(function(x){ return x.id !== id; });
+    renderTestimonialsEditor();
+    render();
+}
+
+function renderTestimonialsEditor(){
+    const el = document.getElementById('editor-testimonials-list');
+    if(!el) return;
+    if(!state.testimonials) state.testimonials = [];
+    el.innerHTML = state.testimonials.map(function(t){
+        return '<div style="background:var(--ui-surface);border:1px solid var(--ui-border);border-radius:10px;padding:12px;margin-bottom:9px;">'
+            + '<div style="display:flex;gap:6px;margin-bottom:6px;">'
+            + '<input type="text" class="input-control" style="font-size:12px;flex:1;" value="' + (t.name||'') + '" oninput="updateTestimonialData(' + t.id + ',\'name\',this.value)" placeholder="Nom du client">'
+            + '<button class="btn-icon" onclick="deleteTestimonial(' + t.id + ')" title="Supprimer" style="width:28px;height:28px;font-size:13px;color:#ef4444;flex-shrink:0;"><i class="ri-delete-bin-line"></i></button>'
+            + '</div>'
+            + '<input type="text" class="input-control" style="font-size:12px;margin-bottom:6px;" value="' + (t.role||'') + '" oninput="updateTestimonialData(' + t.id + ',\'role\',this.value)" placeholder="Poste ou entreprise">'
+            + '<textarea class="input-control" rows="3" style="font-size:12px;resize:vertical;" oninput="updateTestimonialData(' + t.id + ',\'text\',this.value)" placeholder="Son témoignage">' + (t.text||'') + '</textarea>'
+            + '</div>';
+    }).join('');
+}
+
 // ── CHIFFRES CLÉS ─────────────────────────────────────────
 function addStat(){
     if(!state.stats) state.stats = [];
@@ -7721,6 +8215,8 @@ function setAccountMenuGuestState() {
   // à la prochaine connexion.
   const adminBtn = document.getElementById('account-admin-btn');
   if (adminBtn) adminBtn.style.display = 'none';
+  const refBtnGuest = document.getElementById('account-referral-btn');
+  if (refBtnGuest) refBtnGuest.style.display = 'none';
   window.__adminStatsCache = null;
 }
 
@@ -7745,6 +8241,11 @@ function setAccountMenuConnectedState() {
   if (savedBtn) savedBtn.style.display = 'flex';
   if (historyBtn) historyBtn.style.display = 'flex';
   if (sync) sync.style.display = 'flex';
+
+  // Le parrainage nécessite un compte : l'entrée n'apparaît
+  // qu'une fois l'utilisateur connecté.
+  const refBtn = document.getElementById('account-referral-btn');
+  if (refBtn) refBtn.style.display = 'flex';
 }
 
 async function signInWithGoogle() {
@@ -7812,6 +8313,7 @@ async function loadUserProfile(user) {
 
   setAccountMenuConnectedState();
   checkAdminAccess();
+  registerPendingReferral();
 
   // Un brouillon local présent signifie que le visiteur travaillait
   // déjà activement (connecté ou non) avant cette connexion — ce
@@ -8134,6 +8636,237 @@ function closeSavedPortfolios() {
 // ── AVIS UTILISATEUR ──────────────────────────────────────
 let feedbackCategory = 'avis';
 let feedbackRating = 0;
+
+// ── QR CODE DU PORTFOLIO ──────────────────────────────────
+function openQrModal(){
+    const modal = document.getElementById('qr-modal');
+    if(!modal) return;
+    modal.classList.add('open');
+
+    // Pré-remplit avec le lien déjà utilisé si l'utilisateur en
+    // a saisi un précédemment, pour ne pas le retaper.
+    const field = document.getElementById('qr-url');
+    if(field && !field.value){
+        try{
+            const saved = localStorage.getItem('mental_studio_portfolio_url');
+            if(saved) field.value = saved;
+        } catch(err){}
+    }
+    generateQrCode();
+}
+
+function closeQrModal(){
+    const modal = document.getElementById('qr-modal');
+    if(modal) modal.classList.remove('open');
+}
+
+function generateQrCode(){
+    const field = document.getElementById('qr-url');
+    const result = document.getElementById('qr-result');
+    if(!field || !result) return;
+
+    let url = field.value.trim();
+    if(!url){
+        result.innerHTML = '<div class="adm-empty">Saisissez une adresse pour générer le QR code.</div>';
+        return;
+    }
+
+    // Ajoute le protocole s'il manque, sinon le QR pointerait
+    // vers une adresse relative inutilisable.
+    if(!/^https?:\/\//i.test(url)) url = 'https://' + url;
+
+    try{ localStorage.setItem('mental_studio_portfolio_url', field.value.trim()); } catch(err){}
+
+    // Le QR est produit par un service public, sans compte ni clé.
+    const qrSrc = 'https://api.qrserver.com/v1/create-qr-code/?size=600x600&margin=10&data='
+                + encodeURIComponent(url);
+
+    result.innerHTML =
+        '<div id="qr-image-wrap"><img src="' + qrSrc + '" alt="QR code du portfolio" '
+        + 'onerror="document.getElementById(\'qr-result\').innerHTML=\'<div class=&quot;adm-empty&quot;>Service de QR code momentanément indisponible. Réessayez dans un instant.</div>\';"></div>'
+        + '<div style="font-size:11px;color:#71717a;margin-bottom:14px;word-break:break-all;">' + url + '</div>'
+        + '<a class="qr-dl-btn" href="' + qrSrc + '" download="qr-portfolio.png" target="_blank" rel="noopener">'
+        + '<i class="ri-download-2-line"></i> Télécharger le QR code</a>';
+}
+
+// ── PARRAINAGE ────────────────────────────────────────────
+const REFERRAL_PENDING_KEY = 'mental_studio_pending_referral';
+
+// Capture le code présent dans l'URL (?ref=CODE) dès l'arrivée
+// du visiteur, avant même qu'il ne crée un compte. Le code est
+// conservé jusqu'à sa connexion.
+(function captureReferralCode(){
+    try{
+        const params = new URLSearchParams(window.location.search);
+        const ref = params.get('ref');
+        if(ref && ref.trim()){
+            localStorage.setItem(REFERRAL_PENDING_KEY, ref.trim().toUpperCase());
+        }
+    } catch(err){ /* stockage indisponible : sans conséquence */ }
+})();
+
+// Enregistre le parrainage une fois le compte connecté. En cas
+// d'échec, rien ne se passe : l'éditeur fonctionne normalement.
+async function registerPendingReferral(){
+    if(!supabaseClient || !currentUser) return;
+    let pending = null;
+    try{ pending = localStorage.getItem(REFERRAL_PENDING_KEY); } catch(err){ return; }
+    if(!pending) return;
+
+    try{
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if(!session || !session.access_token) return;
+
+        const res = await fetch(PAYMENT_API_BASE + '/referrals', {
+            method:'POST',
+            headers:{ 'Content-Type':'application/json', 'apikey': PAYMENT_ANON_KEY },
+            body: JSON.stringify({ accessToken: session.access_token, action:'register', code: pending })
+        });
+        if(res.ok){
+            // Traité (accepté ou refusé) : on ne réessaie pas.
+            try{ localStorage.removeItem(REFERRAL_PENDING_KEY); } catch(err){}
+        }
+    } catch(err){
+        console.warn('[Parrainage] Enregistrement différé:', err);
+    }
+}
+
+function openReferralModal(){
+    const modal = document.getElementById('referral-modal');
+    if(!modal) return;
+    modal.classList.add('open');
+    loadReferralStatus();
+}
+
+function closeReferralModal(){
+    const modal = document.getElementById('referral-modal');
+    if(modal) modal.classList.remove('open');
+}
+
+async function loadReferralStatus(){
+    const body = document.getElementById('referral-body');
+    if(!body) return;
+    body.innerHTML = '<div class="adm-empty">Chargement…</div>';
+
+    if(!supabaseClient || !currentUser){
+        body.innerHTML = '<div class="adm-empty">Connectez-vous pour obtenir votre lien de parrainage.</div>';
+        return;
+    }
+
+    try{
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if(!session || !session.access_token) throw new Error('Session introuvable.');
+
+        const res = await fetch(PAYMENT_API_BASE + '/referrals', {
+            method:'POST',
+            headers:{ 'Content-Type':'application/json', 'apikey': PAYMENT_ANON_KEY },
+            body: JSON.stringify({ accessToken: session.access_token, action:'status' })
+        });
+        const data = await res.json();
+        if(!res.ok) throw new Error(data.error || 'Impossible de charger vos parrainages.');
+
+        renderReferralStatus(data);
+    } catch(err){
+        body.innerHTML = '<div class="adm-empty">' + (err.message || 'Erreur de chargement.') + '</div>';
+    }
+}
+
+function renderReferralStatus(d){
+    const body = document.getElementById('referral-body');
+    if(!body || !d) return;
+
+    const link = 'https://mental-studio.com/?ref=' + d.code;
+    const msg = "Je viens de créer mon portfolio avec Mental Studio, c'est vraiment bien fait. Essaie via mon lien : " + link;
+
+    let html = '';
+
+    html += '<div style="font-size:12.5px;color:#a1a1aa;line-height:1.6;margin-bottom:16px;">'
+          + 'Partagez votre lien. Dès qu\'une personne l\'utilise et publie son premier portfolio, '
+          + '<strong style="color:#10b981;">vous gagnez un téléchargement gratuit</strong>.'
+          + '</div>';
+
+    html += '<div class="ref-link-box">'
+          + '<div class="ref-link-input" id="ref-link-value">' + link + '</div>'
+          + '<button class="ref-copy-btn" onclick="copyReferralLink()">Copier</button>'
+          + '</div>';
+
+    html += '<div class="ref-share-row">'
+          + '<button class="ref-share-btn" onclick="shareReferral(\'whatsapp\')"><i class="ri-whatsapp-line"></i> WhatsApp</button>'
+          + '<button class="ref-share-btn" onclick="shareReferral(\'facebook\')"><i class="ri-facebook-circle-line"></i> Facebook</button>'
+          + '<button class="ref-share-btn" onclick="shareReferral(\'x\')"><i class="ri-twitter-x-line"></i> X</button>'
+          + '</div>';
+
+    if(d.newlyRewarded > 0){
+        html += '<div class="ref-reward">'
+              + '<div class="ref-reward-title">🎉 Récompense débloquée !</div>'
+              + '<div class="ref-reward-sub">Votre prochain téléchargement est offert. Il s\'appliquera automatiquement.</div>'
+              + '</div>';
+    } else if(d.rewardAvailable && d.totalRewarded > 0){
+        html += '<div class="ref-reward">'
+              + '<div class="ref-reward-title">Téléchargement gratuit disponible</div>'
+              + '<div class="ref-reward-sub">Il s\'appliquera automatiquement à votre prochain téléchargement.</div>'
+              + '</div>';
+    }
+
+    html += '<div class="ref-stat-row">'
+          + '<div class="ref-stat"><div class="ref-stat-num">' + d.totalReferred + '</div><div class="ref-stat-lbl">Personnes<br>parrainées</div></div>'
+          + '<div class="ref-stat"><div class="ref-stat-num">' + d.totalPaid + '</div><div class="ref-stat-lbl">Ont publié<br>leur portfolio</div></div>'
+          + '<div class="ref-stat"><div class="ref-stat-num">' + d.totalRewarded + '</div><div class="ref-stat-lbl">Récompenses<br>obtenues</div></div>'
+          + '</div>';
+
+    html += '<div style="font-size:10.5px;color:#52525b;text-align:center;line-height:1.5;">'
+          + 'Votre code : <strong style="color:#a5b4fc;">' + d.code + '</strong>'
+          + '</div>';
+
+    body.innerHTML = html;
+    window.__referralLink = link;
+    window.__referralMsg = msg;
+}
+
+function copyReferralLink(){
+    const link = window.__referralLink;
+    if(!link) return;
+    if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(link).then(function(){
+            if(typeof showToast==='function') showToast('✅ Lien copié !');
+        }).catch(function(){
+            fallbackCopyReferral(link);
+        });
+    } else {
+        fallbackCopyReferral(link);
+    }
+}
+
+function fallbackCopyReferral(text){
+    try{
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        if(typeof showToast==='function') showToast('✅ Lien copié !');
+    } catch(err){
+        if(typeof showToast==='function') showToast('Copiez le lien manuellement.');
+    }
+}
+
+function shareReferral(network){
+    const link = window.__referralLink;
+    const msg = window.__referralMsg;
+    if(!link) return;
+    let url = '';
+    if(network === 'whatsapp'){
+        url = 'https://wa.me/?text=' + encodeURIComponent(msg);
+    } else if(network === 'facebook'){
+        url = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(link);
+    } else if(network === 'x'){
+        url = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(msg);
+    }
+    if(url) window.open(url, '_blank', 'noopener');
+}
 
 // ── TABLEAU DE BORD ADMINISTRATEUR ────────────────────────
 function fmtMoney(n){
@@ -8682,6 +9415,51 @@ function endTutorial(){
         style="padding:11px 28px;background:#1a1a1a;color:#f1f5f9;border:1px solid #333;border-radius:100px;font-size:12px;font-weight:700;cursor:pointer;">
         Fermer
       </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     QR CODE — le propriétaire saisit l'adresse de son portfolio
+     publié et obtient un QR code à imprimer (carte de visite,
+     affiche, dos de CV…).
+     ═══════════════════════════════════════════════════════ -->
+<div id="qr-modal" onclick="if(event.target===this)closeQrModal()">
+  <div id="qr-card">
+    <div class="ph-head">
+      <span><i class="ri-qr-code-line" style="color:#a5b4fc;"></i> QR code de mon portfolio</span>
+      <button class="ph-close" onclick="closeQrModal()">✕</button>
+    </div>
+    <div class="ph-body" style="padding:20px;overflow-y:auto;">
+      <div style="font-size:12.5px;color:#a1a1aa;line-height:1.6;margin-bottom:14px;">
+        Saisissez l'adresse où votre portfolio est publié. Vous obtiendrez un QR code
+        à imprimer sur une carte de visite, une affiche ou au dos de votre CV.
+      </div>
+
+      <label style="font-size:11px;font-weight:700;color:#94a3b8;display:block;margin-bottom:6px;">Adresse de votre portfolio</label>
+      <input type="url" id="qr-url" placeholder="https://monsite.com"
+        oninput="generateQrCode()"
+        style="width:100%;padding:11px 14px;border:1.5px solid #262626;border-radius:10px;background:#0a0a0a;color:#f1f5f9;font-size:13px;font-family:'DM Sans',sans-serif;margin-bottom:16px;">
+
+      <div id="qr-result" style="text-align:center;">
+        <div class="adm-empty">Saisissez une adresse pour générer le QR code.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     PARRAINAGE — le parrain gagne un téléchargement gratuit
+     dès qu'un filleul effectue son premier paiement.
+     ═══════════════════════════════════════════════════════ -->
+<div id="referral-modal" onclick="if(event.target===this)closeReferralModal()">
+  <div id="referral-card">
+    <div class="ph-head">
+      <span><i class="ri-gift-line" style="color:#10b981;"></i> Parrainer un ami</span>
+      <button class="ph-close" onclick="closeReferralModal()">✕</button>
+    </div>
+    <div class="ph-body" id="referral-body" style="padding:20px;overflow-y:auto;">
+      <div class="adm-empty">Chargement…</div>
     </div>
   </div>
 </div>
