@@ -402,6 +402,17 @@ textarea.input-control{min-height:75px;resize:none;line-height:1.6;}
 .theme-card:hover{border-color:var(--ui-accent);transform:translateY(-1px);}
 .theme-card.active{border-color:var(--ui-accent);box-shadow:0 0 0 2px var(--ui-accent-glow);}
 .theme-card.active::after{content:'✓';position:absolute;top:4px;right:4px;width:14px;height:14px;border-radius:50%;background:var(--ui-accent);color:white;font-size:8px;display:flex;align-items:center;justify-content:center;font-weight:800;}
+
+/* ── ENSEIGNEMENTS SUR LES THÈMES ── */
+.theme-insight{
+    position:absolute;top:4px;left:4px;
+    padding:1px 6px;border-radius:100px;
+    font-size:7.5px;font-weight:800;letter-spacing:.3px;
+    text-transform:uppercase;z-index:2;pointer-events:none;
+}
+.theme-insight.ti-top{background:#10b981;color:#fff;}
+.theme-insight.ti-pop{background:#6366f1;color:#fff;}
+.theme-insight.ti-metier{background:#fbbf24;color:#1a1a1a;}
 .theme-preview-box{height:32px;border-radius:5px;margin-bottom:6px;}
 .theme-name{font-size:10px;font-weight:700;font-family:'DM Sans',sans-serif;}
 .theme-cat{font-size:8px;color:var(--ui-muted);text-transform:uppercase;letter-spacing:.5px;margin-top:1px;}
@@ -532,7 +543,7 @@ textarea.input-control{min-height:75px;resize:none;line-height:1.6;}
    navigateur simulé et passeraient derrière sa barre (36px).
    On les décale dessous. Dans le portfolio exporté, ce cadre
    n'existe pas : ils gardent leur position d'origine. */
-#app-container #pf-lang-widget{top:48px;}
+#app-container #pf-lang-widget{top:48px!important;}
 #pf-read-progress-fill{
     height:100%;width:0%;
     background:currentColor;
@@ -631,6 +642,97 @@ a.pf-project-info:hover .pf-project-title{text-decoration:underline;}
 .pf-skills-section{margin-top:50px;}
 .pf-skills-section h3{font-size:20px;font-weight:700;margin-bottom:16px;}
 .pf-skills-grid{display:flex;flex-wrap:wrap;gap:10px;}
+
+/* ── BASCULE CLAIR / SOMBRE DU VISITEUR ── */
+#pf-theme-switch{
+    position:fixed;top:12px;left:12px;z-index:9997;
+    width:34px;height:34px;border-radius:50%;
+    background:rgba(0,0,0,.5);color:#fff;
+    border:1px solid rgba(255,255,255,.18);
+    cursor:pointer;font-size:15px;
+    display:flex;align-items:center;justify-content:center;
+    backdrop-filter:blur(8px);
+    transition:transform .25s ease,background .25s ease;
+}
+#pf-theme-switch:hover{transform:scale(1.1);background:rgba(0,0,0,.7);}
+#app-container #pf-theme-switch{top:48px!important;}
+
+/* Bouton d'impression / export PDF du portfolio publié.
+   Décalé pour ne jamais chevaucher la bascule clair/sombre. */
+#pf-print-btn{
+    position:fixed;top:12px;left:54px;z-index:9997;
+    width:34px;height:34px;border-radius:50%;
+    background:rgba(0,0,0,.5);color:#fff;
+    border:1px solid rgba(255,255,255,.18);
+    cursor:pointer;font-size:15px;
+    display:flex;align-items:center;justify-content:center;
+    backdrop-filter:blur(8px);
+    transition:transform .25s ease,background .25s ease;
+}
+#pf-print-btn:hover{transform:scale(1.1);background:rgba(0,0,0,.7);}
+#app-container #pf-print-btn{top:48px!important;}
+.pf-inverted #pf-print-btn{filter:invert(1) hue-rotate(180deg);}
+
+/* Mode inversé : appliqué par le visiteur, il retourne les
+   couleurs du portfolio sans toucher aux images ni aux vidéos,
+   pour rester lisible quel que soit le thème choisi. */
+.pf-inverted{
+    filter:invert(1) hue-rotate(180deg);
+}
+.pf-inverted img,
+.pf-inverted iframe,
+.pf-inverted video,
+.pf-inverted #pf-theme-switch{
+    filter:invert(1) hue-rotate(180deg);
+}
+
+/* ── FORMULAIRE DE CONTACT ── */
+.pf-contact-form-section{margin:48px 0;}
+.pf-cform{
+    max-width:560px;
+    display:flex;flex-direction:column;gap:12px;
+}
+.pf-cform-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.pf-cform-input{
+    width:100%;
+    padding:13px 16px;
+    border-radius:12px;
+    border:1.5px solid color-mix(in srgb, currentColor 22%, transparent);
+    background:color-mix(in srgb, currentColor 4%, transparent);
+    color:inherit;
+    font-family:inherit;
+    font-size:14px;
+    box-sizing:border-box;
+    transition:border-color .25s ease, background .25s ease;
+}
+.pf-cform-input::placeholder{color:currentColor;opacity:.45;}
+.pf-cform-input:focus{
+    outline:none;
+    border-color:currentColor;
+    background:color-mix(in srgb, currentColor 8%, transparent);
+}
+.pf-cform-textarea{resize:vertical;min-height:120px;line-height:1.6;}
+.pf-cform-btn{
+    align-self:flex-start;
+    padding:14px 32px;
+    border-radius:100px;
+    border:1.5px solid currentColor;
+    background:transparent;
+    color:inherit;
+    font-family:inherit;
+    font-size:13px;font-weight:700;
+    cursor:pointer;
+    transition:transform .25s ease, box-shadow .25s ease, opacity .25s ease;
+}
+.pf-cform-btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px -6px currentColor;}
+.pf-cform-btn:disabled{opacity:.55;cursor:not-allowed;transform:none;}
+.pf-cform-feedback{font-size:12.5px;line-height:1.5;display:none;}
+.pf-cform-feedback.pf-cform-ok{display:block;color:#10b981;}
+.pf-cform-feedback.pf-cform-err{display:block;color:#ef4444;}
+@media(max-width:768px){
+    .pf-cform-row{grid-template-columns:1fr;}
+}
+.device-mobile .pf-cform-row{grid-template-columns:1fr!important;}
 
 /* ── VIDÉO DANS LES PROJETS ── */
 .pf-project-video{
@@ -3252,6 +3354,33 @@ radial-gradient(circle at 50% 50%,rgba(255,183,77,.06) 0%,transparent 50%);}
 }
 .sp-load-btn:hover { opacity:.85; }
 
+/* ── GESTION MULTI-PORTFOLIOS ── */
+.sp-new-btn{
+  width:100%;padding:11px;margin-bottom:12px;
+  background:linear-gradient(135deg,#6366f1,#a855f7);
+  color:#fff;border:none;border-radius:10px;
+  font-size:12.5px;font-weight:700;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  transition:.2s;
+}
+.sp-new-btn:hover{opacity:.9;transform:translateY(-1px);}
+.sp-item-current{border-color:#6366f1!important;background:#12121e!important;}
+.sp-badge{
+  display:inline-block;margin-left:7px;padding:2px 7px;
+  border-radius:100px;background:rgba(99,102,241,.2);color:#a5b4fc;
+  font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;
+  vertical-align:middle;
+}
+.sp-actions{display:flex;align-items:center;gap:5px;flex-shrink:0;}
+.sp-icon-btn{
+  width:28px;height:28px;border-radius:7px;
+  background:#1a1a1a;border:1px solid #262626;color:#a1a1aa;
+  cursor:pointer;font-size:13px;display:flex;
+  align-items:center;justify-content:center;transition:.15s;
+}
+.sp-icon-btn:hover{border-color:#3f3f46;color:#f1f5f9;}
+.sp-icon-btn.sp-danger:hover{border-color:#ef4444;color:#ef4444;}
+
 /* ── MODAL AVIS UTILISATEUR ── */
 #feedback-modal {
   display:none; position:fixed; inset:0; background:rgba(0,0,0,0.78);
@@ -3353,6 +3482,229 @@ radial-gradient(circle at 50% 50%,rgba(255,183,77,.06) 0%,transparent 50%);}
 .adm-fb-msg{font-size:11.5px;color:#a1a1aa;line-height:1.55;}
 .adm-fb-date{font-size:9.5px;color:#52525b;margin-top:5px;}
 .adm-empty{text-align:center;padding:26px;color:#52525b;font-size:12px;}
+
+/* ── LISIBILITÉ ── */
+#a11y-modal {
+  display:none; position:fixed; inset:0; background:rgba(0,0,0,0.82);
+  z-index:99998; align-items:center; justify-content:center; padding:20px;
+  overflow-y:auto;
+}
+#a11y-modal.open { display:flex; }
+#a11y-card {
+  background:#0a0a0a; border:1px solid #262626;
+  border-radius:20px; width:100%; max-width:460px; max-height:88vh;
+  overflow:hidden; display:flex; flex-direction:column;
+  animation:authIn .3s ease; margin:auto;
+}
+#a11y-card .ph-head {
+  padding:18px 22px; font-size:15px; font-weight:700; color:#f1f5f9;
+  border-bottom:1px solid #262626; display:flex;
+  align-items:center; justify-content:space-between; flex-shrink:0; gap:8px;
+}
+#a11y-card .ph-close {
+  background:transparent; border:none; cursor:pointer; color:#71717a;
+  font-size:20px; width:32px; height:32px; border-radius:8px;
+  display:flex; align-items:center; justify-content:center; transition:.15s;
+}
+#a11y-card .ph-close:hover { background:#1a1a1a; color:#f1f5f9; }
+.a11y-row{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  background:#141414;border:1px solid #262626;border-radius:10px;
+  padding:11px 13px;margin-bottom:7px;
+}
+.a11y-name{font-size:12px;color:#e2e8f0;font-weight:600;}
+.a11y-ratio{font-size:11px;font-family:monospace;color:#94a3b8;}
+.a11y-verdict{
+  font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;
+  padding:3px 8px;border-radius:100px;flex-shrink:0;
+}
+.a11y-ok{background:rgba(16,185,129,.15);color:#10b981;}
+.a11y-warn{background:rgba(251,191,36,.15);color:#fbbf24;}
+.a11y-bad{background:rgba(239,68,68,.15);color:#f87171;}
+
+/* ── ASSISTANT ── */
+#assistant-modal {
+  display:none; position:fixed; inset:0; background:rgba(0,0,0,0.82);
+  z-index:99998; align-items:center; justify-content:center; padding:20px;
+  overflow-y:auto;
+}
+#assistant-modal.open { display:flex; }
+#assistant-card {
+  background:#0a0a0a; border:1px solid #262626;
+  border-radius:20px; width:100%; max-width:480px; max-height:88vh;
+  overflow:hidden; display:flex; flex-direction:column;
+  animation:authIn .3s ease; margin:auto;
+}
+#assistant-card .ph-head {
+  padding:18px 22px; font-size:15px; font-weight:700; color:#f1f5f9;
+  border-bottom:1px solid #262626; display:flex;
+  align-items:center; justify-content:space-between; flex-shrink:0; gap:8px;
+}
+#assistant-card .ph-close {
+  background:transparent; border:none; cursor:pointer; color:#71717a;
+  font-size:20px; width:32px; height:32px; border-radius:8px;
+  display:flex; align-items:center; justify-content:center; transition:.15s;
+}
+#assistant-card .ph-close:hover { background:#1a1a1a; color:#f1f5f9; }
+
+.as-score-wrap{text-align:center;margin-bottom:20px;}
+.as-score-num{
+  font-family:'Syne',sans-serif;font-size:46px;font-weight:800;line-height:1;
+}
+.as-score-max{font-size:16px;opacity:.4;font-weight:700;}
+.as-score-label{font-size:12.5px;color:#a1a1aa;margin-top:6px;}
+.as-bar{
+  height:7px;background:#1a1a1a;border-radius:100px;
+  overflow:hidden;margin-top:12px;
+}
+.as-bar-fill{height:100%;border-radius:100px;transition:width .6s cubic-bezier(.4,0,.2,1);}
+
+.as-group-title{
+  font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;
+  color:#71717a;margin:18px 0 9px;
+}
+.as-tip{
+  display:flex;gap:11px;align-items:flex-start;
+  background:#141414;border:1px solid #262626;border-radius:11px;
+  padding:12px 14px;margin-bottom:7px;
+}
+.as-tip-icon{
+  width:26px;height:26px;border-radius:8px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:13px;
+}
+.as-crit{background:rgba(239,68,68,.14);color:#f87171;}
+.as-imp{background:rgba(251,191,36,.14);color:#fbbf24;}
+.as-nice{background:rgba(99,102,241,.14);color:#a5b4fc;}
+.as-tip-title{font-size:12.5px;font-weight:700;color:#e2e8f0;margin-bottom:3px;}
+.as-tip-desc{font-size:11.5px;color:#94a3b8;line-height:1.55;}
+.as-done{
+  text-align:center;padding:22px;background:rgba(16,185,129,.08);
+  border:1px solid rgba(16,185,129,.25);border-radius:12px;
+}
+.as-done-title{font-size:14px;font-weight:700;color:#10b981;margin-bottom:5px;}
+.as-done-desc{font-size:12px;color:#a1a1aa;line-height:1.6;}
+
+/* ── HISTORIQUE DE VERSIONS ── */
+#versions-modal {
+  display:none; position:fixed; inset:0; background:rgba(0,0,0,0.82);
+  z-index:99998; align-items:center; justify-content:center; padding:20px;
+  overflow-y:auto;
+}
+#versions-modal.open { display:flex; }
+#versions-card {
+  background:#0a0a0a; border:1px solid #262626;
+  border-radius:20px; width:100%; max-width:480px; max-height:88vh;
+  overflow:hidden; display:flex; flex-direction:column;
+  animation:authIn .3s ease; margin:auto;
+}
+#versions-card .ph-head {
+  padding:18px 22px; font-size:15px; font-weight:700; color:#f1f5f9;
+  border-bottom:1px solid #262626; display:flex;
+  align-items:center; justify-content:space-between; flex-shrink:0; gap:8px;
+}
+#versions-card .ph-close {
+  background:transparent; border:none; cursor:pointer; color:#71717a;
+  font-size:20px; width:32px; height:32px; border-radius:8px;
+  display:flex; align-items:center; justify-content:center; transition:.15s;
+}
+#versions-card .ph-close:hover { background:#1a1a1a; color:#f1f5f9; }
+.ver-item{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  background:#141414;border:1px solid #262626;border-radius:11px;
+  padding:12px 14px;margin-bottom:7px;
+}
+.ver-label{font-size:12.5px;font-weight:600;color:#e2e8f0;}
+.ver-date{font-size:10.5px;color:#71717a;margin-top:3px;}
+.ver-restore{
+  padding:7px 15px;border-radius:8px;border:1px solid #6366f1;
+  background:rgba(99,102,241,.12);color:#a5b4fc;
+  font-size:11.5px;font-weight:700;cursor:pointer;transition:.18s;flex-shrink:0;
+}
+.ver-restore:hover{background:rgba(99,102,241,.25);}
+
+/* ── STATISTIQUES ── */
+#stats-modal {
+  display:none; position:fixed; inset:0; background:rgba(0,0,0,0.82);
+  z-index:99998; align-items:center; justify-content:center; padding:20px;
+  overflow-y:auto;
+}
+#stats-modal.open { display:flex; }
+#stats-card {
+  background:#0a0a0a; border:1px solid #262626;
+  border-radius:20px; width:100%; max-width:560px; max-height:88vh;
+  overflow:hidden; display:flex; flex-direction:column;
+  animation:authIn .3s ease; margin:auto;
+}
+#stats-card .ph-head {
+  padding:18px 22px; font-size:15px; font-weight:700; color:#f1f5f9;
+  border-bottom:1px solid #262626; display:flex;
+  align-items:center; justify-content:space-between; flex-shrink:0; gap:8px;
+}
+#stats-card .ph-close {
+  background:transparent; border:none; cursor:pointer; color:#71717a;
+  font-size:20px; width:32px; height:32px; border-radius:8px;
+  display:flex; align-items:center; justify-content:center; transition:.15s;
+}
+#stats-card .ph-close:hover { background:#1a1a1a; color:#f1f5f9; }
+.st-chart{
+  display:flex;align-items:flex-end;gap:3px;height:70px;
+  background:#141414;border:1px solid #262626;border-radius:12px;
+  padding:12px;margin-bottom:14px;
+}
+.st-bar{
+  flex:1;background:linear-gradient(180deg,#6366f1,#4338ca);
+  border-radius:3px 3px 0 0;min-height:2px;transition:height .4s ease;
+}
+.st-list-row{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:8px 12px;background:#141414;border:1px solid #262626;
+  border-radius:9px;margin-bottom:6px;
+}
+.st-list-name{font-size:12px;color:#e2e8f0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.st-list-count{font-size:11px;font-weight:700;color:#a5b4fc;flex-shrink:0;}
+
+/* ── MESSAGES REÇUS ── */
+#messages-modal {
+  display:none; position:fixed; inset:0; background:rgba(0,0,0,0.82);
+  z-index:99998; align-items:center; justify-content:center; padding:20px;
+  overflow-y:auto;
+}
+#messages-modal.open { display:flex; }
+#messages-card {
+  background:#0a0a0a; border:1px solid #262626;
+  border-radius:20px; width:100%; max-width:540px; max-height:88vh;
+  overflow:hidden; display:flex; flex-direction:column;
+  animation:authIn .3s ease; margin:auto;
+}
+#messages-card .ph-head {
+  padding:18px 22px; font-size:15px; font-weight:700; color:#f1f5f9;
+  border-bottom:1px solid #262626; display:flex;
+  align-items:center; justify-content:space-between; flex-shrink:0; gap:8px;
+}
+#messages-card .ph-close {
+  background:transparent; border:none; cursor:pointer; color:#71717a;
+  font-size:20px; width:32px; height:32px; border-radius:8px;
+  display:flex; align-items:center; justify-content:center; transition:.15s;
+}
+#messages-card .ph-close:hover { background:#1a1a1a; color:#f1f5f9; }
+.msg-item{
+  background:#141414;border:1px solid #262626;border-radius:12px;
+  padding:13px 15px;margin-bottom:9px;transition:border-color .2s;
+}
+.msg-item.msg-unread{border-color:#6366f1;background:#12121e;}
+.msg-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px;}
+.msg-from{font-size:12.5px;font-weight:700;color:#f1f5f9;}
+.msg-date{font-size:9.5px;color:#52525b;flex-shrink:0;}
+.msg-contact{font-size:11px;color:#a5b4fc;margin-bottom:8px;word-break:break-all;}
+.msg-text{font-size:12.5px;color:#a1a1aa;line-height:1.6;white-space:pre-wrap;}
+.msg-actions{display:flex;gap:8px;margin-top:10px;}
+.msg-btn{
+  padding:7px 14px;border-radius:8px;border:1px solid #262626;
+  background:#1a1a1a;color:#a1a1aa;font-size:11px;font-weight:600;
+  cursor:pointer;text-decoration:none;transition:.18s;display:inline-flex;
+  align-items:center;gap:5px;
+}
+.msg-btn:hover{border-color:#3f3f46;color:#f1f5f9;}
 
 /* ── QR CODE ── */
 #qr-modal {
@@ -3634,6 +3986,15 @@ radial-gradient(circle at 50% 50%,rgba(255,183,77,.06) 0%,transparent 50%);}
                             <button class="account-menu-item" onclick="openFeedbackModal();closeAccountMenu();">
                                 <i class="ri-chat-quote-line"></i> Donner mon avis
                             </button>
+                            <button class="account-menu-item" id="account-versions-btn" onclick="openVersionsModal();closeAccountMenu();" style="display:none;">
+                                <i class="ri-history-line"></i> Historique de versions
+                            </button>
+                            <button class="account-menu-item" id="account-stats-btn" onclick="openStatsModal();closeAccountMenu();" style="display:none;">
+                                <i class="ri-line-chart-line"></i> Statistiques de mon portfolio
+                            </button>
+                            <button class="account-menu-item" id="account-messages-btn" onclick="openMessagesModal();closeAccountMenu();" style="display:none;">
+                                <i class="ri-inbox-line"></i> Messages reçus
+                            </button>
                             <button class="account-menu-item" onclick="openQrModal();closeAccountMenu();">
                                 <i class="ri-qr-code-line"></i> QR code de mon portfolio
                             </button>
@@ -3682,6 +4043,7 @@ radial-gradient(circle at 50% 50%,rgba(255,183,77,.06) 0%,transparent 50%);}
                 <div id="level-dot" style="width:8px;height:8px;border-radius:50%;background:#64748b;flex-shrink:0;animation:levelPulse 2s ease infinite;"></div>
                 <span id="level-label" style="font-size:10px;font-weight:700;color:var(--ui-text);">Basique</span>
                 <span id="score-label" style="font-size:9px;color:var(--ui-muted);">(0 pts)</span>
+                <button id="quality-badge" onclick="openAssistant()" title="Assistant — qualité de votre portfolio" style="display:none;align-items:center;gap:4px;margin-left:6px;padding:2px 9px;border-radius:100px;border:none;cursor:pointer;font-size:9px;font-weight:700;font-family:'DM Sans',sans-serif;transition:.2s;"></button>
             </div>
             <!-- Prix + conversion -->
             <div style="display:flex;align-items:center;gap:5px;">
@@ -4042,6 +4404,69 @@ radial-gradient(circle at 50% 50%,rgba(255,183,77,.06) 0%,transparent 50%);}
                         <span style="font-size:10px;color:var(--ui-muted);">Les sections défilent en profondeur</span>
                     </div>
                     <label class="toggle-switch"><input type="checkbox" id="toggle-parallax" onchange="toggleParallax(this.checked)"><span class="toggle-thumb"></span></label>
+                </div>
+                <div class="input-group" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                    <div>
+                        <label style="margin:0;font-size:12px;font-weight:700;display:block;">Bascule clair / sombre</label>
+                        <span style="font-size:10px;color:var(--ui-muted);">Le visiteur choisit son mode d'affichage</span>
+                    </div>
+                    <label class="toggle-switch"><input type="checkbox" id="toggle-themeswitch" onchange="toggleThemeSwitch(this.checked)"><span class="toggle-thumb"></span></label>
+                </div>
+                <div class="input-group" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                    <div>
+                        <label style="margin:0;font-size:12px;font-weight:700;display:block;">Bouton PDF</label>
+                        <span style="font-size:10px;color:var(--ui-muted);">Le visiteur enregistre le portfolio en PDF</span>
+                    </div>
+                    <label class="toggle-switch"><input type="checkbox" id="toggle-printbtn" onchange="togglePrintBtn(this.checked)"><span class="toggle-thumb"></span></label>
+                </div>
+
+                <!-- ═══ VÉRIFICATION DE LISIBILITÉ ═══ -->
+                <div class="section-label" style="margin-top:18px;"><i class="ri-eye-2-line"></i> Lisibilité<div class="section-label-line"></div></div>
+                <div class="input-group" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                    <div>
+                        <label style="margin:0;font-size:12px;font-weight:700;display:block;">Correction automatique</label>
+                        <span style="font-size:10px;color:var(--ui-muted);">Rend lisible tout texte trop peu contrasté</span>
+                    </div>
+                    <label class="toggle-switch"><input type="checkbox" id="toggle-autofix" onchange="toggleAutoFixContrast(this.checked)"><span class="toggle-thumb"></span></label>
+                </div>
+                <button class="btn btn-ghost" style="width:100%;" onclick="checkAccessibility()">
+                    <i class="ri-search-eye-line"></i> Vérifier la lisibilité
+                </button>
+                <div id="a11y-report" style="font-size:10.5px;color:var(--ui-muted);margin-top:8px;padding:8px 10px;background:var(--ui-surface);border-radius:8px;line-height:1.6;">
+                    Analyse le contraste entre vos textes et leur fond, selon les normes d'accessibilité.
+                </div>
+
+                <!-- ═══ FORMULAIRE DE CONTACT ═══ -->
+                <div class="section-label" style="margin-top:18px;"><i class="ri-mail-send-line"></i> Formulaire de contact<div class="section-label-line"></div></div>
+                <div class="input-group" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                    <div>
+                        <label style="margin:0;font-size:12px;font-weight:700;display:block;">Activer le formulaire</label>
+                        <span style="font-size:10px;color:var(--ui-muted);">Les visiteurs vous écrivent directement</span>
+                    </div>
+                    <label class="toggle-switch"><input type="checkbox" id="toggle-contactform" onchange="toggleContactForm(this.checked)"><span class="toggle-thumb"></span></label>
+                </div>
+                <div id="contactform-info" style="display:none;font-size:10px;color:var(--ui-muted);padding:8px 10px;background:var(--ui-surface);border-radius:8px;line-height:1.5;margin-bottom:8px;">
+                    <i class="ri-information-line"></i> Un formulaire apparaîtra sur votre portfolio. Les messages reçus seront consultables depuis votre menu compte, rubrique « Messages reçus ».
+                </div>
+
+                <!-- ═══ PROTECTION PAR MOT DE PASSE ═══ -->
+                <div class="section-label" style="margin-top:18px;"><i class="ri-lock-2-line"></i> Accès privé<div class="section-label-line"></div></div>
+                <div class="input-group" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                    <div>
+                        <label style="margin:0;font-size:12px;font-weight:700;display:block;">Protéger par mot de passe</label>
+                        <span style="font-size:10px;color:var(--ui-muted);">Pour un partage confidentiel</span>
+                    </div>
+                    <label class="toggle-switch"><input type="checkbox" id="toggle-password" onchange="togglePasswordProtect(this.checked)"><span class="toggle-thumb"></span></label>
+                </div>
+                <div id="password-options" style="display:none;">
+                    <div class="input-group">
+                        <label>Mot de passe d'accès</label>
+                        <input type="text" id="inp-portfolio-password" class="input-control" oninput="updatePortfolioPassword(this.value)" placeholder="Ex : Client2026">
+                    </div>
+                    <div style="font-size:10px;color:var(--ui-muted);padding:8px 10px;background:var(--ui-surface);border-radius:8px;border-left:2px solid #f59e0b;line-height:1.5;">
+                        Ce mot de passe écarte les visiteurs non désirés, mais il est présent dans le fichier :
+                        ne l'utilisez pas pour protéger des informations réellement sensibles.
+                    </div>
                 </div>
 
         </div>
@@ -4526,7 +4951,13 @@ const state={
     footer:{enabled:false,copyright:'',email:'',location:''},
     multiPage:false,
     cursorGlow:false,
-    parallax:false
+    parallax:false,
+    themeSwitch:false,
+    autoFixContrast:false,
+    contactForm:false,
+    currentPortfolioId:null,
+    printBtn:false,
+    passwordProtect:{enabled:false, password:''}
 };
 
 // Instantané figé des animations de section d'origine — sert
@@ -4538,6 +4969,13 @@ const DEFAULT_SECTION_ANIMS = Object.freeze({...state.sectionAnims});
 // Clé de sauvegarde locale — déclarée tôt car restoreStateFromLocalStorage()
 // est appelée avant l'initialisation de l'éditeur, plus loin dans ce script.
 const LOCAL_STATE_KEY = 'mental_studio_portfolio_draft_v1';
+
+// Variables d'authentification déclarées tôt : render() et
+// plusieurs réglages les consultent bien avant l'initialisation
+// du système de connexion, plus bas dans ce script.
+let supabaseClient = null;
+let currentUser = null;
+let autoSaveTimer = null;
 
 // Constantes du tutoriel — déclarées tôt car maybeStartTutorial()
 // est appelée dès le chargement de la page, avant l'initialisation
@@ -4984,6 +5422,25 @@ function render(){
     </div>
 </div>` : '';
 
+    // Formulaire de contact — l'identifiant du propriétaire est
+    // embarqué pour que les messages lui parviennent. On n'y met
+    // jamais son email : ce serait offert aux robots collecteurs.
+    const ownerId = (typeof currentUser !== 'undefined' && currentUser && currentUser.id) ? currentUser.id : '';
+    const contactFormH = (state.contactForm && ownerId) ? `
+<div class="pf-contact-form-section anim-el">
+    <h3 class="pf-section-sub-title">Me contacter</h3>
+    <form class="pf-cform" data-owner="${ownerId}" onsubmit="return false;">
+        <div class="pf-cform-row">
+            <input type="text" class="pf-cform-input" name="name" placeholder="Votre nom *" required>
+            <input type="email" class="pf-cform-input" name="email" placeholder="Votre email *" required>
+        </div>
+        <input type="tel" class="pf-cform-input" name="phone" placeholder="Votre téléphone (facultatif)">
+        <textarea class="pf-cform-input pf-cform-textarea" name="message" rows="5" placeholder="Votre message *" required></textarea>
+        <div class="pf-cform-feedback"></div>
+        <button type="button" class="pf-cform-btn">Envoyer le message</button>
+    </form>
+</div>` : '';
+
     // Réservation en ligne
     const bookingH = state.booking.enabled ? (() => {
         const link = state.booking.link || (state.booking.phone ? `https://wa.me/${state.booking.phone.replace(/\D/g,'')}` : '#');
@@ -5081,6 +5538,8 @@ function render(){
     vp.innerHTML=`
 <div id="pf-read-progress"><div id="pf-read-progress-fill"></div></div>
 ${state.cursorGlow ? '<div id="pf-cursor-glow"></div>' : ''}
+${state.themeSwitch ? '<button id="pf-theme-switch" onclick="togglePortfolioTheme()" title="Changer le mode d\'affichage"><i class="ri-contrast-2-line"></i></button>' : ''}
+${state.printBtn ? '<button id="pf-print-btn" onclick="window.print()" title="Enregistrer en PDF"><i class="ri-printer-line"></i></button>' : ''}
 <div class="pf-container" style="padding:${state.spacing}px 40px;">
 ${state.multiPage ? buildMultiPageNav() : ''}
 <div id="pf-sec-hero" data-page="pf-sec-hero" class="pf-section-page">
@@ -5095,7 +5554,7 @@ ${state.multiPage ? buildMultiPageNav() : ''}
 <div id="pf-sec-projects" data-page="pf-sec-projects" class="pf-section-page">
 <div class="pf-projects-wrap"><h2 class="pf-section-title anim-el">${state.data.sectionTitle||'Travaux & Projets'}</h2><div class="pf-projects" style="grid-template-columns:${gridMap[state.gridCols]||'1fr 1fr'};">${projH}</div></div>
 </div>
-<div id="pf-sec-contact" data-page="pf-sec-contact" class="pf-section-page"></div>
+<div id="pf-sec-contact" data-page="pf-sec-contact" class="pf-section-page">${contactFormH}</div>
 ${buildFooterHTML()}
 ${buildEditorSignatureHTML()}
 </div>${chatH}${langH}`;
@@ -5110,6 +5569,12 @@ ${buildEditorSignatureHTML()}
     if(typeof initReadProgress==='function') initReadProgress();
     if(typeof initVisualEffects==='function') initVisualEffects();
     if(typeof initCounters==='function') initCounters();
+    if(typeof updateQualityBadge==='function') updateQualityBadge();
+    // Le thème ou le contenu vient peut-être de changer : on
+    // recalcule la correction de lisibilité sur le nouveau rendu.
+    if(state.autoFixContrast && typeof applyAutoFixContrast==='function'){
+        requestAnimationFrame(applyAutoFixContrast);
+    }
     if(typeof updatePhotoAnimBtn==='function') updatePhotoAnimBtn();
     // Multi-pages: afficher seulement la section active
     if(state.multiPage && typeof showOnlySection==='function'){
@@ -5315,6 +5780,24 @@ function initEditor(){
     if(tgGlow) tgGlow.checked = !!state.cursorGlow;
     var tgPara = document.getElementById('toggle-parallax');
     if(tgPara) tgPara.checked = !!state.parallax;
+    var tgThemeSw = document.getElementById('toggle-themeswitch');
+    if(tgThemeSw) tgThemeSw.checked = !!state.themeSwitch;
+    var tgAutoFix = document.getElementById('toggle-autofix');
+    if(tgAutoFix) tgAutoFix.checked = !!state.autoFixContrast;
+    var tgCForm = document.getElementById('toggle-contactform');
+    if(tgCForm) tgCForm.checked = !!state.contactForm;
+    var cfInfo = document.getElementById('contactform-info');
+    if(cfInfo) cfInfo.style.display = state.contactForm ? 'block' : 'none';
+    var tgPrint = document.getElementById('toggle-printbtn');
+    if(tgPrint) tgPrint.checked = !!state.printBtn;
+    var tgPw = document.getElementById('toggle-password');
+    if(tgPw && state.passwordProtect){
+        tgPw.checked = !!state.passwordProtect.enabled;
+        var pwOpts = document.getElementById('password-options');
+        if(pwOpts) pwOpts.style.display = state.passwordProtect.enabled ? 'block' : 'none';
+        var pwInput = document.getElementById('inp-portfolio-password');
+        if(pwInput) pwInput.value = state.passwordProtect.password || '';
+    }
 
     document.getElementById('inp-name').value=state.data.name;
     document.getElementById('inp-role').value=state.data.role;
@@ -5324,7 +5807,11 @@ function initEditor(){
     document.getElementById('inp-ctaType').value=state.data.ctaType||'url';
     document.getElementById('inp-section-title').value=state.data.sectionTitle;
     document.getElementById('layout-catalog').innerHTML=layoutCatalogData.map(l=>`<div class="layout-card ${state.activeLayout===l.id?'active':''}" onclick="selectLayout('${l.id}')" id="layout-${l.id}"><i class="${l.icon} layout-icon"></i><div class="layout-name">${l.name}</div></div>`).join('');
-    document.getElementById('theme-catalog').innerHTML=themeCatalogData.map(t=>`<div class="theme-card ${state.activeTheme===t.id?'active':''}" onclick="selectTheme('${t.id}')" id="theme-${t.id}"><div class="theme-preview-box" style="background:linear-gradient(135deg,${t.c1} 50%,${t.c2} 50%)"></div><div class="theme-name">${t.name}</div><div class="theme-cat">${t.cat}</div></div>`).join('');
+    document.getElementById('theme-catalog').innerHTML=themeCatalogData.map(t=>{
+        const ins = (window.__themeInsights && window.__themeInsights[t.id]) || null;
+        const badge = ins ? `<div class="theme-insight ${ins.cls}" title="${ins.title}">${ins.label}</div>` : '';
+        return `<div class="theme-card ${state.activeTheme===t.id?'active':''}" onclick="selectTheme('${t.id}')" id="theme-${t.id}">${badge}<div class="theme-preview-box" style="background:linear-gradient(135deg,${t.c1} 50%,${t.c2} 50%)"></div><div class="theme-name">${t.name}</div><div class="theme-cat">${t.cat}</div></div>`;
+    }).join('');
     const simpleAnims = animCatalogData.filter(a=>a.cat==='simple');
     const advAnims = animCatalogData.filter(a=>a.cat==='advanced');
     const renderAnimCards = (arr) => arr.map(a=>`<div class="anim-card ${state.activeAnim===a.id?'active':''}" onclick="selectAnim('${a.id}')" id="anim-${a.id}"><div class="anim-card-icon">${a.icon}</div><div class="anim-card-name">${a.name}</div><div class="anim-card-desc">${a.desc}</div></div>`).join('');
@@ -5370,6 +5857,311 @@ function toggleCursorGlow(val){
 function toggleParallax(val){
     state.parallax = val;
     render();
+}
+
+// Bascule le mode d'affichage du portfolio pour le visiteur.
+// Définie globalement car le bouton l'appelle depuis le contenu
+// rendu, aussi bien dans l'aperçu que dans le portfolio publié.
+function togglePortfolioTheme(){
+    const vp = document.getElementById('portfolio-viewport') || document.body;
+    vp.classList.toggle('pf-inverted');
+}
+
+// ── BASCULE CLAIR / SOMBRE POUR LE VISITEUR ───────────────
+function toggleThemeSwitch(val){
+    state.themeSwitch = val;
+    render();
+}
+
+function togglePrintBtn(val){
+    state.printBtn = val;
+    render();
+}
+
+// ── VÉRIFICATION DE LISIBILITÉ (CONTRASTE) ────────────────
+// Applique la formule officielle de luminance relative des
+// normes d'accessibilité, sur les couleurs RÉELLEMENT rendues
+// à l'écran — pas sur une supposition tirée du thème.
+function parseRgb(str){
+    if(!str) return null;
+    const m = String(str).match(/rgba?\(([^)]+)\)/);
+    if(!m) return null;
+    const parts = m[1].split(',').map(function(x){ return parseFloat(x.trim()); });
+    if(parts.length < 3) return null;
+    return { r:parts[0], g:parts[1], b:parts[2], a: parts.length > 3 ? parts[3] : 1 };
+}
+
+function relLuminance(c){
+    const f = function(v){
+        v = v / 255;
+        return v <= 0.03928 ? v/12.92 : Math.pow((v+0.055)/1.055, 2.4);
+    };
+    return 0.2126*f(c.r) + 0.7152*f(c.g) + 0.0722*f(c.b);
+}
+
+function contrastRatio(fg, bg){
+    const l1 = relLuminance(fg), l2 = relLuminance(bg);
+    const light = Math.max(l1,l2), dark = Math.min(l1,l2);
+    return (light + 0.05) / (dark + 0.05);
+}
+
+// Remonte les parents jusqu'à trouver un fond réellement opaque,
+// car un élément transparent hérite visuellement de son parent.
+function effectiveBackground(el){
+    let node = el;
+    while(node && node !== document.documentElement){
+        const bg = parseRgb(getComputedStyle(node).backgroundColor);
+        if(bg && bg.a > 0.85) return bg;
+        node = node.parentElement;
+    }
+    return { r:255, g:255, b:255, a:1 };
+}
+
+// ── CORRECTION AUTOMATIQUE DE LISIBILITÉ ──────────────────
+// Certains thèmes, ou certaines combinaisons choisies par
+// l'utilisateur, produisent des textes trop peu contrastés.
+// Ce mécanisme les détecte et ajuste leur couleur jusqu'à ce
+// qu'ils redeviennent lisibles — en restant le plus proche
+// possible de la teinte d'origine, pour préserver le style du
+// thème plutôt que de tout forcer en noir ou blanc.
+
+function rgbToHsl(c){
+    const r=c.r/255, g=c.g/255, b=c.b/255;
+    const mx=Math.max(r,g,b), mn=Math.min(r,g,b);
+    let h=0, s=0; const l=(mx+mn)/2;
+    if(mx!==mn){
+        const d=mx-mn;
+        s = l>0.5 ? d/(2-mx-mn) : d/(mx+mn);
+        if(mx===r) h=(g-b)/d+(g<b?6:0);
+        else if(mx===g) h=(b-r)/d+2;
+        else h=(r-g)/d+4;
+        h/=6;
+    }
+    return {h:h, s:s, l:l};
+}
+
+function hslToRgb(hsl){
+    const {h,s,l} = hsl;
+    if(s===0){ const v=Math.round(l*255); return {r:v,g:v,b:v,a:1}; }
+    const hue2rgb=function(p,q,t){
+        if(t<0)t+=1; if(t>1)t-=1;
+        if(t<1/6)return p+(q-p)*6*t;
+        if(t<1/2)return q;
+        if(t<2/3)return p+(q-p)*(2/3-t)*6;
+        return p;
+    };
+    const q = l<0.5 ? l*(1+s) : l+s-l*s;
+    const p = 2*l-q;
+    return {
+        r: Math.round(hue2rgb(p,q,h+1/3)*255),
+        g: Math.round(hue2rgb(p,q,h)*255),
+        b: Math.round(hue2rgb(p,q,h-1/3)*255),
+        a: 1
+    };
+}
+
+// Cherche la variante lisible la plus proche de la couleur
+// d'origine : on ne change que sa luminosité, en s'éloignant
+// progressivement jusqu'à franchir le seuil de contraste.
+function findReadableColor(fg, bg, minRatio){
+    if(contrastRatio(fg, bg) >= minRatio) return null;
+
+    const hsl = rgbToHsl(fg);
+    const bgLum = relLuminance(bg);
+    // Sur fond sombre on éclaircit, sur fond clair on assombrit
+    const goLighter = bgLum < 0.5;
+
+    for(let step = 1; step <= 40; step++){
+        const delta = step * 0.025;
+        const l = goLighter
+            ? Math.min(1, hsl.l + delta)
+            : Math.max(0, hsl.l - delta);
+        const candidate = hslToRgb({ h:hsl.h, s:hsl.s, l:l });
+        if(contrastRatio(candidate, bg) >= minRatio) return candidate;
+        if(l === 0 || l === 1) break;
+    }
+
+    // Cas extrême : même au bout du spectre le contraste reste
+    // insuffisant (fond très moyen). On bascule alors vers le
+    // noir ou le blanc, celui qui contraste le mieux.
+    const white = {r:255,g:255,b:255,a:1}, black = {r:0,g:0,b:0,a:1};
+    return contrastRatio(white,bg) >= contrastRatio(black,bg) ? white : black;
+}
+
+// Éléments analysés, avec le seuil qui leur correspond.
+const AUTOFIX_TARGETS = [
+    { sel:'.pf-name',            large:true  },
+    { sel:'.pf-role',            large:false },
+    { sel:'.pf-bio',             large:false },
+    { sel:'.pf-section-title',   large:true  },
+    { sel:'.pf-section-sub-title',large:true },
+    { sel:'.pf-project-title',   large:false },
+    { sel:'.pf-project-desc',    large:false },
+    { sel:'.pf-skill-chip',      large:false },
+    { sel:'.pf-testi-text',      large:false },
+    { sel:'.pf-testi-name',      large:false },
+    { sel:'.pf-testi-role',      large:false },
+    { sel:'.pf-stat-value',      large:true  },
+    { sel:'.pf-stat-label',      large:false },
+    { sel:'.pf-exp-role',        large:false },
+    { sel:'.pf-exp-company',     large:false },
+    { sel:'.pf-exp-desc',        large:false },
+    { sel:'.pf-cert-name',       large:false },
+    { sel:'.pf-footer',          large:false }
+];
+
+function applyAutoFixContrast(){
+    let tag = document.getElementById('autofix-contrast-style');
+    if(!tag){
+        tag = document.createElement('style');
+        tag.id = 'autofix-contrast-style';
+        document.head.appendChild(tag);
+    }
+
+    if(!state.autoFixContrast){ tag.textContent = ''; return 0; }
+
+    const vp = document.getElementById('portfolio-viewport');
+    if(!vp){ tag.textContent = ''; return 0; }
+
+    const rules = [];
+    let fixed = 0;
+
+    AUTOFIX_TARGETS.forEach(function(t){
+        const el = vp.querySelector(t.sel);
+        if(!el) return;
+        const cs = getComputedStyle(el);
+
+        // Un texte en dégradé a un remplissage transparent :
+        // le corriger casserait l'effet voulu, on le laisse.
+        const fillIsGradient = cs.webkitTextFillColor === 'rgba(0, 0, 0, 0)'
+            && cs.backgroundImage && cs.backgroundImage !== 'none';
+        if(fillIsGradient) return;
+
+        const fg = parseRgb(cs.webkitTextFillColor && cs.webkitTextFillColor !== 'rgba(0, 0, 0, 0)'
+            ? cs.webkitTextFillColor : cs.color);
+        if(!fg || fg.a === 0) return;
+
+        const bg = effectiveBackground(el);
+        const min = t.large ? 3 : 4.5;
+        const better = findReadableColor(fg, bg, min);
+        if(!better) return;
+
+        const col = 'rgb(' + better.r + ',' + better.g + ',' + better.b + ')';
+        rules.push('.portfolio-viewport ' + t.sel
+                 + '{color:' + col + '!important;-webkit-text-fill-color:' + col + '!important;}');
+        fixed++;
+    });
+
+    tag.textContent = rules.join('\n');
+    return fixed;
+}
+
+function toggleContactForm(val){
+    state.contactForm = val;
+    var info = document.getElementById('contactform-info');
+    if(info) info.style.display = val ? 'block' : 'none';
+    if(val && (typeof currentUser === 'undefined' || !currentUser)){
+        if(typeof showToast === 'function'){
+            showToast('Connectez-vous pour que les messages vous soient rattachés.');
+        }
+    }
+    render();
+}
+
+function toggleAutoFixContrast(val){
+    state.autoFixContrast = val;
+    render();
+    // Le rendu vient de régénérer le DOM : on mesure ensuite,
+    // sinon les couleurs analysées seraient celles d'avant.
+    requestAnimationFrame(function(){
+        const n = applyAutoFixContrast();
+        const report = document.getElementById('a11y-report');
+        if(report){
+            if(!val){
+                report.innerHTML = 'Correction désactivée — les couleurs d\'origine du thème sont rétablies.';
+            } else if(n > 0){
+                report.innerHTML = '✅ ' + n + ' élément(s) corrigé(s) automatiquement. Vos textes sont désormais lisibles sur ce thème.';
+            } else {
+                report.innerHTML = '✅ Aucun ajustement nécessaire — ce thème est déjà lisible.';
+            }
+        }
+    });
+}
+
+function checkAccessibility(){
+    const report = document.getElementById('a11y-report');
+    if(!report) return;
+    const vp = document.getElementById('portfolio-viewport');
+    if(!vp){ report.textContent = 'Aperçu indisponible.'; return; }
+
+    const targets = [
+        { sel:'.pf-name',        label:'Votre nom',        large:true  },
+        { sel:'.pf-role',        label:'Votre rôle',       large:false },
+        { sel:'.pf-bio',         label:'Votre biographie', large:false },
+        { sel:'.pf-section-title',label:'Titres de section',large:true },
+        { sel:'.pf-project-desc',label:'Textes de projet', large:false },
+        { sel:'.pf-skill-chip',  label:'Compétences',      large:false },
+        { sel:'.pf-testi-text',  label:'Témoignages',      large:false }
+    ];
+
+    const problems = [];
+    let checked = 0;
+
+    targets.forEach(function(t){
+        const el = vp.querySelector(t.sel);
+        if(!el) return;
+        const cs = getComputedStyle(el);
+        let fg = parseRgb(cs.webkitTextFillColor && cs.webkitTextFillColor !== 'rgba(0, 0, 0, 0)'
+            ? cs.webkitTextFillColor : cs.color);
+        if(!fg) return;
+
+        // Un texte en dégradé a un remplissage transparent :
+        // le contraste n'est alors pas mesurable de façon fiable.
+        if(fg.a === 0) return;
+
+        const bg = effectiveBackground(el);
+        const ratio = contrastRatio(fg, bg);
+        checked++;
+
+        // Seuils des normes d'accessibilité : 3:1 pour un grand
+        // texte, 4.5:1 pour un texte courant.
+        const min = t.large ? 3 : 4.5;
+        if(ratio < min){
+            problems.push({ label:t.label, ratio:ratio.toFixed(1), min:min });
+        }
+    });
+
+    if(checked === 0){
+        report.innerHTML = 'Rien à analyser pour le moment — ajoutez du contenu puis relancez.';
+        return;
+    }
+
+    if(problems.length === 0){
+        report.innerHTML = '<span style="color:#10b981;font-weight:700;">✅ Lisibilité correcte</span><br>'
+            + checked + ' élément(s) analysé(s), tous suffisamment contrastés.';
+        return;
+    }
+
+    report.innerHTML = '<span style="color:#f59e0b;font-weight:700;">⚠️ '
+        + problems.length + ' point(s) à améliorer</span><br>'
+        + problems.map(function(p){
+            return '• <strong>' + p.label + '</strong> : contraste ' + p.ratio + ':1 (minimum ' + p.min + ':1)';
+          }).join('<br>')
+        + '<br><span style="opacity:.75;">Essayez un thème plus contrasté, ou modifiez les couleurs dans le thème personnalisé.</span>';
+}
+
+// ── PROTECTION PAR MOT DE PASSE ───────────────────────────
+function togglePasswordProtect(val){
+    if(!state.passwordProtect) state.passwordProtect = { enabled:false, password:'' };
+    state.passwordProtect.enabled = val;
+    const opts = document.getElementById('password-options');
+    if(opts) opts.style.display = val ? 'block' : 'none';
+    render();
+}
+
+function updatePortfolioPassword(val){
+    if(!state.passwordProtect) state.passwordProtect = { enabled:false, password:'' };
+    state.passwordProtect.password = val;
 }
 
 function buildMultiPageNav(){
@@ -6017,6 +6809,9 @@ function activeSidebarTab(tabId,btn){
     const m={data:'tab-data',style:'tab-style',anim:'tab-anim',advanced:'tab-advanced'};
     document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
     document.getElementById(m[tabId]).classList.add('active');
+    // Les repères sur les thèmes ne servent qu'ici : on les charge
+    // au moment où l'utilisateur ouvre cet onglet, pas avant.
+    if(tabId === 'style' && typeof loadThemeInsights === 'function') loadThemeInsights();
 }
 function toggleExportMenu(){
     var menu=document.getElementById('export-menu');
@@ -6590,7 +7385,7 @@ function doExport(){
     // querySelector('style') ne renvoie que le premier bloc, or ces
     // styles-là sont ajoutés au <head> bien après.
     let styles = document.querySelector('style').outerHTML;
-    ['custom-bg-style','anim-section-style'].forEach(function(id){
+    ['custom-bg-style','anim-section-style','autofix-contrast-style'].forEach(function(id){
         const dyn = document.getElementById(id);
         if(dyn && dyn.textContent && dyn.textContent.trim() !== ''){
             styles += '\n' + dyn.outerHTML;
@@ -6637,6 +7432,64 @@ function doExport(){
 
 
     // Protection anti-scraping des emails/téléphones
+    // ── PORTE D'ACCÈS PAR MOT DE PASSE ────────────────────
+    // Écarte les visiteurs non désirés d'un portfolio partagé
+    // en privé. Le mot de passe étant contenu dans le fichier,
+    // c'est un filtre de confort, pas une protection forte —
+    // l'utilisateur en est averti dans l'éditeur.
+    const pwProtect = state.passwordProtect && state.passwordProtect.enabled && state.passwordProtect.password
+        ? state.passwordProtect.password : '';
+
+    const passwordGate = pwProtect ? `
+<div id="pf-gate" style="position:fixed;inset:0;z-index:2147483000;background:#0a0a12;display:flex;align-items:center;justify-content:center;padding:20px;">
+  <div style="max-width:340px;width:100%;text-align:center;font-family:'DM Sans',sans-serif;">
+    <div style="width:60px;height:60px;margin:0 auto 18px;border-radius:50%;background:rgba(99,102,241,.14);display:flex;align-items:center;justify-content:center;">
+      <i class="ri-lock-2-line" style="font-size:26px;color:#818cf8;"></i>
+    </div>
+    <div style="font-size:17px;font-weight:700;color:#f1f5f9;margin-bottom:8px;">Portfolio privé</div>
+    <div style="font-size:13px;color:#94a3b8;line-height:1.6;margin-bottom:20px;">Saisissez le mot de passe qui vous a été communiqué.</div>
+    <input type="password" id="pf-gate-input" placeholder="Mot de passe"
+      style="width:100%;padding:12px 14px;border:1.5px solid #262626;border-radius:10px;background:#141414;color:#f1f5f9;font-size:14px;text-align:center;margin-bottom:10px;">
+    <div id="pf-gate-error" style="display:none;color:#f87171;font-size:12px;margin-bottom:10px;">Mot de passe incorrect.</div>
+    <button id="pf-gate-btn" style="width:100%;padding:12px;background:linear-gradient(135deg,#6366f1,#a855f7);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;">Accéder au portfolio</button>
+  </div>
+</div>
+<script>
+(function(){
+    var expected = ${JSON.stringify(pwProtect)};
+    var gate = document.getElementById('pf-gate');
+    var input = document.getElementById('pf-gate-input');
+    var btn = document.getElementById('pf-gate-btn');
+    var err = document.getElementById('pf-gate-error');
+    if(!gate) return;
+
+    document.documentElement.style.overflow = 'hidden';
+
+    function unlock(){
+        if(input.value === expected){
+            gate.remove();
+            document.documentElement.style.overflow = '';
+            try{ sessionStorage.setItem('pf_gate_ok','1'); }catch(e){}
+        } else {
+            err.style.display = 'block';
+            input.value = '';
+            input.focus();
+        }
+    }
+    btn.addEventListener('click', unlock);
+    input.addEventListener('keydown', function(e){ if(e.key === 'Enter') unlock(); });
+
+    // Ne redemande pas le mot de passe à chaque page pendant
+    // la même visite.
+    try{
+        if(sessionStorage.getItem('pf_gate_ok') === '1'){
+            gate.remove();
+            document.documentElement.style.overflow = '';
+        }
+    }catch(e){}
+})();
+<\/script>` : '';
+
     const antiSpamScript = `<script>
 // PROTECTION ANTI-SPAM & SÉCURITÉ
 (function(){
@@ -6694,6 +7547,210 @@ function doExport(){
 
     // Script responsive + animations + compteur de vues
     const scripts = `<script>
+// ══════════════════════════════════════════════════════════
+// ADAPTATION AUTOMATIQUE AU VISITEUR
+// Le portfolio s'ajuste tout seul à qui le consulte : sa langue,
+// son appareil, sa connexion. Rien à configurer.
+// ══════════════════════════════════════════════════════════
+(function(){
+    // ── Langue : si une traduction existe pour la langue du
+    //    navigateur, on l'applique dès l'ouverture. Un visiteur
+    //    anglophone voit le portfolio en anglais sans rien faire.
+    // Tout est différé : ce bloc s'exécute avant que les
+    // traductions et switchLang ne soient définis plus bas dans
+    // le script. Lire immédiatement donnerait un objet vide.
+    setTimeout(function(){
+        try{
+            var trans = window.__pfTranslations || {};
+            var avail = Object.keys(trans);
+            if(avail.length === 0) return;
+            var nav = (navigator.language || navigator.userLanguage || 'fr').toLowerCase().split('-')[0];
+            if(nav !== 'fr' && avail.indexOf(nav) !== -1 && typeof switchLang === 'function'){
+                switchLang(nav);
+            }
+        } catch(e){}
+    }, 0);
+
+    // ── Performance : sur un appareil modeste ou une connexion
+    //    lente, les effets lourds sont désactivés. Mieux vaut un
+    //    portfolio fluide qu'un portfolio spectaculaire qui rame.
+    try{
+        var slow = false;
+        var conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+        if(conn){
+            if(conn.saveData) slow = true;
+            if(conn.effectiveType && /^(slow-)?2g$/.test(conn.effectiveType)) slow = true;
+        }
+        // Peu de cœurs ou peu de mémoire : appareil d'entrée de gamme
+        if(navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 2) slow = true;
+        if(navigator.deviceMemory && navigator.deviceMemory <= 2) slow = true;
+
+        if(slow){
+            var s = document.createElement('style');
+            s.textContent =
+                '#pf-cursor-glow{display:none!important;}'
+              + '.pf-section-page{transform:none!important;transition:none!important;}'
+              + '.anim-el{transition-duration:.25s!important;filter:none!important;}'
+              + '[class*="ph-anim-"]::before{animation:none!important;}';
+            document.head.appendChild(s);
+        }
+    } catch(e){}
+})();
+// ── STATISTIQUES DE VISITE ───────────────────────────────
+// Signale les consultations au propriétaire du portfolio.
+// Aucun cookie, aucune donnée personnelle, aucun pistage :
+// seulement des compteurs. En cas d'échec réseau, le portfolio
+// fonctionne normalement, l'échec est silencieux.
+${(state.contactForm || state.analytics !== false) ? `
+(function(){
+    var OWNER = ${JSON.stringify((typeof currentUser !== 'undefined' && currentUser && currentUser.id) ? currentUser.id : '')};
+    if(!OWNER) return;
+    var API = ${JSON.stringify(PAYMENT_API_BASE)};
+    var KEY = ${JSON.stringify(PAYMENT_ANON_KEY)};
+
+    function device(){
+        var w = window.innerWidth;
+        return w < 768 ? 'mobile' : (w < 1024 ? 'tablette' : 'ordinateur');
+    }
+
+    function track(eventType, detail){
+        try{
+            if(typeof fetch !== 'function') return;
+            fetch(API + '/analytics', {
+                method:'POST',
+                headers:{ 'Content-Type':'application/json', 'apikey': KEY },
+                body: JSON.stringify({
+                    action:'track', ownerId:OWNER, eventType:eventType,
+                    referrer: document.referrer || null,
+                    device: device(), detail: detail || null
+                })
+            }).catch(function(){});
+        } catch(e){}
+    }
+    window.__pfTrack = track;
+
+    // Une seule vue comptée par session, pour ne pas gonfler
+    // les chiffres à chaque rafraîchissement de page.
+    try{
+        if(!sessionStorage.getItem('pf_viewed')){
+            sessionStorage.setItem('pf_viewed','1');
+            track('view');
+        }
+    } catch(e){ track('view'); }
+
+    document.addEventListener('click', function(e){
+        var proj = e.target.closest && e.target.closest('.pf-project-card');
+        if(proj){
+            var t = proj.querySelector('.pf-project-title');
+            track('project', t ? t.textContent.trim() : null);
+            return;
+        }
+        if(e.target.closest && e.target.closest('.pf-contact-btn')) track('contact');
+        if(e.target.closest && e.target.closest('.pf-cv-btn')) track('cv');
+    }, { passive:true });
+})();
+` : ''}
+// ── FORMULAIRE DE CONTACT ────────────────────────────────
+// Envoie le message au propriétaire du portfolio, où que ce
+// portfolio soit hébergé.
+(function(){
+    var form = document.querySelector('.pf-cform');
+    if(!form) return;
+    var API = ${JSON.stringify(PAYMENT_API_BASE)};
+    var KEY = ${JSON.stringify(PAYMENT_ANON_KEY)};
+    var btn = form.querySelector('.pf-cform-btn');
+    var fb = form.querySelector('.pf-cform-feedback');
+
+    function say(msg, ok){
+        fb.textContent = msg;
+        fb.className = 'pf-cform-feedback ' + (ok ? 'pf-cform-ok' : 'pf-cform-err');
+    }
+
+    btn.addEventListener('click', function(){
+        var name = form.querySelector('[name=name]').value.trim();
+        var email = form.querySelector('[name=email]').value.trim();
+        var phone = form.querySelector('[name=phone]').value.trim();
+        var message = form.querySelector('[name=message]').value.trim();
+
+        if(name.length < 2) return say('Veuillez indiquer votre nom.', false);
+        if(email.indexOf('@') === -1) return say('Veuillez indiquer un email valide.', false);
+        if(message.length < 10) return say('Votre message est un peu court.', false);
+
+        btn.disabled = true;
+        var original = btn.textContent;
+        btn.textContent = 'Envoi en cours…';
+
+        fetch(API + '/contact-messages', {
+            method:'POST',
+            headers:{ 'Content-Type':'application/json', 'apikey': KEY },
+            body: JSON.stringify({
+                action:'send',
+                ownerId: form.getAttribute('data-owner'),
+                name:name, email:email, phone:phone, message:message
+            })
+        })
+        .then(function(r){ return r.json().then(function(d){ return { ok:r.ok, d:d }; }); })
+        .then(function(res){
+            if(!res.ok) throw new Error(res.d.error || 'Envoi impossible.');
+            say('Merci, votre message a bien été envoyé.', true);
+            if(window.__pfTrack) window.__pfTrack('message');
+            form.querySelector('[name=name]').value = '';
+            form.querySelector('[name=email]').value = '';
+            form.querySelector('[name=phone]').value = '';
+            form.querySelector('[name=message]').value = '';
+        })
+        .catch(function(e){ say(e.message || 'Erreur réseau. Réessayez.', false); })
+        .finally(function(){ btn.disabled = false; btn.textContent = original; });
+    });
+})();
+// ── PROTECTION PAR MOT DE PASSE ──────────────────────────
+// Le contenu reste masqué tant que le mot de passe n'est pas
+// saisi. Le déverrouillage est retenu le temps de la visite,
+// pour ne pas le redemander à chaque page.
+${(state.passwordProtect && state.passwordProtect.enabled && state.passwordProtect.password) ? `
+(function(){
+    var PW = ${JSON.stringify(state.passwordProtect.password)};
+    var KEY = 'pf_unlocked_' + PW.length;
+    try{ if(sessionStorage.getItem(KEY) === 'ok') return; }catch(e){}
+
+    var ov = document.createElement('div');
+    ov.id = 'pf-lock-overlay';
+    ov.style.cssText = 'position:fixed;inset:0;z-index:2147483647;background:#0a0a0f;display:flex;align-items:center;justify-content:center;padding:20px;font-family:system-ui,-apple-system,sans-serif;';
+    ov.innerHTML =
+        '<div style="text-align:center;max-width:340px;width:100%;">'
+      + '<div style="width:64px;height:64px;margin:0 auto 20px;border-radius:50%;background:rgba(99,102,241,.12);display:flex;align-items:center;justify-content:center;font-size:28px;">🔒</div>'
+      + '<div style="font-size:18px;font-weight:700;color:#f1f5f9;margin-bottom:8px;">Portfolio protégé</div>'
+      + '<div style="font-size:13px;color:#94a3b8;margin-bottom:22px;line-height:1.6;">Saisissez le mot de passe pour accéder au contenu.</div>'
+      + '<input id="pf-lock-input" type="password" placeholder="Mot de passe" style="width:100%;padding:13px 16px;border:1.5px solid #262626;border-radius:12px;background:#141414;color:#f1f5f9;font-size:14px;text-align:center;margin-bottom:10px;box-sizing:border-box;">'
+      + '<div id="pf-lock-error" style="display:none;color:#f87171;font-size:12px;margin-bottom:10px;">Mot de passe incorrect.</div>'
+      + '<button id="pf-lock-btn" style="width:100%;padding:13px;background:linear-gradient(135deg,#6366f1,#a855f7);color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;">Accéder</button>'
+      + '</div>';
+
+    function mount(){
+        document.body.appendChild(ov);
+        document.body.style.overflow = 'hidden';
+        var input = document.getElementById('pf-lock-input');
+        var btn = document.getElementById('pf-lock-btn');
+        var err = document.getElementById('pf-lock-error');
+        function tryUnlock(){
+            if(input.value === PW){
+                try{ sessionStorage.setItem(KEY, 'ok'); }catch(e){}
+                ov.remove();
+                document.body.style.overflow = '';
+            } else {
+                err.style.display = 'block';
+                input.value = '';
+                input.focus();
+            }
+        }
+        btn.addEventListener('click', tryUnlock);
+        input.addEventListener('keydown', function(e){ if(e.key === 'Enter') tryUnlock(); });
+        input.focus();
+    }
+    if(document.body) mount();
+    else document.addEventListener('DOMContentLoaded', mount);
+})();
+` : ''}
 // ── SYSTÈME MULTILINGUE DU PORTFOLIO PUBLIÉ ──────────────
 // Traductions du contenu, générées une seule fois depuis
 // l'éditeur et embarquées ici : le changement de langue est
@@ -6759,6 +7816,12 @@ function switchLang(lang){
     for(var c=0;c<cvBtns.length;c++){
         cvBtns[c].innerHTML = '<i class="ri-file-pdf-2-fill"></i> ' + (lang==='fr' ? 'Mon CV' : L.download);
     }
+}
+
+// Bascule clair / sombre choisie par le visiteur
+function togglePortfolioTheme(){
+    var vp = document.getElementById('portfolio-viewport') || document.body;
+    vp.classList.toggle('pf-inverted');
 }
 // Animations au scroll — avec zone tampon pour éviter tout
 // scintillement quand un élément se trouve pile en bordure d'écran.
@@ -6876,6 +7939,14 @@ document.querySelectorAll('.anim-el').forEach(function(el){
     }
 
     // Tentative de comptage global via CountAPI (service gratuit, sans clé)
+    // Si fetch est indisponible ou bloqué, on retombe simplement sur
+    // le compteur local sans interrompre les autres scripts.
+    if(typeof fetch !== 'function'){
+        var lv = parseInt(localStorage.getItem(localKey)||'0') + 1;
+        localStorage.setItem(localKey, lv);
+        showViews(lv);
+        return;
+    }
     fetch('https://api.countapi.xyz/hit/' + namespace + '/' + key)
         .then(function(r){ return r.json(); })
         .then(function(data){
@@ -6899,6 +7970,48 @@ document.querySelectorAll('.anim-el').forEach(function(el){
     const responsiveCSS = `<style>
 /* PORTFOLIO — 100% RESPONSIVE */
 *{box-sizing:border-box;}
+
+/* ═══ IMPRESSION / EXPORT PDF ═══
+   Le visiteur peut enregistrer le portfolio en PDF depuis son
+   navigateur. On masque tout ce qui n'a pas de sens sur papier
+   et on force des couleurs lisibles à l'impression. */
+@media print{
+    @page{ margin:14mm; }
+    body{background:#fff!important;color:#111!important;}
+    .portfolio-viewport{background:#fff!important;color:#111!important;min-height:0!important;}
+    .portfolio-viewport::before,.portfolio-viewport::after{display:none!important;}
+    .pf-container{padding:0!important;max-width:100%!important;}
+
+    /* Éléments interactifs sans objet sur papier */
+    #pf-lang-widget,#pf-chat-widget,#pf-theme-switch,#pf-read-progress,
+    #pf-cursor-glow,#pf-lock-overlay,.pf-multipage-nav,#pf-print-btn{display:none!important;}
+
+    /* Les vidéos ne s'impriment pas : on garde la place utile */
+    .pf-project-video{display:none!important;}
+
+    /* Tout le contenu doit être visible, jamais masqué par une
+       animation restée en position initiale */
+    .anim-el{opacity:1!important;transform:none!important;filter:none!important;}
+    .pf-section-page{display:block!important;transform:none!important;}
+
+    /* Texte lisible quel que soit le thème d'origine */
+    .pf-name,.pf-role,.pf-bio,.pf-section-title,.pf-section-sub-title,
+    .pf-project-title,.pf-project-desc,.pf-testi-text,.pf-testi-name,
+    .pf-stat-value,.pf-stat-label,.pf-skill-chip{
+        color:#111!important;-webkit-text-fill-color:#111!important;
+        background:none!important;text-shadow:none!important;
+    }
+    .pf-skill-chip{border:1px solid #999!important;}
+    .pf-project-card,.pf-testi-card,.pf-stat-item,.pf-cert-card{
+        border:1px solid #ccc!important;background:#fff!important;
+        box-shadow:none!important;break-inside:avoid;page-break-inside:avoid;
+    }
+    .pf-hero{min-height:0!important;page-break-after:avoid;}
+    .pf-projects-wrap,.pf-testimonials-section,.pf-stats-section{page-break-inside:auto;}
+    a{text-decoration:none!important;color:#111!important;}
+    .pf-editor-signature{opacity:.6!important;}
+}
+
 body{display:block;height:auto;overflow:auto;overflow-x:hidden;}
 .portfolio-viewport{height:auto;min-height:100vh;overflow-x:hidden;}
 .editable-img-wrapper::after{display:none!important;}
@@ -7041,6 +8154,7 @@ ${styles}
 ${responsiveCSS}
 </head>
 <body>
+${passwordGate}
 ${vpH}
 ${viewCounter}
 ${scripts}
@@ -7642,6 +8756,7 @@ function mobileNav(tabId, btn){
     const m = {data:'tab-data', style:'tab-style', anim:'tab-anim', advanced:'tab-advanced'};
     document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
     document.getElementById(m[tabId]).classList.add('active');
+    if(tabId === 'style' && typeof loadThemeInsights === 'function') loadThemeInsights();
     const ec = document.querySelector('.editor-content');
     if(ec) ec.scrollTo({top:0, behavior:'smooth'});
 }
@@ -8110,9 +9225,10 @@ const PAYMENT_CONFIG = {
   apiBase            : "https://api.notchpay.co"
 };
 
-let supabaseClient = null;
-let currentUser = null;
-let autoSaveTimer = null;
+// supabaseClient, currentUser et autoSaveTimer sont déclarés plus
+// haut dans le fichier : render() et plusieurs réglages les
+// consultent avant ce point, et une déclaration tardive levait
+// une erreur bloquante au chargement.
 // Si l'utilisateur clique "Télécharger" sans être connecté, on retient
 // l'intention pour reprendre automatiquement le téléchargement juste
 // après une connexion réussie, sans qu'il ait à recliquer.
@@ -8217,6 +9333,12 @@ function setAccountMenuGuestState() {
   if (adminBtn) adminBtn.style.display = 'none';
   const refBtnGuest = document.getElementById('account-referral-btn');
   if (refBtnGuest) refBtnGuest.style.display = 'none';
+  const msgBtnGuest = document.getElementById('account-messages-btn');
+  if (msgBtnGuest) msgBtnGuest.style.display = 'none';
+  const statsBtnGuest = document.getElementById('account-stats-btn');
+  if (statsBtnGuest) statsBtnGuest.style.display = 'none';
+  const verBtnGuest = document.getElementById('account-versions-btn');
+  if (verBtnGuest) verBtnGuest.style.display = 'none';
   window.__adminStatsCache = null;
 }
 
@@ -8246,6 +9368,12 @@ function setAccountMenuConnectedState() {
   // qu'une fois l'utilisateur connecté.
   const refBtn = document.getElementById('account-referral-btn');
   if (refBtn) refBtn.style.display = 'flex';
+  const msgBtn = document.getElementById('account-messages-btn');
+  if (msgBtn) msgBtn.style.display = 'flex';
+  const statsBtn = document.getElementById('account-stats-btn');
+  if (statsBtn) statsBtn.style.display = 'flex';
+  const verBtn = document.getElementById('account-versions-btn');
+  if (verBtn) verBtn.style.display = 'flex';
 }
 
 async function signInWithGoogle() {
@@ -8343,6 +9471,9 @@ async function loadUserProfile(user) {
       // confiance le dernier portfolio sauvegardé sur ce compte
       // (cas typique : reprise de travail depuis un autre appareil).
       Object.assign(state, data.portfolio_data);
+      // On retient lequel est ouvert, pour que les sauvegardes
+      // suivantes visent bien celui-ci et pas un autre.
+      state.currentPortfolioId = data.id;
       if (typeof render === 'function') render();
       if (typeof initEditor === 'function') initEditor();
       console.log('[Auth] Portfolio cloud restauré:', data.portfolio_name);
@@ -8398,15 +9529,26 @@ async function signOut() {
 
 async function savePortfolioToCloud() {
   if (!supabaseClient || !currentUser) return;
+  // Même protection que pour la sauvegarde locale : pendant une
+  // réinitialisation, on n'écrit surtout rien dans le cloud.
+  if (window.__resetInProgress) return;
   setSyncStatus('syncing');
   try {
-    const { data: existing } = await supabaseClient
-      .from('user_portfolios')
-      .select('id')
-      .eq('user_id', currentUser.id)
-      .order('updated_at', { ascending: false })
-      .limit(1)
-      .maybeSingle();
+    // On enregistre dans le portfolio réellement en cours d'édition.
+    // Auparavant on visait toujours la ligne la plus récente : charger
+    // un ancien portfolio puis le modifier écrasait alors un autre.
+    let targetId = state.currentPortfolioId || null;
+
+    if (!targetId) {
+      const { data: existing } = await supabaseClient
+        .from('user_portfolios')
+        .select('id')
+        .eq('user_id', currentUser.id)
+        .order('updated_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (existing && existing.id) targetId = existing.id;
+    }
 
     const payload = {
       user_id: currentUser.id,
@@ -8415,13 +9557,18 @@ async function savePortfolioToCloud() {
     };
 
     let error;
-    if (existing && existing.id) {
-      ({ error } = await supabaseClient.from('user_portfolios').update(payload).eq('id', existing.id));
+    if (targetId) {
+      ({ error } = await supabaseClient.from('user_portfolios').update(payload).eq('id', targetId).eq('user_id', currentUser.id));
     } else {
-      ({ error } = await supabaseClient.from('user_portfolios').insert(payload));
+      const res = await supabaseClient.from('user_portfolios').insert(payload).select('id').maybeSingle();
+      error = res.error;
+      if (res.data && res.data.id) state.currentPortfolioId = res.data.id;
     }
     if (error) throw error;
     setSyncStatus('saved');
+    // Une version est conservée au passage, pour pouvoir revenir
+    // en arrière après une fausse manœuvre.
+    if (typeof saveVersionSnapshot === 'function') saveVersionSnapshot();
   } catch (err) {
     console.error('[Auth] Erreur sauvegarde cloud:', err);
     setSyncStatus('error');
@@ -8478,6 +9625,9 @@ function setSyncStatus(status) {
 let localSaveTimer = null;
 
 function saveStateToLocalStorage() {
+  // Pendant une réinitialisation, toute écriture est ignorée :
+  // sinon le brouillon serait réécrit juste après avoir été effacé.
+  if (window.__resetInProgress) return;
   try {
     if (typeof state === 'undefined') return;
     localStorage.setItem(LOCAL_STATE_KEY, JSON.stringify(state));
@@ -8510,12 +9660,37 @@ function clearLocalDraft() {
 // confirmation car c'est une action destructive et irréversible — le
 // brouillon local est effacé, puis la page est rechargée pour repartir
 // d'un état JS totalement neuf (évite tout résidu en mémoire).
-function confirmResetEditor(){
+async function confirmResetEditor(){
     const ok = window.confirm(
         "Réinitialiser l'éditeur ?\n\nTout votre travail actuel sera définitivement perdu et remplacé par le portfolio par défaut. Cette action est irréversible."
     );
     if(!ok) return;
+
+    // Coupe toute sauvegarde automatique en attente : sans ça, un
+    // enregistrement déclenché juste avant pourrait réécrire le
+    // travail dans le cloud pendant le rechargement, et tout
+    // reviendrait comme avant.
+    window.__resetInProgress = true;
+    try{ if(typeof localSaveTimer !== 'undefined' && localSaveTimer) clearTimeout(localSaveTimer); }catch(e){}
+    try{ if(typeof autoSaveTimer !== 'undefined' && autoSaveTimer) clearTimeout(autoSaveTimer); }catch(e){}
+
+    // Efface le brouillon local
     clearLocalDraft();
+
+    // Efface aussi la sauvegarde cloud. C'était la cause du
+    // problème : sans ça, au rechargement le portfolio était
+    // rechargé depuis le compte et le travail réapparaissait.
+    if(supabaseClient && currentUser){
+        try{
+            await supabaseClient
+                .from('user_portfolios')
+                .delete()
+                .eq('user_id', currentUser.id);
+        } catch(err){
+            console.warn('[Réinitialisation] Nettoyage cloud impossible:', err);
+        }
+    }
+
     window.location.reload();
 }
 
@@ -8589,26 +9764,123 @@ async function openSavedPortfolios() {
       .order('updated_at', { ascending: false });
     if (error) throw error;
 
-    if (!data || data.length === 0) {
-      body.innerHTML = '<div class="ph-empty">Aucun portfolio sauvegardé pour le moment.</div>';
-      return;
-    }
+    let html = '<button class="sp-new-btn" onclick="createNewPortfolio()">'
+             + '<i class="ri-add-line"></i> Nouveau portfolio</button>';
 
-    let html = '';
-    data.forEach(p => {
-      const date = new Date(p.updated_at).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
-      html += `<div class="sp-item"><div><div class="sp-item-name">${p.portfolio_name || 'Mon Portfolio'}</div><div class="sp-item-date">Modifié le ${date}</div></div><button class="sp-load-btn" onclick="loadSavedPortfolio('${p.id}')">Charger</button></div>`;
-    });
+    if (!data || data.length === 0) {
+      html += '<div class="ph-empty">Aucun portfolio sauvegardé pour le moment.</div>';
+    } else {
+      data.forEach(p => {
+        const date = new Date(p.updated_at).toLocaleDateString('fr-FR',
+          { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+        const isCurrent = (state.currentPortfolioId === p.id);
+        const safeName = String(p.portfolio_name || 'Mon Portfolio')
+          .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+        html += '<div class="sp-item' + (isCurrent ? ' sp-item-current' : '') + '">'
+              + '<div style="min-width:0;flex:1;">'
+              + '<div class="sp-item-name">' + safeName
+              + (isCurrent ? '<span class="sp-badge">en cours</span>' : '') + '</div>'
+              + '<div class="sp-item-date">Modifié le ' + date + '</div>'
+              + '</div>'
+              + '<div class="sp-actions">'
+              + (isCurrent ? '' : '<button class="sp-load-btn" onclick="loadSavedPortfolio(\'' + p.id + '\')">Ouvrir</button>')
+              + '<button class="sp-icon-btn" title="Renommer" onclick="renamePortfolio(\'' + p.id + '\')"><i class="ri-edit-line"></i></button>'
+              + '<button class="sp-icon-btn sp-danger" title="Supprimer" onclick="deletePortfolio(\'' + p.id + '\')"><i class="ri-delete-bin-line"></i></button>'
+              + '</div></div>';
+      });
+    }
     body.innerHTML = html;
   } catch (err) {
-    console.error('[Auth] Erreur chargement portfolios:', err);
+    console.error('[Portfolios] Erreur chargement:', err);
     body.innerHTML = '<div class="ph-empty">Erreur de chargement. Réessayez.</div>';
+  }
+}
+
+// Crée un portfolio vierge sans toucher à celui en cours : le
+// travail actuel est d'abord sauvegardé, puis on repart à neuf.
+async function createNewPortfolio(){
+  if (!supabaseClient || !currentUser) return;
+  const name = window.prompt('Nom du nouveau portfolio :', 'Nouveau portfolio');
+  if (name === null) return;
+
+  try {
+    // On sauvegarde le portfolio en cours avant de le quitter,
+    // pour ne rien perdre.
+    if (state.currentPortfolioId) await savePortfolioToCloud();
+
+    const { data, error } = await supabaseClient
+      .from('user_portfolios')
+      .insert({
+        user_id: currentUser.id,
+        portfolio_name: name.trim() || 'Nouveau portfolio',
+        portfolio_data: {}
+      })
+      .select('id')
+      .maybeSingle();
+    if (error) throw error;
+
+    // On repart de l'état par défaut, en conservant l'identifiant
+    // du nouveau portfolio pour que les sauvegardes le visent.
+    clearLocalDraft();
+    state.currentPortfolioId = data.id;
+    saveStateToLocalStorage();
+    window.location.reload();
+  } catch (err) {
+    console.error('[Portfolios] Création impossible:', err);
+    if (typeof showToast === 'function') showToast('Impossible de créer le portfolio.');
+  }
+}
+
+async function renamePortfolio(portfolioId){
+  if (!supabaseClient || !currentUser) return;
+  const newName = window.prompt('Nouveau nom du portfolio :');
+  if (newName === null || !newName.trim()) return;
+  try {
+    await supabaseClient
+      .from('user_portfolios')
+      .update({ portfolio_name: newName.trim() })
+      .eq('id', portfolioId)
+      .eq('user_id', currentUser.id);
+    openSavedPortfolios();
+  } catch (err) {
+    console.error('[Portfolios] Renommage impossible:', err);
+  }
+}
+
+async function deletePortfolio(portfolioId){
+  if (!supabaseClient || !currentUser) return;
+  const ok = window.confirm('Supprimer définitivement ce portfolio ?\n\nCette action est irréversible.');
+  if (!ok) return;
+  try {
+    await supabaseClient
+      .from('user_portfolios')
+      .delete()
+      .eq('id', portfolioId)
+      .eq('user_id', currentUser.id);
+
+    // Si c'était celui ouvert, on se détache pour ne pas
+    // continuer d'écrire dans une ligne qui n'existe plus.
+    if (state.currentPortfolioId === portfolioId) {
+      state.currentPortfolioId = null;
+      saveStateToLocalStorage();
+    }
+    openSavedPortfolios();
+    if (typeof showToast === 'function') showToast('Portfolio supprimé.');
+  } catch (err) {
+    console.error('[Portfolios] Suppression impossible:', err);
   }
 }
 
 async function loadSavedPortfolio(portfolioId) {
   if (!supabaseClient || !currentUser) return;
   try {
+    // On sauvegarde d'abord le portfolio en cours, sinon les
+    // modifications non enregistrées seraient perdues.
+    if (state.currentPortfolioId && state.currentPortfolioId !== portfolioId) {
+      await savePortfolioToCloud();
+    }
+
     const { data, error } = await supabaseClient
       .from('user_portfolios')
       .select('portfolio_data')
@@ -8617,14 +9889,20 @@ async function loadSavedPortfolio(portfolioId) {
       .single();
     if (error) throw error;
 
-    if (data && data.portfolio_data && typeof state !== 'undefined') {
-      Object.assign(state, data.portfolio_data);
+    if (data && typeof state !== 'undefined') {
+      if (data.portfolio_data && Object.keys(data.portfolio_data).length > 0) {
+        Object.assign(state, data.portfolio_data);
+      }
+      state.currentPortfolioId = portfolioId;
+      saveStateToLocalStorage();
+      if (typeof initEditor === 'function') initEditor();
       if (typeof render === 'function') render();
       closeSavedPortfolios();
-      if (typeof showToast === 'function') showToast('Portfolio chargé ✓');
+      if (typeof showToast === 'function') showToast('Portfolio ouvert ✓');
     }
   } catch (err) {
-    console.error('[Auth] Erreur chargement portfolio:', err);
+    console.error('[Portfolios] Ouverture impossible:', err);
+    if (typeof showToast === 'function') showToast('Impossible d\'ouvrir ce portfolio.');
   }
 }
 
@@ -8636,6 +9914,649 @@ function closeSavedPortfolios() {
 // ── AVIS UTILISATEUR ──────────────────────────────────────
 let feedbackCategory = 'avis';
 let feedbackRating = 0;
+
+// ══════════════════════════════════════════════════════════
+// MOTEUR D'ENSEIGNEMENTS
+//
+// L'éditeur apprend de l'usage réel : quels thèmes attirent le
+// plus de visites, lesquels déclenchent le plus de prises de
+// contact, lesquels les autres personnes du même métier ont
+// retenus. Ces repères apparaissent directement sur les cartes
+// de thèmes.
+//
+// Le point important : ça s'améliore tout seul. Plus l'éditeur
+// est utilisé, plus les repères sont justes — sans que personne
+// n'ait à mettre quoi que ce soit à jour.
+// ══════════════════════════════════════════════════════════
+async function loadThemeInsights(){
+    // Une seule fois par session : ces chiffres bougent lentement,
+    // inutile d'interroger le serveur à chaque changement d'onglet.
+    if(window.__insightsLoaded) return;
+    window.__insightsLoaded = true;
+
+    try{
+        const res = await fetch(PAYMENT_API_BASE + '/insights', {
+            method:'POST',
+            headers:{ 'Content-Type':'application/json', 'apikey': PAYMENT_ANON_KEY },
+            body: JSON.stringify({})
+        });
+        if(!res.ok) return;
+        const data = await res.json();
+        if(!data.ready) return;
+
+        const map = {};
+
+        // Les plus choisis, repère utile dès les premiers jours
+        (data.popular||[]).slice(0,5).forEach(function(p){
+            map[p.theme] = {
+                cls:'ti-pop', label:'Populaire',
+                title: p.users + ' personnes utilisent ce thème'
+            };
+        });
+
+        // Ceux qui déclenchent réellement des échanges
+        (data.themes||[]).slice(0,3).forEach(function(t){
+            if(t.avgViews <= 0) return;
+            map[t.theme] = {
+                cls:'ti-top', label:'Performant',
+                title: 'Moyenne de ' + t.avgViews + ' visites et ' + t.contactRate + '% de prises de contact'
+            };
+        });
+
+        // Ce que les personnes du même métier ont retenu : c'est
+        // le repère le plus pertinent, il passe donc devant.
+        const myRole = (state.data && state.data.role ? state.data.role : '').toLowerCase().trim();
+        if(myRole){
+            const match = (data.professions||[]).find(function(p){
+                return p.role === myRole
+                    || p.role.indexOf(myRole) !== -1
+                    || myRole.indexOf(p.role) !== -1;
+            });
+            if(match){
+                match.topThemes.forEach(function(th){
+                    map[th] = {
+                        cls:'ti-metier', label:'Votre métier',
+                        title: 'Souvent choisi par des profils similaires au vôtre'
+                    };
+                });
+            }
+        }
+
+        window.__themeInsights = map;
+        // Le catalogue est rendu dans initEditor : on le régénère
+        // pour que les repères apparaissent sur les cartes.
+        if(typeof initEditor === 'function') initEditor();
+    } catch(err){
+        // Sans ces repères, l'éditeur fonctionne exactement pareil.
+        console.warn('[Enseignements] Indisponibles:', err);
+    }
+}
+
+// ══════════════════════════════════════════════════════════
+// ASSISTANT — observe le portfolio et conseille
+//
+// L'éditeur évalue en continu ce qui empêche un portfolio de
+// convaincre, et le classe par importance réelle. Un portfolio
+// sans projet ne se vend pas ; un portfolio sans témoignage se
+// vend moins bien. Les deux ne pèsent pas pareil, et l'assistant
+// le reflète plutôt que d'aligner une liste plate.
+// ══════════════════════════════════════════════════════════
+
+// Chaque règle porte son poids et son niveau d'urgence.
+//   'critique'  → sans ça, le portfolio ne remplit pas sa fonction
+//   'important' → nettement moins convaincant
+//   'bonus'     → ce qui fait la différence
+function analyzePortfolio(){
+    const tips = [];
+    const d = state.data || {};
+    const add = function(level, weight, title, desc){
+        tips.push({ level:level, weight:weight, title:title, desc:desc });
+    };
+
+    // ── Identité ──────────────────────────────────────
+    const name = (d.name||'').trim();
+    if(!name || /^(votre nom|nom|mon nom)$/i.test(name)){
+        add('critique', 12, 'Indiquez votre nom',
+            "C'est la première chose qu'un visiteur cherche. Un portfolio sans nom identifiable n'inspire pas confiance.");
+    }
+
+    const role = (d.role||'').trim();
+    if(!role || role.length < 4){
+        add('critique', 10, 'Précisez votre métier',
+            "Un visiteur doit comprendre ce que vous faites en moins de trois secondes.");
+    }
+
+    const bio = (d.bio||'').replace(/<[^>]*>/g,'').trim();
+    if(!bio || bio.length < 40){
+        add('critique', 10, 'Développez votre présentation',
+            "Une présentation trop courte laisse le visiteur sans raison de vous contacter. Visez trois à cinq lignes.");
+    } else if(bio.length > 600){
+        add('bonus', 3, 'Raccourcissez votre présentation',
+            "Au-delà de quelques lignes, un visiteur décroche. L'essentiel d'abord, les détails dans vos projets.");
+    }
+
+    // ── Projets ───────────────────────────────────────
+    const projects = state.projects || [];
+    if(projects.length === 0){
+        add('critique', 15, 'Ajoutez au moins un projet',
+            "Les projets sont ce qui convainc vraiment. Un portfolio sans réalisation ne remplit pas sa fonction.");
+    } else {
+        if(projects.length < 3){
+            add('important', 7, 'Ajoutez d\'autres projets',
+                "Trois projets ou plus donnent une idée juste de votre étendue. Vous en avez " + projects.length + ".");
+        }
+        const noDesc = projects.filter(function(p){ return !p.desc || p.desc.trim().length < 20; }).length;
+        if(noDesc > 0){
+            add('important', 6, 'Décrivez vos projets',
+                noDesc + " projet(s) sans description utile. Expliquez le problème traité et votre rôle, pas seulement le nom.");
+        }
+        const noLink = projects.filter(function(p){ return !p.link && !p.video; }).length;
+        if(noLink === projects.length){
+            add('important', 6, 'Rendez vos projets consultables',
+                "Aucun projet n'a de lien ni de vidéo. Un visiteur qui ne peut rien voir repart sans preuve de votre travail.");
+        }
+    }
+
+    // ── Contact ───────────────────────────────────────
+    if(!state.contactForm){
+        add('important', 8, 'Activez le formulaire de contact',
+            "Beaucoup de visiteurs — recruteurs, entreprises — n'écrivent pas sur WhatsApp mais remplissent un formulaire.");
+    }
+    if(!d.cta || d.cta.trim().length < 3){
+        add('important', 5, 'Ajoutez un bouton d\'action',
+            "Dites clairement au visiteur quoi faire : « Discutons de votre projet », « Réserver un appel ».");
+    }
+
+    // ── Crédibilité ───────────────────────────────────
+    const skills = state.skills || [];
+    if(skills.length === 0){
+        add('important', 6, 'Listez vos compétences',
+            "Elles permettent au visiteur de vérifier en un coup d'œil que vous correspondez à son besoin.");
+    } else if(skills.length < 4){
+        add('bonus', 3, 'Complétez vos compétences',
+            "Quatre à huit compétences donnent une image plus complète.");
+    }
+
+    if(!(state.testimonials||[]).length){
+        add('bonus', 5, 'Ajoutez un témoignage client',
+            "Rien ne convainc autant que la parole d'un client. Même un seul avis change la perception.");
+    }
+    if(!(state.stats||[]).length){
+        add('bonus', 3, 'Mettez en avant vos chiffres',
+            "Années d'expérience, projets livrés, clients accompagnés — les chiffres rassurent immédiatement.");
+    }
+    if(!(state.experiences||[]).length){
+        add('bonus', 3, 'Retracez votre parcours',
+            "Votre expérience professionnelle donne du poids à ce que vous affirmez.");
+    }
+    if(typeof cvData === 'undefined' || !cvData){
+        add('bonus', 4, 'Joignez votre CV',
+            "Un recruteur veut souvent télécharger un document. Sans CV, il devra vous le demander.");
+    }
+
+    // ── Image ─────────────────────────────────────────
+    if(d.profileImg && d.profileImg.indexOf('unsplash') !== -1){
+        add('important', 7, 'Mettez votre vraie photo',
+            "La photo par défaut trahit un portfolio non personnalisé. Une vraie photo installe la confiance.");
+    }
+
+    // ── Diffusion ─────────────────────────────────────
+    if(!(state.multilang && state.multilang.enabled)){
+        add('bonus', 2, 'Envisagez le multilingue',
+            "Si vos clients potentiels ne parlent pas tous français, une version traduite élargit votre portée.");
+    }
+
+    return tips;
+}
+
+// Le score reflète ce qui est acquis par rapport à tout ce qui
+// compte : plus les manques sont lourds, plus le score baisse.
+function computeQualityScore(tips){
+    const totalPossible = 95;
+    const lost = tips.reduce(function(s,t){ return s + t.weight; }, 0);
+    return Math.max(0, Math.min(100, Math.round(((totalPossible - lost) / totalPossible) * 100)));
+}
+
+function updateQualityBadge(){
+    const badge = document.getElementById('quality-badge');
+    if(!badge) return;
+    const tips = analyzePortfolio();
+    const score = computeQualityScore(tips);
+    const critical = tips.filter(function(t){ return t.level === 'critique'; }).length;
+
+    badge.style.display = 'inline-flex';
+    if(critical > 0){
+        badge.style.background = 'rgba(239,68,68,.15)';
+        badge.style.color = '#f87171';
+        badge.innerHTML = '<i class="ri-compass-3-line"></i> ' + score + '% · ' + critical + ' point' + (critical>1?'s':'') + ' bloquant' + (critical>1?'s':'');
+    } else if(score < 85){
+        badge.style.background = 'rgba(251,191,36,.15)';
+        badge.style.color = '#fbbf24';
+        badge.innerHTML = '<i class="ri-compass-3-line"></i> ' + score + '% · à améliorer';
+    } else {
+        badge.style.background = 'rgba(16,185,129,.15)';
+        badge.style.color = '#10b981';
+        badge.innerHTML = '<i class="ri-compass-3-line"></i> ' + score + '% · prêt';
+    }
+}
+
+function openAssistant(){
+    const modal = document.getElementById('assistant-modal');
+    const body = document.getElementById('assistant-body');
+    if(!modal || !body) return;
+
+    const tips = analyzePortfolio();
+    const score = computeQualityScore(tips);
+
+    const color = score >= 85 ? '#10b981' : (score >= 60 ? '#fbbf24' : '#f87171');
+    const verdict = score >= 85
+        ? 'Votre portfolio est convaincant.'
+        : (score >= 60 ? 'Bonne base — quelques points à renforcer.'
+                       : 'Plusieurs éléments essentiels manquent encore.');
+
+    let html = '<div class="as-score-wrap">'
+             + '<div class="as-score-num" style="color:' + color + ';">' + score + '<span class="as-score-max">/100</span></div>'
+             + '<div class="as-score-label">' + verdict + '</div>'
+             + '<div class="as-bar"><div class="as-bar-fill" style="width:' + score + '%;background:' + color + ';"></div></div>'
+             + '</div>';
+
+    if(tips.length === 0){
+        html += '<div class="as-done">'
+              + '<div class="as-done-title">Rien à signaler</div>'
+              + '<div class="as-done-desc">Votre portfolio contient tout ce qui compte. Vous pouvez le publier en confiance.</div>'
+              + '</div>';
+    } else {
+        const groups = [
+            { key:'critique',  title:'À corriger en priorité', cls:'as-crit', icon:'ri-alert-line' },
+            { key:'important', title:'Fortement recommandé',   cls:'as-imp',  icon:'ri-arrow-up-line' },
+            { key:'bonus',     title:'Pour aller plus loin',   cls:'as-nice', icon:'ri-sparkling-line' }
+        ];
+        groups.forEach(function(g){
+            const list = tips.filter(function(t){ return t.level === g.key; })
+                             .sort(function(a,b){ return b.weight - a.weight; });
+            if(list.length === 0) return;
+            html += '<div class="as-group-title">' + g.title + '</div>';
+            list.forEach(function(t){
+                html += '<div class="as-tip">'
+                      + '<div class="as-tip-icon ' + g.cls + '"><i class="' + g.icon + '"></i></div>'
+                      + '<div><div class="as-tip-title">' + t.title + '</div>'
+                      + '<div class="as-tip-desc">' + t.desc + '</div></div></div>';
+            });
+        });
+    }
+
+    body.innerHTML = html;
+    modal.classList.add('open');
+}
+
+function closeAssistant(){
+    const modal = document.getElementById('assistant-modal');
+    if(modal) modal.classList.remove('open');
+}
+
+// ── HISTORIQUE DE VERSIONS ────────────────────────────────
+const MAX_VERSIONS = 10;
+const MIN_VERSION_GAP_MS = 10 * 60 * 1000; // 10 minutes
+
+// Produit une copie de l'état SANS les images. Les photos sont
+// stockées en base64 et pèsent lourd : les conserver à chaque
+// version saturerait le stockage. Les textes, thèmes et réglages
+// suffisent à réparer une fausse manœuvre.
+function buildVersionSnapshot(){
+    const snap = JSON.parse(JSON.stringify(state));
+    const isData = function(v){ return typeof v === 'string' && v.indexOf('data:') === 0; };
+
+    if(snap.data && isData(snap.data.profileImg)) delete snap.data.profileImg;
+    if(Array.isArray(snap.projects)){
+        snap.projects.forEach(function(p){ if(isData(p.img)) delete p.img; });
+    }
+    if(snap.custom && isData(snap.custom.bgImage)) delete snap.custom.bgImage;
+    // Le CV n'est pas dans state, mais on écarte tout résidu volumineux
+    delete snap.translations;
+    return snap;
+}
+
+let lastVersionAt = 0;
+
+async function saveVersionSnapshot(){
+    if(!supabaseClient || !currentUser) return;
+    if(window.__resetInProgress) return;
+
+    // On n'enregistre pas une version à chaque frappe : une toutes
+    // les dix minutes suffit à couvrir une fausse manœuvre, sans
+    // encombrer la liste ni le stockage.
+    const now = Date.now();
+    if(now - lastVersionAt < MIN_VERSION_GAP_MS) return;
+    lastVersionAt = now;
+
+    try{
+        await supabaseClient.from('portfolio_versions').insert({
+            user_id: currentUser.id,
+            portfolio_id: state.currentPortfolioId || null,
+            label: (state.data && state.data.name) ? state.data.name : 'Mon Portfolio',
+            snapshot: buildVersionSnapshot()
+        });
+
+        // On ne garde que les plus récentes.
+        const { data: all } = await supabaseClient
+            .from('portfolio_versions')
+            .select('id')
+            .eq('user_id', currentUser.id)
+            .order('created_at', { ascending: false });
+
+        if(all && all.length > MAX_VERSIONS){
+            const toDelete = all.slice(MAX_VERSIONS).map(function(v){ return v.id; });
+            await supabaseClient.from('portfolio_versions').delete().in('id', toDelete);
+        }
+    } catch(err){
+        // Une version non enregistrée ne doit jamais gêner l'édition.
+        console.warn('[Versions] Enregistrement impossible:', err);
+    }
+}
+
+function openVersionsModal(){
+    const modal = document.getElementById('versions-modal');
+    if(!modal) return;
+    modal.classList.add('open');
+    loadVersions();
+}
+
+function closeVersionsModal(){
+    const modal = document.getElementById('versions-modal');
+    if(modal) modal.classList.remove('open');
+}
+
+async function loadVersions(){
+    const body = document.getElementById('versions-body');
+    if(!body) return;
+    body.innerHTML = '<div class="adm-empty">Chargement…</div>';
+
+    if(!supabaseClient || !currentUser){
+        body.innerHTML = '<div class="adm-empty">Connectez-vous pour accéder à votre historique.</div>';
+        return;
+    }
+
+    try{
+        const { data, error } = await supabaseClient
+            .from('portfolio_versions')
+            .select('id,label,created_at')
+            .eq('user_id', currentUser.id)
+            .order('created_at', { ascending: false })
+            .limit(MAX_VERSIONS);
+        if(error) throw error;
+
+        if(!data || data.length === 0){
+            body.innerHTML = '<div class="adm-empty">Aucune version enregistrée pour le moment.<br><br>'
+                + 'Une version est conservée automatiquement au fil de votre travail.</div>';
+            return;
+        }
+
+        let html = '<div style="font-size:11.5px;color:#a1a1aa;line-height:1.6;margin-bottom:14px;">'
+                 + 'Restaurer une version rétablit vos textes, votre thème et vos réglages. '
+                 + '<strong style="color:#e2e8f0;">Vos photos actuelles sont conservées.</strong>'
+                 + '</div>';
+
+        data.forEach(function(v){
+            const d = new Date(v.created_at).toLocaleDateString('fr-FR',
+                { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
+            const safe = String(v.label||'Portfolio')
+                .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+            html += '<div class="ver-item"><div style="min-width:0;">'
+                  + '<div class="ver-label">' + safe + '</div>'
+                  + '<div class="ver-date">' + d + '</div></div>'
+                  + '<button class="ver-restore" onclick="restoreVersion(\'' + v.id + '\')">Restaurer</button>'
+                  + '</div>';
+        });
+
+        body.innerHTML = html;
+    } catch(err){
+        body.innerHTML = '<div class="adm-empty">Erreur de chargement. Vérifiez que la table des versions est bien créée.</div>';
+    }
+}
+
+async function restoreVersion(versionId){
+    if(!supabaseClient || !currentUser) return;
+    const ok = window.confirm(
+        'Restaurer cette version ?\n\nVos textes, votre thème et vos réglages actuels seront remplacés. '
+        + 'Vos photos seront conservées.'
+    );
+    if(!ok) return;
+
+    try{
+        const { data, error } = await supabaseClient
+            .from('portfolio_versions')
+            .select('snapshot')
+            .eq('id', versionId)
+            .eq('user_id', currentUser.id)
+            .single();
+        if(error) throw error;
+        if(!data || !data.snapshot) throw new Error('Version introuvable.');
+
+        // On conserve les images actuelles, absentes de la version.
+        const keptProfile = state.data ? state.data.profileImg : null;
+        const keptProjectImgs = {};
+        (state.projects||[]).forEach(function(p){ keptProjectImgs[p.id] = p.img; });
+        const keptBg = state.custom ? state.custom.bgImage : null;
+        const keptTranslations = state.translations;
+        const keptPortfolioId = state.currentPortfolioId;
+
+        Object.assign(state, data.snapshot);
+
+        if(state.data && !state.data.profileImg && keptProfile) state.data.profileImg = keptProfile;
+        (state.projects||[]).forEach(function(p){
+            if(!p.img && keptProjectImgs[p.id]) p.img = keptProjectImgs[p.id];
+        });
+        if(state.custom && !state.custom.bgImage && keptBg) state.custom.bgImage = keptBg;
+        if(keptTranslations) state.translations = keptTranslations;
+        state.currentPortfolioId = keptPortfolioId;
+
+        saveStateToLocalStorage();
+        if(typeof initEditor === 'function') initEditor();
+        if(typeof render === 'function') render();
+        closeVersionsModal();
+        if(typeof showToast === 'function') showToast('Version restaurée ✓');
+    } catch(err){
+        console.error('[Versions] Restauration impossible:', err);
+        if(typeof showToast === 'function') showToast('Impossible de restaurer cette version.');
+    }
+}
+
+// ── STATISTIQUES DU PORTFOLIO ─────────────────────────────
+function openStatsModal(){
+    const modal = document.getElementById('stats-modal');
+    if(!modal) return;
+    modal.classList.add('open');
+    loadStats();
+}
+
+function closeStatsModal(){
+    const modal = document.getElementById('stats-modal');
+    if(modal) modal.classList.remove('open');
+}
+
+async function loadStats(){
+    const body = document.getElementById('stats-body');
+    if(!body) return;
+    body.innerHTML = '<div class="adm-empty">Chargement…</div>';
+
+    if(!supabaseClient || !currentUser){
+        body.innerHTML = '<div class="adm-empty">Connectez-vous pour consulter vos statistiques.</div>';
+        return;
+    }
+
+    try{
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if(!session || !session.access_token) throw new Error('Session introuvable.');
+
+        const res = await fetch(PAYMENT_API_BASE + '/analytics', {
+            method:'POST',
+            headers:{ 'Content-Type':'application/json', 'apikey': PAYMENT_ANON_KEY },
+            body: JSON.stringify({ action:'stats', accessToken: session.access_token })
+        });
+        const data = await res.json();
+        if(!res.ok) throw new Error(data.error || 'Chargement impossible.');
+
+        renderStats(data);
+    } catch(err){
+        body.innerHTML = '<div class="adm-empty">' + (err.message || 'Erreur de chargement.') + '</div>';
+    }
+}
+
+function renderStats(d){
+    const body = document.getElementById('stats-body');
+    if(!body || !d) return;
+
+    if(d.views.total === 0){
+        body.innerHTML = '<div class="adm-empty">Aucune visite enregistrée pour le moment.<br><br>'
+            + 'Les statistiques apparaîtront dès que votre portfolio publié sera consulté.</div>';
+        return;
+    }
+
+    let html = '';
+
+    // Courbe des 14 derniers jours
+    const max = Math.max.apply(null, d.daily.map(function(x){ return x.count; }).concat([1]));
+    html += '<div class="adm-section-title">Visites des 14 derniers jours</div>';
+    html += '<div class="st-chart">';
+    d.daily.forEach(function(day){
+        const h = Math.max(2, Math.round((day.count / max) * 100));
+        html += '<div class="st-bar" style="height:' + h + '%;" title="' + day.date + ' — ' + day.count + ' visite(s)"></div>';
+    });
+    html += '</div>';
+
+    html += '<div class="adm-grid">';
+    html += '<div class="adm-card"><div class="adm-card-value">' + d.views.total + '</div><div class="adm-card-label">Visites (30 jours)</div><div class="adm-card-sub">' + d.views.week + ' cette semaine</div></div>';
+    html += '<div class="adm-card"><div class="adm-card-value">' + d.clicks.project + '</div><div class="adm-card-label">Projets consultés</div></div>';
+    html += '<div class="adm-card"><div class="adm-card-value">' + (d.clicks.contact + d.clicks.message) + '</div><div class="adm-card-label">Prises de contact</div><div class="adm-card-sub">' + d.clicks.message + ' message(s)</div></div>';
+    html += '</div>';
+
+    const section = function(title, items, empty){
+        let s = '<div class="adm-section-title">' + title + '</div>';
+        if(!items || items.length === 0){
+            s += '<div style="font-size:11.5px;color:#52525b;padding:6px 0 10px;">' + empty + '</div>';
+        } else {
+            items.forEach(function(it){
+                s += '<div class="st-list-row"><span class="st-list-name">' + it.name
+                   + '</span><span class="st-list-count">' + it.count + '</span></div>';
+            });
+        }
+        return s;
+    };
+
+    html += section('D\'où viennent vos visiteurs', d.referrers, 'Accès directs uniquement pour l\'instant.');
+    html += section('Pays', d.countries, 'Information non disponible chez votre hébergeur.');
+    html += section('Appareils', d.devices, '—');
+    if(d.topProjects && d.topProjects.length){
+        html += section('Projets les plus consultés', d.topProjects, '—');
+    }
+
+    html += '<button onclick="loadStats()" style="width:100%;margin-top:14px;padding:11px;background:#141414;color:#a1a1aa;border:1px solid #262626;border-radius:10px;font-size:12px;font-weight:600;cursor:pointer;">Actualiser</button>';
+    html += '<div style="font-size:10px;color:#52525b;margin-top:10px;text-align:center;line-height:1.5;">'
+          + 'Aucun cookie, aucune donnée personnelle. Seuls des compteurs sont enregistrés.</div>';
+
+    body.innerHTML = html;
+}
+
+// ── MESSAGES REÇUS ────────────────────────────────────────
+function openMessagesModal(){
+    const modal = document.getElementById('messages-modal');
+    if(!modal) return;
+    modal.classList.add('open');
+    loadMessages();
+}
+
+function closeMessagesModal(){
+    const modal = document.getElementById('messages-modal');
+    if(modal) modal.classList.remove('open');
+}
+
+async function loadMessages(){
+    const body = document.getElementById('messages-body');
+    if(!body) return;
+    body.innerHTML = '<div class="adm-empty">Chargement…</div>';
+
+    if(!supabaseClient || !currentUser){
+        body.innerHTML = '<div class="adm-empty">Connectez-vous pour consulter vos messages.</div>';
+        return;
+    }
+
+    try{
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if(!session || !session.access_token) throw new Error('Session introuvable.');
+
+        const res = await fetch(PAYMENT_API_BASE + '/contact-messages', {
+            method:'POST',
+            headers:{ 'Content-Type':'application/json', 'apikey': PAYMENT_ANON_KEY },
+            body: JSON.stringify({ action:'list', accessToken: session.access_token })
+        });
+        const data = await res.json();
+        if(!res.ok) throw new Error(data.error || 'Chargement impossible.');
+
+        renderMessages(data);
+    } catch(err){
+        body.innerHTML = '<div class="adm-empty">' + (err.message || 'Erreur de chargement.') + '</div>';
+    }
+}
+
+function renderMessages(data){
+    const body = document.getElementById('messages-body');
+    if(!body) return;
+    const list = data.messages || [];
+
+    if(list.length === 0){
+        body.innerHTML = '<div class="adm-empty">Aucun message pour le moment.<br><br>'
+            + 'Activez le formulaire de contact dans l\'onglet Avancé, puis republiez votre portfolio.</div>';
+        return;
+    }
+
+    let html = '';
+    if(data.unread > 0){
+        html += '<div style="font-size:11.5px;color:#fbbf24;margin-bottom:12px;font-weight:600;">'
+              + data.unread + ' nouveau' + (data.unread>1?'x':'') + ' message' + (data.unread>1?'s':'') + '</div>';
+    }
+
+    list.forEach(function(m){
+        const date = new Date(m.created_at).toLocaleDateString('fr-FR',
+            { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
+        const safe = function(s){
+            return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        };
+        const mailto = 'mailto:' + encodeURIComponent(m.sender_email)
+                     + '?subject=' + encodeURIComponent('Re: votre message');
+
+        html += '<div class="msg-item' + (m.is_read ? '' : ' msg-unread') + '" id="msg-' + m.id + '">'
+              + '<div class="msg-top"><span class="msg-from">' + safe(m.sender_name) + '</span>'
+              + '<span class="msg-date">' + date + '</span></div>'
+              + '<div class="msg-contact">' + safe(m.sender_email)
+              + (m.sender_phone ? ' · ' + safe(m.sender_phone) : '') + '</div>'
+              + '<div class="msg-text">' + safe(m.message) + '</div>'
+              + '<div class="msg-actions">'
+              + '<a class="msg-btn" href="' + mailto + '"><i class="ri-reply-line"></i> Répondre</a>'
+              + (m.sender_phone ? '<a class="msg-btn" href="https://wa.me/' + String(m.sender_phone).replace(/[^0-9]/g,'') + '" target="_blank" rel="noopener"><i class="ri-whatsapp-line"></i> WhatsApp</a>' : '')
+              + (m.is_read ? '' : '<button class="msg-btn" onclick="markMessageRead(\'' + m.id + '\')"><i class="ri-check-line"></i> Marquer comme lu</button>')
+              + '</div></div>';
+    });
+
+    body.innerHTML = html;
+}
+
+async function markMessageRead(id){
+    if(!supabaseClient || !currentUser) return;
+    try{
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if(!session) return;
+        await fetch(PAYMENT_API_BASE + '/contact-messages', {
+            method:'POST',
+            headers:{ 'Content-Type':'application/json', 'apikey': PAYMENT_ANON_KEY },
+            body: JSON.stringify({ action:'read', accessToken: session.access_token, messageId: id })
+        });
+        const el = document.getElementById('msg-' + id);
+        if(el) el.classList.remove('msg-unread');
+        loadMessages();
+    } catch(err){
+        console.warn('[Messages] Marquage impossible:', err);
+    }
+}
 
 // ── QR CODE DU PORTFOLIO ──────────────────────────────────
 function openQrModal(){
@@ -9416,6 +11337,63 @@ function endTutorial(){
         Fermer
       </button>
     </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     ASSISTANT — observe le portfolio en construction et
+     signale ce qui l'empêche de convaincre, par ordre
+     d'importance réelle.
+     ═══════════════════════════════════════════════════════ -->
+<div id="assistant-modal" onclick="if(event.target===this)closeAssistant()">
+  <div id="assistant-card">
+    <div class="ph-head">
+      <span><i class="ri-compass-3-line" style="color:#a5b4fc;"></i> Assistant</span>
+      <button class="ph-close" onclick="closeAssistant()">✕</button>
+    </div>
+    <div class="ph-body" id="assistant-body" style="padding:20px;overflow-y:auto;"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     HISTORIQUE DE VERSIONS — revenir à un état antérieur
+     après une fausse manœuvre.
+     ═══════════════════════════════════════════════════════ -->
+<div id="versions-modal" onclick="if(event.target===this)closeVersionsModal()">
+  <div id="versions-card">
+    <div class="ph-head">
+      <span><i class="ri-history-line" style="color:#fbbf24;"></i> Historique de versions</span>
+      <button class="ph-close" onclick="closeVersionsModal()">✕</button>
+    </div>
+    <div class="ph-body" id="versions-body" style="padding:18px;overflow-y:auto;"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     STATISTIQUES — combien de personnes consultent le
+     portfolio, d'où elles viennent, ce qui les intéresse.
+     ═══════════════════════════════════════════════════════ -->
+<div id="stats-modal" onclick="if(event.target===this)closeStatsModal()">
+  <div id="stats-card">
+    <div class="ph-head">
+      <span><i class="ri-line-chart-line" style="color:#10b981;"></i> Statistiques</span>
+      <button class="ph-close" onclick="closeStatsModal()">✕</button>
+    </div>
+    <div class="ph-body" id="stats-body" style="padding:18px;overflow-y:auto;"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     MESSAGES REÇUS — ce que les visiteurs ont écrit depuis
+     le formulaire de contact du portfolio publié.
+     ═══════════════════════════════════════════════════════ -->
+<div id="messages-modal" onclick="if(event.target===this)closeMessagesModal()">
+  <div id="messages-card">
+    <div class="ph-head">
+      <span><i class="ri-inbox-line" style="color:#a5b4fc;"></i> Messages reçus</span>
+      <button class="ph-close" onclick="closeMessagesModal()">✕</button>
+    </div>
+    <div class="ph-body" id="messages-body" style="padding:18px;overflow-y:auto;"></div>
   </div>
 </div>
 
