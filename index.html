@@ -2913,55 +2913,94 @@ radial-gradient(circle at 50% 50%,rgba(255,183,77,.06) 0%,transparent 50%);}
     padding:10px 20px;
     background:transparent;
 }
-/* Bouton hamburger 3D */
+/* Bouton d'ouverture — emprunte lui aussi la palette du thème */
 #pf-hamburger-btn{
     width:44px;height:44px;border-radius:50%;
-    background:linear-gradient(145deg,rgba(255,255,255,.18),rgba(255,255,255,.06));
-    border:1px solid rgba(255,255,255,.22);
-    box-shadow:0 4px 16px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.2);
+    background:color-mix(in srgb, currentColor 10%, transparent);
+    border:1px solid color-mix(in srgb, currentColor 22%, transparent);
+    box-shadow:0 4px 16px rgba(0,0,0,.18),
+               inset 0 1px 0 color-mix(in srgb, currentColor 15%, transparent);
     cursor:pointer;
     display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
     transition:all .25s cubic-bezier(.34,1.56,.64,1);
     backdrop-filter:blur(10px);
+    -webkit-backdrop-filter:blur(10px);
     flex-shrink:0;
+    color:inherit;
 }
 #pf-hamburger-btn:hover{
-    transform:scale(1.1);
-    box-shadow:0 6px 24px rgba(99,102,241,.35),inset 0 1px 0 rgba(255,255,255,.25);
-    background:linear-gradient(145deg,rgba(99,102,241,.3),rgba(168,85,247,.2));
+    transform:scale(1.08);
+    background:color-mix(in srgb, currentColor 18%, transparent);
+    box-shadow:0 6px 22px rgba(0,0,0,.22),
+               inset 0 1px 0 color-mix(in srgb, currentColor 20%, transparent);
 }
 #pf-hamburger-btn span{
     width:16px;height:2px;
-    background:#fff;border-radius:1px;
+    background:currentColor;border-radius:1px;
+    opacity:.9;
     transition:all .25s ease;
     display:block;
 }
-/* Menu déroulant */
+/* Menu déroulant — s'adapte à la couleur du thème actif.
+   Il était auparavant en bleu nuit fixe, ce qui jurait avec la
+   plupart des thèmes. Tout est désormais construit sur
+   currentColor : le menu emprunte la palette du thème. */
 #pf-hamburger-menu{
-    position:absolute;top:calc(100% + 6px);right:20px;
-    min-width:190px;
-    background:rgba(10,12,28,.92);
-    backdrop-filter:blur(20px);
-    border:1px solid rgba(255,255,255,.12);
-    border-radius:16px;
-    box-shadow:0 16px 48px rgba(0,0,0,.4);
+    position:absolute;top:calc(100% + 8px);right:20px;
+    min-width:208px;
+    background:color-mix(in srgb, currentColor 8%, rgba(255,255,255,.82));
+    backdrop-filter:blur(24px) saturate(1.4);
+    -webkit-backdrop-filter:blur(24px) saturate(1.4);
+    border:1px solid color-mix(in srgb, currentColor 18%, transparent);
+    border-radius:18px;
+    box-shadow:0 20px 50px -12px rgba(0,0,0,.35),
+               inset 0 1px 0 color-mix(in srgb, currentColor 10%, transparent);
     overflow:hidden;
+    padding:6px;
     z-index:200;
     transform-origin:top right;
-    animation:menuDropIn .2s cubic-bezier(.34,1.56,.64,1);
+    animation:menuDropIn .22s cubic-bezier(.34,1.56,.64,1);
 }
-@keyframes menuDropIn{from{opacity:0;transform:scale(.9) translateY(-8px);}to{opacity:1;transform:scale(1) translateY(0);}}
+/* Sur les thèmes sombres, le fond s'assombrit au lieu de s'éclaircir */
+[class*="theme-ph_"] #pf-hamburger-menu,
+.theme-noir #pf-hamburger-menu,
+.theme-cyber #pf-hamburger-menu,
+.theme-galaxy #pf-hamburger-menu{
+    background:color-mix(in srgb, currentColor 6%, rgba(12,12,16,.88));
+}
+@keyframes menuDropIn{from{opacity:0;transform:scale(.94) translateY(-8px);}to{opacity:1;transform:scale(1) translateY(0);}}
+
 #pf-hamburger-menu a{
-    display:flex;align-items:center;gap:10px;
-    padding:11px 16px;
-    color:#e2e8f0;font-size:12px;font-weight:600;
+    display:flex;align-items:center;gap:12px;
+    padding:10px 12px;
+    margin-bottom:2px;
+    border-radius:12px;
+    color:inherit;font-size:12.5px;font-weight:600;
     text-decoration:none;
-    transition:background .15s;
-    border-bottom:1px solid rgba(255,255,255,.05);
+    opacity:.85;
+    transition:background .18s ease, opacity .18s ease, transform .18s ease;
+    border-bottom:none;
 }
-#pf-hamburger-menu a:last-child{border-bottom:none;}
-#pf-hamburger-menu a:hover{background:rgba(99,102,241,.2);color:#fff;}
-#pf-hamburger-menu a i{font-size:15px;color:#818cf8;flex-shrink:0;}
+#pf-hamburger-menu a:last-child{margin-bottom:0;}
+#pf-hamburger-menu a:hover{
+    background:color-mix(in srgb, currentColor 12%, transparent);
+    opacity:1;
+    transform:translateX(2px);
+}
+/* Icônes posées dans une pastille douce plutôt que nues */
+#pf-hamburger-menu a i{
+    width:28px;height:28px;flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;
+    font-size:14px;
+    border-radius:9px;
+    background:color-mix(in srgb, currentColor 12%, transparent);
+    opacity:.9;
+    transition:background .18s ease;
+}
+#pf-hamburger-menu a:hover i{
+    background:color-mix(in srgb, currentColor 20%, transparent);
+}
+
 
 /* Section isolée en mode multi-pages */
 .pf-section-page{display:block;}
@@ -3279,6 +3318,13 @@ radial-gradient(circle at 50% 50%,rgba(255,183,77,.06) 0%,transparent 50%);}
   transition      : background 0.15s, color 0.15s;
 }
 .account-menu-item:hover { background:#1a1a1a; color:#a5b4fc; }
+
+/* Barre de défilement discrète du menu compte */
+#account-menu::-webkit-scrollbar{width:6px;}
+#account-menu::-webkit-scrollbar-track{background:transparent;}
+#account-menu::-webkit-scrollbar-thumb{background:#2a2a2a;border-radius:100px;}
+#account-menu::-webkit-scrollbar-thumb:hover{background:#3f3f46;}
+#account-menu{scrollbar-width:thin;scrollbar-color:#2a2a2a transparent;}
 #guest-google-signin-btn:hover {
   background:#1f1f1f!important;
   border-color:#3a3a3a!important;
@@ -3938,7 +3984,9 @@ radial-gradient(circle at 50% 50%,rgba(255,183,77,.06) 0%,transparent 50%);}
 
                     <div id="account-menu" style="display:none;position:absolute;right:0;top:calc(100% + 10px);
                         background:#000000;border:1px solid #262626;
-                        border-radius:16px;min-width:272px;z-index:9999;overflow:hidden;
+                        border-radius:16px;min-width:272px;z-index:9999;
+                        max-height:calc(100vh - 90px);overflow-y:auto;overflow-x:hidden;
+                        overscroll-behavior:contain;
                         box-shadow:0 24px 60px rgba(0,0,0,.6);">
 
                         <!-- ── Vu par un visiteur NON connecté ── -->
@@ -6391,16 +6439,20 @@ var currentPage = 'pf-sec-hero';
 
 function buildMultiPageNav(){
     var sections = [];
-    sections.push({id:'pf-sec-hero',    label:'Accueil',      icon:'ri-home-line'});
+    sections.push({id:'pf-sec-hero',    label:'Accueil',      icon:'ri-home-5-line'});
     if(state.showSkills && state.skills.length > 0)
-        sections.push({id:'pf-sec-skills',   label:'Compétences',  icon:'ri-code-s-slash-line'});
+        sections.push({id:'pf-sec-skills',   label:'Compétences',  icon:'ri-shining-2-line'});
+    if(state.stats && state.stats.length > 0)
+        sections.push({id:'pf-sec-stats',    label:'En chiffres',   icon:'ri-bar-chart-2-line'});
     if(state.projects && state.projects.length > 0)
-        sections.push({id:'pf-sec-projects', label:'Projets',       icon:'ri-folder-line'});
+        sections.push({id:'pf-sec-projects', label:'Projets',       icon:'ri-grid-line'});
     if(state.experiences && state.experiences.length > 0)
-        sections.push({id:'pf-sec-exp',      label:'Parcours',      icon:'ri-briefcase-line'});
+        sections.push({id:'pf-sec-exp',      label:'Parcours',      icon:'ri-route-line'});
     if(state.certifications && state.certifications.length > 0)
-        sections.push({id:'pf-sec-cert',     label:'Certifications',icon:'ri-award-line'});
-    sections.push({id:'pf-sec-contact',  label:'Contact',       icon:'ri-mail-line'});
+        sections.push({id:'pf-sec-cert',     label:'Certifications',icon:'ri-medal-2-line'});
+    if(state.testimonials && state.testimonials.length > 0)
+        sections.push({id:'pf-sec-testi',    label:'Témoignages',   icon:'ri-chat-quote-line'});
+    sections.push({id:'pf-sec-contact',  label:'Contact',       icon:'ri-send-plane-line'});
 
     // Stocker les sections disponibles pour la navigation
     window._mpSections = sections;
