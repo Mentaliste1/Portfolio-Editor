@@ -3017,6 +3017,9 @@ radial-gradient(circle at 50% 50%,rgba(255,183,77,.06) 0%,transparent 50%);}
 }
 
 /* ── RÉGLAGE DES EFFETS PAR ÉLÉMENT ── */
+/* Une ligne par élément, sur toute la largeur. Une disposition
+   en colonnes rejetait la moitié des réglages hors de l'écran. */
+.fx-list{display:block;}
 .fx-row{
     display:flex;align-items:center;gap:8px;
     padding:7px 9px;margin-bottom:5px;
@@ -3025,9 +3028,13 @@ radial-gradient(circle at 50% 50%,rgba(255,183,77,.06) 0%,transparent 50%);}
     border-radius:9px;
 }
 .fx-row i{color:var(--ui-accent);font-size:14px;flex-shrink:0;width:16px;text-align:center;}
-.fx-row label{flex:1;font-size:11px;font-weight:600;color:var(--ui-text);margin:0;min-width:0;}
+.fx-row label{
+    flex:1;min-width:0;
+    font-size:11px;font-weight:600;color:var(--ui-text);margin:0;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
 .fx-row select{
-    width:118px;flex-shrink:0;
+    width:118px;flex-shrink:0;max-width:52%;
     font-size:11px;padding:5px 7px;
     background:var(--ui-bg);color:var(--ui-text);
     border:1px solid var(--ui-border);border-radius:7px;
@@ -4210,6 +4217,106 @@ radial-gradient(circle at 50% 50%,rgba(255,183,77,.06) 0%,transparent 50%);}
 .adm-fb-date{font-size:9.5px;color:#52525b;margin-top:5px;}
 .adm-empty{text-align:center;padding:26px;color:#52525b;font-size:12px;}
 
+/* ── TABLEAU DE BORD — présentation enrichie ── */
+.adm-hero{
+    position:relative;overflow:hidden;
+    background:linear-gradient(145deg,#101018,#0b0b10);
+    border:1px solid #262630;border-radius:18px;
+    padding:18px 18px 0;margin-bottom:12px;
+}
+.adm-hero::before{
+    content:'';position:absolute;top:-60px;right:-40px;
+    width:180px;height:180px;border-radius:50%;
+    background:radial-gradient(circle,rgba(16,185,129,.18),transparent 68%);
+    pointer-events:none;
+}
+.adm-hero-label{
+    font-size:10px;font-weight:700;letter-spacing:1.2px;
+    text-transform:uppercase;color:#71717a;margin-bottom:6px;
+}
+.adm-hero-value{
+    font-family:'Syne',sans-serif;font-size:34px;font-weight:800;
+    color:#f1f5f9;line-height:1;letter-spacing:-1px;
+}
+.adm-hero-unit{font-size:14px;font-weight:700;opacity:.5;margin-left:6px;}
+.adm-hero-meta{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 4px;}
+.adm-pill{
+    font-size:10px;font-weight:700;padding:4px 9px;border-radius:100px;
+    background:#1a1a22;color:#a1a1aa;
+}
+.adm-pill.adm-up{background:rgba(16,185,129,.14);color:#10b981;}
+.adm-pill.adm-down{background:rgba(239,68,68,.14);color:#f87171;}
+
+.adm-chart{display:block;width:100%;height:64px;margin-top:6px;}
+.adm-chart-foot{
+    display:flex;justify-content:space-between;
+    font-size:9px;color:#52525b;padding:2px 0 10px;
+}
+
+.adm-kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:12px;}
+.adm-kpi{
+    display:flex;align-items:flex-start;gap:10px;
+    background:#121218;border:1px solid #24242c;
+    border-radius:14px;padding:13px 12px;
+    transition:border-color .2s ease, transform .2s ease;
+}
+.adm-kpi:hover{border-color:#3f3f4a;transform:translateY(-2px);}
+.adm-kpi-icon{
+    width:32px;height:32px;border-radius:10px;flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;font-size:15px;
+}
+.adm-kpi-value{
+    font-family:'Syne',sans-serif;font-size:17px;font-weight:800;
+    color:#f1f5f9;line-height:1.1;
+}
+.adm-kpi-label{font-size:10.5px;color:#a1a1aa;margin-top:2px;}
+.adm-kpi-sub{font-size:9.5px;color:#52525b;margin-top:2px;}
+
+.adm-panel{
+    background:#121218;border:1px solid #24242c;
+    border-radius:16px;padding:14px;margin-bottom:12px;
+}
+.adm-panel-head{
+    display:flex;align-items:center;justify-content:space-between;
+    font-size:12px;font-weight:700;color:#e4e4e7;margin-bottom:8px;gap:8px;
+}
+.adm-panel-badge{
+    font-size:9.5px;font-weight:700;padding:3px 8px;border-radius:100px;
+    background:#1e1e26;color:#a1a1aa;flex-shrink:0;
+}
+.adm-panel-badge.adm-badge-warn{background:rgba(251,191,36,.14);color:#fbbf24;}
+.adm-panel-foot{
+    font-size:9.5px;color:#52525b;text-align:center;
+    margin-top:8px;padding-top:8px;border-top:1px solid #1e1e26;
+}
+
+.adm-mini-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px;}
+.adm-mini{
+    display:flex;align-items:center;gap:8px;
+    background:#121218;border:1px solid #24242c;
+    border-radius:12px;padding:11px 10px;
+}
+.adm-mini i{font-size:16px;flex-shrink:0;}
+.adm-mini-value{font-family:'Syne',sans-serif;font-size:15px;font-weight:800;color:#f1f5f9;line-height:1;}
+.adm-mini-label{font-size:9.5px;color:#71717a;margin-top:2px;}
+
+.adm-stars{color:#fbbf24;font-size:10px;margin-left:5px;}
+.adm-refresh{
+    width:100%;padding:12px;margin-top:2px;
+    background:#16161d;color:#a1a1aa;
+    border:1px solid #26262e;border-radius:12px;
+    font-size:12px;font-weight:600;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;gap:6px;
+    transition:background .18s ease, color .18s ease;
+    font-family:'DM Sans',sans-serif;
+}
+.adm-refresh:hover{background:#1e1e26;color:#f1f5f9;}
+
+@media(max-width:520px){
+    .adm-kpi-grid{grid-template-columns:1fr;}
+    .adm-hero-value{font-size:28px;}
+}
+
 /* ── LISIBILITÉ ── */
 #a11y-modal {
   display:none; position:fixed; inset:0; background:rgba(0,0,0,0.82);
@@ -5001,14 +5108,14 @@ radial-gradient(circle at 50% 50%,rgba(255,183,77,.06) 0%,transparent 50%);}
                 <div style="font-size:10px;color:var(--ui-muted);margin-bottom:8px;">
                     Un effet permanent sur votre nom et vos titres de section, comme un reflet qui passe.
                 </div>
-                <div class="anim-grid" id="text-fx-catalog"></div>
+                <div class="fx-list" id="text-fx-catalog"></div>
 
                 <!-- ═══ EFFET AU SURVOL DES BOUTONS ═══ -->
                 <div class="section-label" style="margin-top:18px;"><i class="ri-cursor-line"></i> Effet des boutons<div class="section-label-line"></div></div>
                 <div style="font-size:10px;color:var(--ui-muted);margin-bottom:8px;">
                     Ce qui se passe quand le visiteur survole un bouton ou une compétence.
                 </div>
-                <div class="anim-grid" id="btn-fx-catalog"></div>
+                <div class="fx-list" id="btn-fx-catalog"></div>
                 <div class="section-label" style="margin-top:18px;"><i class="ri-time-line"></i> Vitesse<div class="section-label-line"></div></div>
                 <div class="speed-row"><span style="font-size:11px;color:var(--ui-muted);">Rapide</span><input type="range" min="400" max="1600" step="100" value="800" id="anim-speed" oninput="updateAnimSpeed(this.value)"><span style="font-size:11px;color:var(--ui-muted);">Lent</span><span class="speed-val" id="speed-label">0.8s</span></div>
                 <div class="section-label" style="margin-top:16px;"><i class="ri-stack-line"></i> Stagger (délai)<div class="section-label-line"></div></div>
@@ -8158,9 +8265,15 @@ async function exportPortfolio(){
 // d'un accès gratuit au téléchargement (accordé par l'administrateur
 // dans la table free_access de Supabase).
 async function checkFreeAccess(){
-    if (!currentUser || !currentUser.email) return false;
+    if (!currentUser || !supabaseClient) return false;
+    // On envoie le jeton de session, jamais l'email : le serveur
+    // établit lui-même l'identité. Envoyer un email laissait la
+    // porte ouverte à quiconque connaissait celui d'un compte
+    // bénéficiant de la gratuité.
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (!session || !session.access_token) return false;
     const res = await fetch(
-        PAYMENT_API_BASE + '/check-free-access?email=' + encodeURIComponent(currentUser.email),
+        PAYMENT_API_BASE + '/check-free-access?token=' + encodeURIComponent(session.access_token),
         { headers: { 'apikey': PAYMENT_ANON_KEY } }
     );
     if (!res.ok) return false;
@@ -9580,10 +9693,21 @@ async function translatePortfolio(){
     for(const lang of targets){
         if(status) status.textContent = 'Traduction vers ' + lang.toUpperCase() + '… (' + (done+1) + '/' + targets.length + ')';
         try{
+            // La traduction consomme un quota payant : le serveur
+            // exige donc une session valide.
+            let tok = null;
+            if(supabaseClient){
+                const { data: { session } } = await supabaseClient.auth.getSession();
+                tok = session ? session.access_token : null;
+            }
             const res = await fetch(PAYMENT_API_BASE + '/translate', {
                 method:'POST',
                 headers:{ 'Content-Type':'application/json', 'apikey': PAYMENT_ANON_KEY },
-                body: JSON.stringify({ texts: items.map(function(i){ return i.text; }), targetLang: lang })
+                body: JSON.stringify({
+                    texts: items.map(function(i){ return i.text; }),
+                    targetLang: lang,
+                    accessToken: tok
+                })
             });
             const data = await res.json();
             if(!res.ok || !data.translations) throw new Error(data.error || 'Échec');
@@ -11621,7 +11745,11 @@ function renderStats(d){
             s += '<div style="font-size:11.5px;color:#52525b;padding:6px 0 10px;">' + empty + '</div>';
         } else {
             items.forEach(function(it){
-                s += '<div class="st-list-row"><span class="st-list-name">' + it.name
+                // La provenance est fournie par le visiteur : on ne
+                // l'interprète jamais comme du HTML.
+                const escName = String(it.name==null?'':it.name)
+                    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+                s += '<div class="st-list-row"><span class="st-list-name">' + escName
                    + '</span><span class="st-list-count">' + it.count + '</span></div>';
             });
         }
@@ -12055,47 +12183,147 @@ function renderAdminStats(d){
     if(!body || !d) return;
 
     const catLabels = { avis:'Avis', suggestion:'Suggestion', probleme:'Souci', question:'Question' };
+    const money = function(n){ return (n||0).toLocaleString('fr-FR'); };
+    // Les avis sont écrits par des utilisateurs : leur contenu ne
+    // doit jamais être interprété comme du HTML dans la console
+    // d'administration, sinon un message piégé pourrait exécuter
+    // du code dans la session de l'administrateur.
+    const safe = function(s){
+        return String(s == null ? '' : s)
+            .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+            .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+    };
+
+    // Tendance par rapport au mois précédent : un chiffre seul ne
+    // dit rien, c'est la comparaison qui informe.
+    const prev = d.revenuePrevMonth || 0;
+    const cur  = d.payments.revenueMonth || 0;
+    let trend = null;
+    if(prev > 0){
+        const pct = Math.round(((cur - prev) / prev) * 100);
+        trend = { pct: pct, up: pct >= 0 };
+    } else if(cur > 0){
+        trend = { pct: 100, up: true };
+    }
+
+    // ── Graphique en aires, dessiné en SVG ────────────────
+    // Aucune bibliothèque externe : le fichier reste autonome.
+    const areaChart = function(series, color, unit){
+        if(!series || !series.length) return '';
+        const max = Math.max.apply(null, series.map(function(p){ return p.value; }).concat([1]));
+        const W = 300, H = 64;
+        const step = W / Math.max(1, series.length - 1);
+        const pts = series.map(function(p,i){
+            return [i*step, H - (p.value/max)*(H-8) - 4];
+        });
+        const line = pts.map(function(p,i){ return (i?'L':'M') + p[0].toFixed(1) + ',' + p[1].toFixed(1); }).join(' ');
+        const area = line + ' L' + W + ',' + H + ' L0,' + H + ' Z';
+        const last = series[series.length-1];
+        return '<svg class="adm-chart" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none">'
+             + '<defs><linearGradient id="g' + unit + '" x1="0" y1="0" x2="0" y2="1">'
+             + '<stop offset="0%" stop-color="' + color + '" stop-opacity=".38"/>'
+             + '<stop offset="100%" stop-color="' + color + '" stop-opacity="0"/>'
+             + '</linearGradient></defs>'
+             + '<path d="' + area + '" fill="url(#g' + unit + ')"/>'
+             + '<path d="' + line + '" fill="none" stroke="' + color + '" stroke-width="2" '
+             + 'stroke-linecap="round" stroke-linejoin="round"/>'
+             + '<circle cx="' + pts[pts.length-1][0].toFixed(1) + '" cy="' + pts[pts.length-1][1].toFixed(1)
+             + '" r="3.5" fill="' + color + '"/>'
+             + '</svg>'
+             + '<div class="adm-chart-foot"><span>il y a 30 jours</span><span>' + (last.label||'aujourd\'hui') + '</span></div>';
+    };
 
     let html = '';
 
-    html += '<div class="adm-section-title">Activité</div><div class="adm-grid">';
-    html += '<div class="adm-card"><div class="adm-card-value">' + d.users.total + '</div><div class="adm-card-label">Comptes créés</div><div class="adm-card-sub">+' + d.users.week + ' cette semaine</div></div>';
-    html += '<div class="adm-card"><div class="adm-card-value">' + d.portfolios.total + '</div><div class="adm-card-label">Portfolios sauvegardés</div></div>';
-    html += '<div class="adm-card"><div class="adm-card-value">' + d.freeAccess.active + '</div><div class="adm-card-label">Accès gratuits actifs</div></div>';
+    // ── Bandeau principal : le revenu du mois ─────────────
+    html += '<div class="adm-hero">'
+          + '<div class="adm-hero-label">Revenu du mois</div>'
+          + '<div class="adm-hero-value">' + money(cur) + '<span class="adm-hero-unit">FCFA</span></div>'
+          + '<div class="adm-hero-meta">'
+          + '<span class="adm-pill">' + d.payments.paidMonth + ' paiement' + (d.payments.paidMonth>1?'s':'') + '</span>';
+    if(trend){
+        html += '<span class="adm-pill ' + (trend.up?'adm-up':'adm-down') + '">'
+              + (trend.up?'▲':'▼') + ' ' + Math.abs(trend.pct) + '% vs mois dernier</span>';
+    }
     html += '</div>';
-
-    html += '<div class="adm-section-title">Paiements</div><div class="adm-grid">';
-    html += '<div class="adm-card"><div class="adm-card-value">' + fmtMoney(d.payments.revenueMonth) + '</div><div class="adm-card-label">Ce mois-ci</div><div class="adm-card-sub">' + d.payments.paidMonth + ' paiement' + (d.payments.paidMonth > 1 ? 's' : '') + '</div></div>';
-    html += '<div class="adm-card"><div class="adm-card-value">' + fmtMoney(d.payments.revenueTotal) + '</div><div class="adm-card-label">Total encaissé</div><div class="adm-card-sub">' + d.payments.paidCount + ' au total</div></div>';
-    html += '<div class="adm-card"><div class="adm-card-value">' + d.payments.pending + '</div><div class="adm-card-label">En attente</div></div>';
-    html += '</div>';
-
-    html += '<div class="adm-section-title">Avis reçus';
-    if(d.feedback.unread > 0){
-        html += ' <span class="adm-fb-badge adm-unread" style="margin-left:6px;">' + d.feedback.unread + ' non lu' + (d.feedback.unread > 1 ? 's' : '') + '</span>';
+    if(d.dailyRevenue && d.dailyRevenue.length){
+        html += areaChart(d.dailyRevenue.map(function(x){ return { value:x.amount }; }), '#10b981', 'rev');
     }
     html += '</div>';
 
-    if(d.feedback.recent && d.feedback.recent.length > 0){
+    // ── Indicateurs clés ──────────────────────────────────
+    html += '<div class="adm-kpi-grid">'
+          + '<div class="adm-kpi"><div class="adm-kpi-icon" style="background:rgba(99,102,241,.14);color:#a5b4fc;"><i class="ri-group-line"></i></div>'
+          + '<div><div class="adm-kpi-value">' + d.users.total + '</div>'
+          + '<div class="adm-kpi-label">Comptes</div>'
+          + '<div class="adm-kpi-sub">+' + d.users.week + ' cette semaine</div></div></div>'
+
+          + '<div class="adm-kpi"><div class="adm-kpi-icon" style="background:rgba(16,185,129,.14);color:#10b981;"><i class="ri-wallet-3-line"></i></div>'
+          + '<div><div class="adm-kpi-value">' + money(d.payments.revenueTotal) + '</div>'
+          + '<div class="adm-kpi-label">Total encaissé</div>'
+          + '<div class="adm-kpi-sub">' + d.payments.paidCount + ' paiements</div></div></div>'
+
+          + '<div class="adm-kpi"><div class="adm-kpi-icon" style="background:rgba(251,191,36,.14);color:#fbbf24;"><i class="ri-shopping-bag-3-line"></i></div>'
+          + '<div><div class="adm-kpi-value">' + money(d.avgBasket) + '</div>'
+          + '<div class="adm-kpi-label">Panier moyen</div>'
+          + '<div class="adm-kpi-sub">par téléchargement</div></div></div>'
+
+          + '<div class="adm-kpi"><div class="adm-kpi-icon" style="background:rgba(168,85,247,.14);color:#c084fc;"><i class="ri-percent-line"></i></div>'
+          + '<div><div class="adm-kpi-value">' + (d.conversion||0) + '%</div>'
+          + '<div class="adm-kpi-label">Conversion</div>'
+          + '<div class="adm-kpi-sub">comptes ayant payé</div></div></div>'
+          + '</div>';
+
+    // ── Inscriptions ──────────────────────────────────────
+    if(d.dailySignups && d.dailySignups.length){
+        const totalSignups = d.dailySignups.reduce(function(s,x){ return s + x.count; }, 0);
+        html += '<div class="adm-panel">'
+              + '<div class="adm-panel-head"><span>Nouveaux comptes</span>'
+              + '<span class="adm-panel-badge">' + totalSignups + ' sur 30 jours</span></div>'
+              + areaChart(d.dailySignups.map(function(x){ return { value:x.count }; }), '#6366f1', 'sign')
+              + '</div>';
+    }
+
+    // ── En attente et accès gratuits ──────────────────────
+    html += '<div class="adm-mini-grid">'
+          + '<div class="adm-mini"><i class="ri-time-line" style="color:#fbbf24;"></i>'
+          + '<div><div class="adm-mini-value">' + d.payments.pending + '</div>'
+          + '<div class="adm-mini-label">En attente</div></div></div>'
+          + '<div class="adm-mini"><i class="ri-gift-line" style="color:#10b981;"></i>'
+          + '<div><div class="adm-mini-value">' + d.freeAccess.active + '</div>'
+          + '<div class="adm-mini-label">Accès gratuits</div></div></div>'
+          + '<div class="adm-mini"><i class="ri-folder-line" style="color:#a5b4fc;"></i>'
+          + '<div><div class="adm-mini-value">' + d.portfolios.total + '</div>'
+          + '<div class="adm-mini-label">Portfolios</div></div></div>'
+          + '</div>';
+
+    // ── Derniers avis ─────────────────────────────────────
+    html += '<div class="adm-panel"><div class="adm-panel-head"><span>Derniers avis</span>';
+    if(d.feedback.unread > 0){
+        html += '<span class="adm-panel-badge adm-badge-warn">' + d.feedback.unread + ' non lu' + (d.feedback.unread>1?'s':'') + '</span>';
+    }
+    html += '</div>';
+
+    if(d.feedback.recent && d.feedback.recent.length){
         d.feedback.recent.forEach(function(f){
             const date = new Date(f.created_at).toLocaleDateString('fr-FR', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' });
-            const stars = f.rating ? ' · ' + '★'.repeat(f.rating) : '';
+            const stars = f.rating ? '<span class="adm-stars">' + '★'.repeat(f.rating) + '</span>' : '';
             html += '<div class="adm-fb-item">'
-                + '<div class="adm-fb-top">'
-                + '<span class="adm-fb-email">' + f.email + '</span>'
-                + '<span class="adm-fb-badge' + (f.is_read ? '' : ' adm-unread') + '">' + (catLabels[f.category] || f.category) + '</span>'
-                + '</div>'
-                + '<div class="adm-fb-msg">' + (f.message.length > 180 ? f.message.substring(0,180) + '…' : f.message) + '</div>'
-                + '<div class="adm-fb-date">' + date + stars + '</div>'
-                + '</div>';
+                  + '<div class="adm-fb-top">'
+                  + '<span class="adm-fb-email">' + safe(f.email) + '</span>'
+                  + '<span class="adm-fb-badge' + (f.is_read?'':' adm-unread') + '">' + safe(catLabels[f.category]||f.category) + '</span>'
+                  + '</div>'
+                  + '<div class="adm-fb-msg">' + safe(f.message.length>150 ? f.message.substring(0,150)+'…' : f.message) + '</div>'
+                  + '<div class="adm-fb-date">' + date + ' ' + stars + '</div>'
+                  + '</div>';
         });
-        html += '<div style="font-size:10.5px;color:#52525b;margin-top:10px;text-align:center;">'
-              + d.feedback.total + ' avis au total — consultez-les tous dans Supabase → Table Editor → feedback</div>';
+        html += '<div class="adm-panel-foot">' + d.feedback.total + ' avis au total — tout consulter dans Supabase</div>';
     } else {
         html += '<div class="adm-empty">Aucun avis pour le moment.</div>';
     }
+    html += '</div>';
 
-    html += '<button onclick="loadAdminStats()" style="width:100%;margin-top:16px;padding:11px;background:#141414;color:#a1a1aa;border:1px solid #262626;border-radius:10px;font-size:12px;font-weight:600;cursor:pointer;">Actualiser</button>';
+    html += '<button class="adm-refresh" onclick="loadAdminStats()"><i class="ri-refresh-line"></i> Actualiser</button>';
 
     body.innerHTML = html;
 }
