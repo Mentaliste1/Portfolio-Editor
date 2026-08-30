@@ -543,7 +543,11 @@ textarea.input-control{min-height:75px;resize:none;line-height:1.6;}
    navigateur simulé et passeraient derrière sa barre (36px).
    On les décale dessous. Dans le portfolio exporté, ce cadre
    n'existe pas : ils gardent leur position d'origine. */
-#app-container #pf-lang-widget{top:48px!important;}
+#app-container #pf-lang-widget:not(.pf-lang-alt){top:48px!important;}
+#app-container #pf-lang-widget.pf-lang-alt{top:48px!important;}
+@media(max-width:768px){
+    #app-container #pf-lang-widget.pf-lang-alt{top:auto!important;}
+}
 #pf-read-progress-fill{
     height:100%;width:0%;
     background:currentColor;
@@ -2941,10 +2945,687 @@ radial-gradient(circle at 50% 50%,rgba(255,183,77,.06) 0%,transparent 50%);}
     transition:all .25s ease;
     display:block;
 }
-/* Menu déroulant — s'adapte à la couleur du thème actif.
-   Il était auparavant en bleu nuit fixe, ce qui jurait avec la
-   plupart des thèmes. Tout est désormais construit sur
-   currentColor : le menu emprunte la palette du thème. */
+/* ═══════════════════════════════════════════════════════
+   IMPRESSION DEPUIS L'ÉDITEUR
+   Ces règles n'existaient que dans le portfolio exporté :
+   imprimer depuis l'éditeur capturait donc toute l'interface —
+   panneaux, barres d'outils, menus. Seul le portfolio doit
+   apparaître sur la feuille.
+   ═══════════════════════════════════════════════════════ */
+@media print{
+    @page{ margin:12mm; }
+
+    /* Tout ce qui relève de l'éditeur disparaît */
+    .studio-sidebar,
+    .editor-panel,
+    .editor-header,
+    #mobile-nav-wrapper,
+    #pricing-badge-bar,
+    .browser-header,
+    .preview-bg-pattern,
+    #inline-toolbar,
+    #account-menu,
+    #tutorial-overlay,
+    .modal-overlay,
+    #pm-modal, #hosting-modal, #publish-choice-modal,
+    #feedback-modal, #admin-modal, #referral-modal,
+    #qr-modal, #messages-modal, #stats-modal,
+    #versions-modal, #assistant-modal, #saved-portfolios-modal,
+    #payment-history-modal, #auth-screen,
+    #pf-chat-widget, #pf-lang-widget, #pf-print-btn,
+    #pf-theme-switch, #pf-read-progress, #pf-cursor-glow,
+    .pf-multipage-nav{
+        display:none!important;
+    }
+
+    /* Le cadre de prévisualisation s'efface au profit du contenu */
+    html, body{
+        height:auto!important;overflow:visible!important;
+        background:#fff!important;
+    }
+    #app-container{display:block!important;height:auto!important;}
+    .preview-wrapper{
+        display:block!important;padding:0!important;
+        height:auto!important;overflow:visible!important;
+    }
+    .browser-mockup{
+        max-width:100%!important;width:100%!important;height:auto!important;
+        border-radius:0!important;box-shadow:none!important;
+        border:none!important;transform:none!important;
+    }
+    .portfolio-viewport{
+        height:auto!important;max-height:none!important;
+        overflow:visible!important;
+    }
+    /* Les rubriques masquées en mode pages séparées doivent
+       toutes figurer sur le document imprimé. */
+    .portfolio-viewport [data-page]{display:block!important;}
+
+    /* Les éléments animés doivent être visibles à l'impression :
+       sans ça, tout ce qui n'est pas encore apparu sortirait blanc. */
+    .anim-el{
+        opacity:1!important;transform:none!important;
+        filter:none!important;animation:none!important;transition:none!important;
+    }
+
+    /* Éviter de couper une carte en deux entre deux pages */
+    .pf-project-card, .pf-testi-card, .pf-cert-card,
+    .pf-stat-item, .pf-exp-item{
+        break-inside:avoid;page-break-inside:avoid;
+    }
+    .pf-section-page{break-inside:auto;}
+}
+
+/* ── RÉGLAGE DES EFFETS PAR ÉLÉMENT ── */
+.fx-row{
+    display:flex;align-items:center;gap:8px;
+    padding:7px 9px;margin-bottom:5px;
+    background:var(--ui-surface);
+    border:1px solid var(--ui-border);
+    border-radius:9px;
+}
+.fx-row i{color:var(--ui-accent);font-size:14px;flex-shrink:0;width:16px;text-align:center;}
+.fx-row label{flex:1;font-size:11px;font-weight:600;color:var(--ui-text);margin:0;min-width:0;}
+.fx-row select{
+    width:118px;flex-shrink:0;
+    font-size:11px;padding:5px 7px;
+    background:var(--ui-bg);color:var(--ui-text);
+    border:1px solid var(--ui-border);border-radius:7px;
+    cursor:pointer;font-family:'DM Sans',sans-serif;
+}
+.fx-row select:focus{outline:none;border-color:var(--ui-accent);}
+/* La première ligne pilote toutes les autres : on la distingue */
+.fx-row-all{
+    background:var(--ui-accent-glow);
+    border-color:var(--ui-accent);
+    margin-bottom:9px;
+}
+.fx-row-all label{font-weight:700;}
+
+.mp-mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.mp-mode-card{
+    padding:11px 10px;
+    border:1.5px solid var(--ui-border);
+    border-radius:11px;
+    background:var(--ui-surface);
+    cursor:pointer;
+    transition:border-color .18s ease, background .18s ease, transform .18s ease;
+}
+.mp-mode-card:hover{border-color:var(--ui-accent);transform:translateY(-1px);}
+.mp-mode-card.active{border-color:var(--ui-accent);background:var(--ui-accent-glow);}
+.mp-mode-icon{font-size:17px;color:var(--ui-accent);margin-bottom:5px;line-height:1;}
+.mp-mode-name{font-size:11.5px;font-weight:700;color:var(--ui-text);margin-bottom:3px;}
+.mp-mode-desc{font-size:9.5px;color:var(--ui-muted);line-height:1.45;}
+
+/* ═══════════════════════════════════════════════════════
+   EFFETS CONTINUS SUR LES TITRES
+   Appliqués au nom et aux titres de section. Tout est construit
+   sur currentColor : chaque thème apporte sa palette, aucun
+   effet n'a de couleur codée en dur.
+   ═══════════════════════════════════════════════════════ */
+@keyframes tfxShimmer{
+    0%,100%{background-position:180% 0;}
+    50%    {background-position:-80% 0;}
+}
+@keyframes tfxGlow{
+    0%,100%{text-shadow:0 0 0 transparent;}
+    50%    {text-shadow:0 0 18px currentColor;}
+}
+@keyframes tfxBreathe{
+    0%,100%{opacity:1;letter-spacing:normal;}
+    50%    {opacity:.82;letter-spacing:.6px;}
+}
+@keyframes tfxFlicker{
+    0%,100%  {opacity:1;}
+    46%,52%  {opacity:1;}
+    48%      {opacity:.45;}
+    50%      {opacity:.75;}
+}
+@keyframes tfxUnderline{
+    0%,100%{background-size:0% 2px;}
+    50%    {background-size:100% 2px;}
+}
+
+/* ── NEUF EFFETS DE TITRE SUPPLÉMENTAIRES ── */
+@keyframes tfxGradient{
+    0%,100%{background-position:0% 50%;}
+    50%    {background-position:100% 50%;}
+}
+@keyframes tfxSpotlight{
+    0%,100%{background-position:-40% 0;}
+    50%    {background-position:140% 0;}
+}
+@keyframes tfxCaret{
+    0%,49% {border-right-color:currentColor;}
+    50%,100%{border-right-color:transparent;}
+}
+@keyframes tfxFloat{
+    0%,100%{transform:translateY(0);}
+    50%    {transform:translateY(-5px);}
+}
+@keyframes tfxFocus{
+    0%,100%{filter:blur(0);}
+    50%    {filter:blur(1.6px);}
+}
+@keyframes tfxHighlight{
+    0%,100%{background-size:0% 42%;}
+    50%    {background-size:100% 42%;}
+}
+@keyframes tfxRelief{
+    0%,100%{text-shadow:0 1px 0 color-mix(in srgb, currentColor 30%, transparent);}
+    50%    {text-shadow:0 5px 10px color-mix(in srgb, currentColor 45%, transparent);}
+}
+@keyframes tfxWave{
+    0%,100%{transform:skewY(0deg);}
+    25%    {transform:skewY(-1.2deg);}
+    75%    {transform:skewY(1.2deg);}
+}
+@keyframes tfxTracking{
+    0%,100%{letter-spacing:normal;}
+    50%    {letter-spacing:3px;}
+}
+
+/* Dégradé qui coule dans le texte */
+[data-tfx="gradient"]{
+    background-image:linear-gradient(90deg,
+        currentColor,
+        color-mix(in srgb, currentColor 45%, #ffffff),
+        currentColor);
+    background-size:220% 100%;
+    -webkit-background-clip:text;background-clip:text;
+    -webkit-text-fill-color:transparent;
+    animation:tfxGradient 6s ease-in-out infinite;
+}
+
+/* Projecteur qui traverse lentement */
+[data-tfx="spotlight"]{
+    background-image:linear-gradient(105deg,
+        color-mix(in srgb, currentColor 55%, transparent) 0%,
+        currentColor 42%,
+        color-mix(in srgb, currentColor 15%, #ffffff) 50%,
+        currentColor 58%,
+        color-mix(in srgb, currentColor 55%, transparent) 100%);
+    background-size:220% 100%;
+    -webkit-background-clip:text;background-clip:text;
+    -webkit-text-fill-color:transparent;
+    animation:tfxSpotlight 6.5s ease-in-out infinite;
+}
+
+/* Curseur qui clignote en fin de titre */
+[data-tfx="typewriter"]{
+    border-right:3px solid currentColor;
+    padding-right:5px;
+    animation:tfxCaret 1.1s step-end infinite;
+}
+
+/* Flottement vertical discret */
+[data-tfx="float"]{
+    animation:tfxFloat 4.4s ease-in-out infinite;
+}
+
+/* Mise au point qui respire */
+[data-tfx="focus"]{
+    animation:tfxFocus 5s ease-in-out infinite;
+}
+
+/* Surlignage qui balaie derrière le texte */
+[data-tfx="highlight"]{
+    background-image:linear-gradient(color-mix(in srgb, currentColor 22%, transparent),
+                                     color-mix(in srgb, currentColor 22%, transparent));
+    background-repeat:no-repeat;
+    background-position:0 88%;
+    background-size:0% 42%;
+    animation:tfxHighlight 5.2s ease-in-out infinite;
+}
+
+/* Ombre portée qui se creuse puis se referme */
+[data-tfx="relief"]{
+    animation:tfxRelief 4.6s ease-in-out infinite;
+}
+
+/* Ondulation légère */
+[data-tfx="wave"]{
+    animation:tfxWave 5.4s ease-in-out infinite;
+}
+
+/* Espacement des lettres qui s'ouvre et se referme */
+[data-tfx="tracking"]{
+    animation:tfxTracking 5.8s ease-in-out infinite;
+}
+
+
+/* Reflet lumineux qui balaie le texte — le même principe que la
+   signature, décliné pour les titres du portfolio. */
+[data-tfx="shimmer"]{
+    background-image:linear-gradient(100deg,
+        currentColor 0%, currentColor 38%,
+        color-mix(in srgb, currentColor 30%, #ffffff) 50%,
+        currentColor 62%, currentColor 100%);
+    background-size:250% 100%;
+    -webkit-background-clip:text;
+    background-clip:text;
+    -webkit-text-fill-color:transparent;
+    animation:tfxShimmer 5s ease-in-out infinite;
+}
+
+[data-tfx="glow"]{
+    animation:tfxGlow 3.6s ease-in-out infinite;
+}
+
+[data-tfx="breathe"]{
+    animation:tfxBreathe 4.2s ease-in-out infinite;
+}
+
+[data-tfx="flicker"]{
+    animation:tfxFlicker 6s linear infinite;
+}
+
+/* Trait qui se dessine sous les titres, puis se retire */
+[data-tfx="underline"]{
+    background-image:linear-gradient(currentColor,currentColor);
+    background-repeat:no-repeat;
+    background-position:0 100%;
+    background-size:0% 2px;
+    animation:tfxUnderline 4.5s ease-in-out infinite;
+    padding-bottom:4px;
+}
+
+@media(prefers-reduced-motion:reduce){
+    [data-tfx]{animation:none!important;}
+}
+
+/* ═══════════════════════════════════════════════════════
+   EFFETS AU SURVOL DES BOUTONS
+   S'appliquent aux boutons d'action, aux compétences et aux
+   boutons de contact. Là encore, tout dérive de currentColor.
+   ═══════════════════════════════════════════════════════ */
+.bfx-target{position:relative;overflow:hidden;}
+
+/* Balayage de lumière — une bande claire traverse le bouton */
+@keyframes bfxSweep{
+    from{transform:translateX(-120%) skewX(-18deg);}
+    to  {transform:translateX(220%) skewX(-18deg);}
+}
+[data-bfx="sweep"]::after{
+    content:'';
+    position:absolute;top:0;left:0;
+    width:45%;height:100%;
+    background:linear-gradient(90deg,
+        transparent,
+        color-mix(in srgb, currentColor 35%, #ffffff),
+        transparent);
+    opacity:0;
+    pointer-events:none;
+}
+[data-bfx="sweep"]:hover::after{
+    opacity:.5;
+    animation:bfxSweep .75s ease-out;
+}
+
+/* Rideau — un voile monte depuis le bas et recouvre le bouton */
+[data-bfx="curtain"]::after{
+    content:'';
+    position:absolute;inset:0;
+    background:color-mix(in srgb, currentColor 22%, transparent);
+    transform:translateY(101%);
+    transition:transform .38s cubic-bezier(.4,0,.2,1);
+    pointer-events:none;
+}
+[data-bfx="curtain"]:hover::after{
+    transform:translateY(0);
+}
+
+/* Halo — une lueur se diffuse autour du bouton */
+[data-bfx="halo"]{
+    transition:box-shadow .35s ease, transform .35s cubic-bezier(.34,1.56,.64,1);
+}
+[data-bfx="halo"]:hover{
+    box-shadow:0 0 0 3px color-mix(in srgb, currentColor 18%, transparent),
+               0 10px 26px -8px currentColor;
+    transform:translateY(-2px);
+}
+
+/* Contour qui se trace autour du bouton */
+@keyframes bfxTrace{
+    0%  {background-position:0% 50%;}
+    100%{background-position:200% 50%;}
+}
+[data-bfx="outline"]::before{
+    content:'';
+    position:absolute;inset:-2px;
+    border-radius:inherit;
+    padding:2px;
+    background:linear-gradient(90deg,
+        transparent,
+        color-mix(in srgb, currentColor 80%, transparent),
+        transparent);
+    background-size:200% 100%;
+    -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite:xor;
+    mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    mask-composite:exclude;
+    opacity:0;
+    transition:opacity .25s ease;
+    pointer-events:none;
+}
+[data-bfx="outline"]:hover::before{
+    opacity:1;
+    animation:bfxTrace 1.4s linear infinite;
+}
+
+/* ── DIX EFFETS DE BOUTON SUPPLÉMENTAIRES ── */
+@keyframes bfxPulse{
+    0%,100%{box-shadow:0 0 0 0 color-mix(in srgb, currentColor 45%, transparent);}
+    70%    {box-shadow:0 0 0 12px transparent;}
+}
+@keyframes bfxShine{
+    0%  {transform:translateX(-160%) rotate(25deg);}
+    100%{transform:translateX(260%) rotate(25deg);}
+}
+
+/* Remplissage latéral */
+[data-bfx="fill"]::after{
+    content:'';position:absolute;inset:0;
+    background:color-mix(in srgb, currentColor 20%, transparent);
+    transform:scaleX(0);transform-origin:left;
+    transition:transform .4s cubic-bezier(.4,0,.2,1);
+    pointer-events:none;
+}
+[data-bfx="fill"]:hover::after{transform:scaleX(1);}
+
+/* Soulèvement franc */
+[data-bfx="lift"]{transition:transform .3s cubic-bezier(.34,1.56,.64,1),box-shadow .3s ease;}
+[data-bfx="lift"]:hover{
+    transform:translateY(-5px);
+    box-shadow:0 14px 26px -10px currentColor;
+}
+
+/* Enfoncement */
+[data-bfx="press"]{transition:transform .16s ease, box-shadow .16s ease;}
+[data-bfx="press"]:hover{
+    transform:translateY(2px) scale(.97);
+    box-shadow:inset 0 3px 8px color-mix(in srgb, currentColor 30%, transparent);
+}
+
+/* Écartement des lettres */
+[data-bfx="expand"]{transition:letter-spacing .3s ease, padding .3s ease;}
+[data-bfx="expand"]:hover{letter-spacing:1.6px;}
+
+/* Pulsation continue */
+[data-bfx="pulse"]:hover{animation:bfxPulse 1.3s ease-out infinite;}
+
+/* Éclat ponctuel qui traverse en diagonale */
+[data-bfx="shine"]::after{
+    content:'';position:absolute;top:-50%;left:0;
+    width:28%;height:200%;
+    background:color-mix(in srgb, currentColor 25%, #ffffff);
+    opacity:0;filter:blur(5px);pointer-events:none;
+}
+[data-bfx="shine"]:hover::after{
+    opacity:.55;animation:bfxShine .7s ease-out;
+}
+
+/* Bordure qui s'épaissit */
+[data-bfx="border"]{
+    box-shadow:inset 0 0 0 0 currentColor;
+    transition:box-shadow .3s ease;
+}
+[data-bfx="border"]:hover{
+    box-shadow:inset 0 0 0 2.5px color-mix(in srgb, currentColor 70%, transparent);
+}
+
+/* Inclinaison légère */
+[data-bfx="tilt"]{transition:transform .3s cubic-bezier(.34,1.56,.64,1);}
+[data-bfx="tilt"]:hover{transform:rotate(-2deg) scale(1.05);}
+
+/* Coins qui s'arrondissent */
+[data-bfx="morph"]{transition:border-radius .35s cubic-bezier(.4,0,.2,1), background .35s ease;}
+[data-bfx="morph"]:hover{
+    border-radius:6px;
+    background:color-mix(in srgb, currentColor 14%, transparent);
+}
+
+/* Voile qui s'ouvre depuis le centre */
+[data-bfx="reveal"]::after{
+    content:'';position:absolute;inset:0;
+    background:color-mix(in srgb, currentColor 22%, transparent);
+    transform:scaleY(0);transform-origin:center;
+    transition:transform .35s cubic-bezier(.4,0,.2,1);
+    pointer-events:none;
+}
+[data-bfx="reveal"]:hover::after{transform:scaleY(1);}
+
+/* Ombre décalée qui vient se caler sous le bouton */
+[data-bfx="shadow"]{
+    transition:transform .28s cubic-bezier(.34,1.56,.64,1), box-shadow .28s ease;
+}
+[data-bfx="shadow"]:hover{
+    transform:translate(-3px,-3px);
+    box-shadow:5px 5px 0 0 color-mix(in srgb, currentColor 55%, transparent);
+}
+
+/* Les boutons doivent contenir leurs effets */
+[data-bfx]{
+    position:relative;
+    overflow:hidden;
+}
+@media(prefers-reduced-motion:reduce){
+    [data-bfx]::after{animation:none!important;transition:none!important;}
+}
+
+/* ═══════════════════════════════════════════════════════
+   BARRE D'ÉDITION EN DIRECT
+   ═══════════════════════════════════════════════════════ */
+#inline-toolbar{
+    display:none;
+    position:fixed;z-index:2147483647;
+    align-items:center;gap:8px;flex-wrap:wrap;
+    max-width:min(92vw,520px);
+    padding:8px 10px;
+    background:rgba(10,10,12,.96);
+    border:1px solid #2a2a2e;
+    border-radius:14px;
+    backdrop-filter:blur(20px) saturate(1.4);
+    -webkit-backdrop-filter:blur(20px) saturate(1.4);
+    box-shadow:0 16px 44px rgba(0,0,0,.45);
+    font-family:'DM Sans',sans-serif;
+}
+.itb-group{display:flex;align-items:center;gap:5px;}
+.itb-sep{width:1px;align-self:stretch;background:#2a2a2e;margin:2px 1px;}
+.itb-label{
+    font-size:9.5px;font-weight:700;letter-spacing:.4px;
+    text-transform:uppercase;color:#71717a;
+}
+.itb-btn{
+    width:30px;height:30px;flex-shrink:0;
+    border:1px solid #2a2a2e;
+    background:#18181b;color:#e4e4e7;
+    border-radius:8px;cursor:pointer;
+    font-size:13px;line-height:1;
+    display:flex;align-items:center;justify-content:center;
+    transition:background .15s ease, border-color .15s ease, transform .15s ease;
+}
+.itb-btn:hover{background:#232327;border-color:#3f3f46;transform:translateY(-1px);}
+.itb-btn:active{transform:translateY(0);}
+.itb-select{
+    background:#18181b;color:#e4e4e7;
+    border:1px solid #2a2a2e;border-radius:8px;
+    padding:5px 7px;
+    font-size:11px;font-weight:600;
+    font-family:inherit;
+    cursor:pointer;max-width:132px;
+    transition:border-color .15s ease;
+}
+.itb-select:hover{border-color:#3f3f46;}
+.itb-select:focus{outline:none;border-color:#6366f1;}
+.itb-select-sm{max-width:118px;}
+.itb-select optgroup{background:#0a0a0a;color:#71717a;font-size:10px;}
+.itb-select option{background:#18181b;color:#e4e4e7;font-weight:500;}
+.itb-color{
+    width:30px;height:30px;flex-shrink:0;
+    border:1px solid #2a2a2e;border-radius:8px;
+    cursor:pointer;padding:2px;background:#18181b;
+}
+.itb-close{
+    width:28px;height:28px;flex-shrink:0;margin-left:auto;
+    border:1px solid transparent;
+    background:rgba(239,68,68,.12);color:#f87171;
+    border-radius:8px;cursor:pointer;font-size:15px;
+    display:flex;align-items:center;justify-content:center;
+    transition:background .15s ease;
+}
+.itb-close:hover{background:rgba(239,68,68,.22);}
+@media(max-width:768px){
+    #inline-toolbar{gap:6px;padding:7px 8px;}
+    .itb-label{display:none;}
+    .itb-select{max-width:104px;}
+}
+
+/* ═══════════════════════════════════════════════════════
+   MENUS DÉROULANTS DU PORTFOLIO
+   Bordure lumineuse qui fait le tour du menu, aux couleurs du
+   thème actif. Les couleurs viennent de currentColor : chaque
+   thème apporte donc les siennes, sans règle dédiée.
+   ═══════════════════════════════════════════════════════ */
+@keyframes pfBorderTrace{
+    0%   {background-position:0% 50%;}
+    50%  {background-position:100% 50%;}
+    100% {background-position:0% 50%;}
+}
+@keyframes pfMenuIn{
+    from{opacity:0;transform:scale(.94) translateY(-8px);}
+    to  {opacity:1;transform:scale(1) translateY(0);}
+}
+
+/* La bordure animée est un dégradé posé derrière le menu, dont
+   seule la marge dépasse — d'où l'effet de contour qui tourne. */
+#pf-hamburger-menu::before,
+#pf-lang-dropdown::before{
+    content:'';
+    position:absolute;
+    inset:-1.5px;
+    border-radius:inherit;
+    padding:1.5px;
+    background:linear-gradient(120deg,
+        color-mix(in srgb, currentColor 70%, transparent),
+        color-mix(in srgb, currentColor 15%, transparent),
+        color-mix(in srgb, currentColor 85%, transparent),
+        color-mix(in srgb, currentColor 15%, transparent),
+        color-mix(in srgb, currentColor 70%, transparent));
+    background-size:300% 100%;
+    animation:pfBorderTrace 4.5s linear infinite;
+    -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite:xor;
+    mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    mask-composite:exclude;
+    pointer-events:none;
+    z-index:1;
+}
+@media(prefers-reduced-motion:reduce){
+    #pf-hamburger-menu::before,#pf-lang-dropdown::before{animation:none;}
+}
+
+/* ── SÉLECTEUR DE LANGUE ── */
+#pf-lang-widget{
+    position:fixed;top:12px;right:12px;z-index:9997;
+    color:inherit;
+}
+/* Quand le menu multi-pages occupe déjà le coin haut droit, le
+   sélecteur passe à gauche : les deux se chevauchaient sinon,
+   particulièrement sur mobile où la place manque. */
+#pf-lang-widget.pf-lang-alt{
+    right:auto;left:12px;
+}
+#pf-lang-widget.pf-lang-alt #pf-lang-dropdown{
+    right:auto;left:0;
+    transform-origin:top left;
+}
+@media(max-width:768px){
+    /* Sur mobile, on descend en bas à gauche : la zone est libre
+       (le chat occupe le bas droit) et le pouce y accède bien. */
+    #pf-lang-widget.pf-lang-alt{
+        top:auto;bottom:16px;left:16px;
+    }
+    #pf-lang-widget.pf-lang-alt #pf-lang-dropdown{
+        top:auto;bottom:calc(100% + 9px);
+        transform-origin:bottom left;
+    }
+}
+#pf-lang-current-btn{
+    display:flex;align-items:center;gap:6px;
+    padding:8px 14px;
+    border-radius:100px;
+    border:1px solid color-mix(in srgb, currentColor 25%, transparent);
+    background:color-mix(in srgb, currentColor 10%, transparent);
+    backdrop-filter:blur(16px) saturate(1.5);
+    -webkit-backdrop-filter:blur(16px) saturate(1.5);
+    color:inherit;
+    font-family:inherit;
+    font-size:11px;font-weight:700;letter-spacing:.6px;
+    cursor:pointer;
+    box-shadow:0 4px 16px rgba(0,0,0,.18);
+    transition:transform .25s cubic-bezier(.34,1.56,.64,1),
+               background .25s ease, box-shadow .25s ease;
+}
+#pf-lang-current-btn:hover{
+    transform:translateY(-2px);
+    background:color-mix(in srgb, currentColor 18%, transparent);
+    box-shadow:0 8px 22px rgba(0,0,0,.24);
+}
+.pf-lang-globe{font-size:14px;opacity:.8;}
+.pf-lang-caret{font-size:13px;opacity:.65;transition:transform .25s ease;}
+#pf-lang-widget.pf-lang-open .pf-lang-caret{transform:rotate(180deg);}
+
+#pf-lang-dropdown{
+    display:none;
+    position:absolute;top:calc(100% + 9px);right:0;
+    min-width:172px;
+    border-radius:16px;
+    padding:6px;
+    background:color-mix(in srgb, currentColor 8%, rgba(255,255,255,.8));
+    backdrop-filter:blur(24px) saturate(1.5);
+    -webkit-backdrop-filter:blur(24px) saturate(1.5);
+    box-shadow:0 20px 50px -12px rgba(0,0,0,.4);
+    overflow:hidden;
+    transform-origin:top right;
+    animation:pfMenuIn .22s cubic-bezier(.34,1.56,.64,1);
+}
+#pf-lang-dropdown.pf-open{display:block;}
+
+.pf-lang-opt{
+    display:flex;align-items:center;gap:10px;
+    width:100%;
+    padding:9px 11px;
+    margin-bottom:2px;
+    border:none;border-radius:11px;
+    background:transparent;
+    color:inherit;
+    font-family:inherit;
+    font-size:12.5px;font-weight:600;
+    text-align:left;cursor:pointer;
+    opacity:.85;
+    transition:background .18s ease, opacity .18s ease, transform .18s ease;
+    position:relative;z-index:2;
+}
+.pf-lang-opt:last-child{margin-bottom:0;}
+.pf-lang-opt:hover{
+    background:color-mix(in srgb, currentColor 12%, transparent);
+    opacity:1;transform:translateX(2px);
+}
+.pf-lang-opt.pf-lang-active{
+    background:color-mix(in srgb, currentColor 14%, transparent);
+    opacity:1;
+}
+.pf-lang-flag{font-size:15px;line-height:1;}
+.pf-lang-name{flex:1;}
+.pf-lang-check{font-size:14px;opacity:.75;}
+
+/* Le contenu doit passer au-dessus de la bordure animée */
+#pf-hamburger-menu a{position:relative;z-index:2;}
+
+/* ── MENU MULTI-PAGES ──
+   Le menu emprunte la palette du thème via currentColor,
+   plutôt qu'un bleu nuit fixe qui jurait avec la plupart. */
 #pf-hamburger-menu{
     position:absolute;top:calc(100% + 8px);right:20px;
     min-width:208px;
@@ -4314,6 +4995,20 @@ radial-gradient(circle at 50% 50%,rgba(255,183,77,.06) 0%,transparent 50%);}
             <div id="tab-anim" class="tab-pane">
                 <div class="section-label"><i class="ri-movie-2-line"></i> Effet d'apparition<div class="section-label-line"></div></div>
                 <div class="anim-grid" id="anim-catalog"></div>
+
+                <!-- ═══ EFFET CONTINU SUR LES TITRES ═══ -->
+                <div class="section-label" style="margin-top:18px;"><i class="ri-font-size-2"></i> Effet sur les titres<div class="section-label-line"></div></div>
+                <div style="font-size:10px;color:var(--ui-muted);margin-bottom:8px;">
+                    Un effet permanent sur votre nom et vos titres de section, comme un reflet qui passe.
+                </div>
+                <div class="anim-grid" id="text-fx-catalog"></div>
+
+                <!-- ═══ EFFET AU SURVOL DES BOUTONS ═══ -->
+                <div class="section-label" style="margin-top:18px;"><i class="ri-cursor-line"></i> Effet des boutons<div class="section-label-line"></div></div>
+                <div style="font-size:10px;color:var(--ui-muted);margin-bottom:8px;">
+                    Ce qui se passe quand le visiteur survole un bouton ou une compétence.
+                </div>
+                <div class="anim-grid" id="btn-fx-catalog"></div>
                 <div class="section-label" style="margin-top:18px;"><i class="ri-time-line"></i> Vitesse<div class="section-label-line"></div></div>
                 <div class="speed-row"><span style="font-size:11px;color:var(--ui-muted);">Rapide</span><input type="range" min="400" max="1600" step="100" value="800" id="anim-speed" oninput="updateAnimSpeed(this.value)"><span style="font-size:11px;color:var(--ui-muted);">Lent</span><span class="speed-val" id="speed-label">0.8s</span></div>
                 <div class="section-label" style="margin-top:16px;"><i class="ri-stack-line"></i> Stagger (délai)<div class="section-label-line"></div></div>
@@ -4433,9 +5128,23 @@ radial-gradient(circle at 50% 50%,rgba(255,183,77,.06) 0%,transparent 50%);}
                     </div>
                     <label class="toggle-switch"><input type="checkbox" id="toggle-multipage" onchange="toggleMultiPage(this.checked)"><span class="toggle-thumb"></span></label>
                 </div>
-                <div id="multipage-info" style="display:none;font-size:10px;color:var(--ui-muted);padding:8px;background:var(--ui-surface);border-radius:8px;margin-bottom:8px;">
-                    <i class="ri-information-line"></i> Un menu de navigation apparaîtra sur votre portfolio avec les sections : Accueil, Compétences, Projets, Expériences, Contact.
-            </div>
+                <div id="multipage-info" style="display:none;margin-bottom:8px;">
+                    <div style="font-size:10px;color:var(--ui-muted);padding:8px;background:var(--ui-surface);border-radius:8px;margin-bottom:8px;">
+                        <i class="ri-information-line"></i> Un menu de navigation apparaîtra sur votre portfolio. Choisissez comment il se comporte.
+                    </div>
+                    <div class="mp-mode-grid">
+                        <div class="mp-mode-card" id="mp-mode-scroll" onclick="setMultiPageMode('scroll')">
+                            <div class="mp-mode-icon"><i class="ri-arrow-down-double-line"></i></div>
+                            <div class="mp-mode-name">Une seule page</div>
+                            <div class="mp-mode-desc">Tout se suit. Le menu fait défiler jusqu'à la rubrique choisie.</div>
+                        </div>
+                        <div class="mp-mode-card" id="mp-mode-pages" onclick="setMultiPageMode('pages')">
+                            <div class="mp-mode-icon"><i class="ri-pages-line"></i></div>
+                            <div class="mp-mode-name">Pages séparées</div>
+                            <div class="mp-mode-desc">Chaque rubrique s'affiche seule, comme un site classique.</div>
+                        </div>
+                    </div>
+                </div>
 
                 <!-- ═══ EFFETS VISUELS AVANCÉS ═══ -->
                 <div class="section-label" style="margin-top:18px;"><i class="ri-sparkling-2-line"></i> Effets visuels<div class="section-label-line"></div></div>
@@ -4566,25 +5275,68 @@ radial-gradient(circle at 50% 50%,rgba(255,183,77,.06) 0%,transparent 50%);}
 </div><!-- end app-container -->
 
 <!-- ── INLINE TEXT EDIT TOOLBAR ── -->
-<div id="inline-toolbar" style="display:none;position:fixed;z-index:2147483647;background:rgba(15,23,42,.95);border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:6px 8px;gap:4px;flex-wrap:wrap;backdrop-filter:blur(12px);box-shadow:0 8px 32px rgba(0,0,0,.3);max-width:340px;">
-    <button onclick="inlineFormat('bold')" title="Gras" style="width:28px;height:28px;border:none;background:rgba(255,255,255,.1);color:#fff;border-radius:6px;cursor:pointer;font-weight:700;font-size:13px;">B</button>
-    <button onclick="inlineFormat('italic')" title="Italique" style="width:28px;height:28px;border:none;background:rgba(255,255,255,.1);color:#fff;border-radius:6px;cursor:pointer;font-style:italic;font-size:13px;">I</button>
-    <button onclick="inlineFormat('underline')" title="Souligné" style="width:28px;height:28px;border:none;background:rgba(255,255,255,.1);color:#fff;border-radius:6px;cursor:pointer;text-decoration:underline;font-size:13px;">U</button>
-    <div style="width:1px;background:rgba(255,255,255,.2);margin:0 2px;align-self:stretch;"></div>
-    <div style="display:flex;align-items:center;gap:4px;">
-        <span style="color:#aaa;font-size:10px;">Couleur</span>
-        <input type="color" value="#ffffff" id="inline-color-pick" oninput="inlineColor(this.value)" onchange="inlineColor(this.value)" style="width:24px;height:24px;border:none;border-radius:4px;cursor:pointer;padding:0;background:none;">
+<div id="inline-toolbar">
+    <div class="itb-group">
+        <button class="itb-btn" onclick="inlineFormat('bold')" title="Gras"><b>B</b></button>
+        <button class="itb-btn" onclick="inlineFormat('italic')" title="Italique"><i>I</i></button>
+        <button class="itb-btn" onclick="inlineFormat('underline')" title="Souligné"><u>U</u></button>
+        <button class="itb-btn" onclick="inlineFormat('strikeThrough')" title="Barré"><s>S</s></button>
     </div>
-    <div style="display:flex;align-items:center;gap:4px;">
-        <span style="color:#aaa;font-size:10px;">Taille</span>
-        <select onchange="inlineFontSize(this.value)" style="font-size:10px;background:rgba(255,255,255,.1);color:#fff;border:none;border-radius:4px;padding:2px 4px;">
-            <option value="">Auto</option><option value="12px">12</option><option value="14px">14</option>
-            <option value="16px">16</option><option value="18px">18</option><option value="20px">20</option>
-            <option value="24px">24</option><option value="28px">28</option><option value="32px">32</option>
-            <option value="36px">36</option><option value="48px">48</option>
+
+    <div class="itb-sep"></div>
+
+    <div class="itb-group">
+        <label class="itb-label">Police</label>
+        <select class="itb-select" onchange="inlineFontFamily(this.value)" title="Police du texte sélectionné">
+            <option value="">Du thème</option>
+            <optgroup label="Sans serif">
+                <option value="'DM Sans',sans-serif">DM Sans</option>
+                <option value="'Plus Jakarta Sans',sans-serif">Plus Jakarta</option>
+                <option value="'Space Grotesk',sans-serif">Space Grotesk</option>
+                <option value="'Josefin Sans',sans-serif">Josefin Sans</option>
+                <option value="'Raleway',sans-serif">Raleway</option>
+                <option value="'Syne',sans-serif">Syne</option>
+            </optgroup>
+            <optgroup label="Serif">
+                <option value="'Playfair Display',serif">Playfair Display</option>
+                <option value="'Cormorant Garamond',serif">Cormorant</option>
+                <option value="'Cinzel',serif">Cinzel</option>
+            </optgroup>
+            <optgroup label="Affiche">
+                <option value="'Bebas Neue',sans-serif">Bebas Neue</option>
+            </optgroup>
         </select>
     </div>
-    <button onclick="closeInlineToolbar()" style="width:24px;height:24px;border:none;background:rgba(255,0,0,.2);color:#fff;border-radius:6px;cursor:pointer;font-size:11px;margin-left:4px;">✕</button>
+
+    <div class="itb-group">
+        <label class="itb-label">Taille</label>
+        <select class="itb-select itb-select-sm" onchange="inlineFontSize(this.value)" title="Taille du texte sélectionné">
+            <option value="">Auto</option>
+            <optgroup label="Corps de texte">
+                <option value="13px">13 · Légende</option>
+                <option value="15px">15 · Courant</option>
+                <option value="17px">17 · Confort</option>
+                <option value="19px">19 · Accroche</option>
+            </optgroup>
+            <optgroup label="Titres">
+                <option value="24px">24 · Sous-titre</option>
+                <option value="30px">30 · Titre</option>
+                <option value="38px">38 · Grand titre</option>
+                <option value="48px">48 · Bannière</option>
+                <option value="64px">64 · Impact</option>
+            </optgroup>
+        </select>
+    </div>
+
+    <div class="itb-sep"></div>
+
+    <div class="itb-group">
+        <label class="itb-label">Couleur</label>
+        <input type="color" value="#ffffff" id="inline-color-pick" class="itb-color"
+               oninput="inlineColor(this.value)" onchange="inlineColor(this.value)">
+    </div>
+
+    <button class="itb-close" onclick="closeInlineToolbar()" title="Fermer"><i class="ri-close-line"></i></button>
 </div>
 
 <!-- ── MINI MENU ANIMATION BG PHOTOS ── -->
@@ -4998,11 +5750,17 @@ const state={
     custom:{font:"'DM Sans',sans-serif",radius:'16px',heroDir:'row',bg:'#ffffff',text:'#111111',accent:'#6366f1',card:'#f3f4f6',bgImage:'',bgAnim:'none',overlayOpacity:60,frameColor:'#6366f1',frameSize:'4px',frameStyle:'solid'},
     footer:{enabled:false,copyright:'',email:'',location:''},
     multiPage:false,
+    multiPageMode:'pages',
     cursorGlow:false,
     parallax:false,
     themeSwitch:false,
     autoFixContrast:false,
     contactForm:false,
+    // Effet par élément : chaque titre et chaque bouton peut
+    // recevoir le sien. La clé 'all' sert de valeur par défaut
+    // pour tout élément qui n'a pas de réglage propre.
+    titleFx:{ all:'none' },
+    buttonFx:{ all:'none' },
     currentPortfolioId:null,
     printBtn:false,
     passwordProtect:{enabled:false, password:''}
@@ -5340,6 +6098,7 @@ function render(){
     vp.className=`portfolio-viewport theme-${state.activeTheme} layout-${state.activeLayout} anim-${state.activeAnim}`;
     if(keptDevice) vp.classList.add(keptDevice);
     if(state.parallax) vp.classList.add('pf-parallax-on');
+
     if(state.activeTheme==='custom'||state.activeLayout==='custom'){
         vp.style.setProperty('--pf-font',state.custom.font);vp.style.setProperty('--pf-radius',state.custom.radius);
         vp.style.setProperty('--pf-hero-dir',state.custom.heroDir);vp.style.setProperty('--pf-bg',state.custom.bg);
@@ -5531,15 +6290,14 @@ function render(){
     const langH = state.multilang.enabled && state.multilang.langs.length > 1 ? (() => {
         const langs = state.multilang.langs;
         const current = LANG_LABELS[activeLang] || LANG_LABELS['fr'];
-        return `<div id="pf-lang-widget" style="position:fixed;top:12px;right:12px;z-index:9997;">
-            <button onclick="document.getElementById('pf-lang-dropdown').style.display=document.getElementById('pf-lang-dropdown').style.display==='block'?'none':'block'"
-                id="pf-lang-current-btn"
-                style="display:flex;align-items:center;gap:3px;padding:4px 8px;background:rgba(0,0,0,.55);color:white;border:1px solid rgba(255,255,255,.15);border-radius:100px;font-family:'DM Sans',sans-serif;font-size:10px;font-weight:800;cursor:pointer;backdrop-filter:blur(8px);letter-spacing:.5px;">
+        return `<div id="pf-lang-widget"${state.multiPage ? ' class="pf-lang-alt"' : ''}>
+            <button id="pf-lang-current-btn" onclick="togglePfLangDropdown()">
+                <i class="ri-global-line pf-lang-globe"></i>
                 <span id="pf-lang-current">${activeLang.toUpperCase()}</span>
-                <i class="ri-arrow-down-s-line" style="font-size:10px;"></i>
+                <i class="ri-arrow-down-s-line pf-lang-caret"></i>
             </button>
-            <div id="pf-lang-dropdown" style="display:none;position:absolute;top:calc(100% + 4px);right:0;background:rgba(10,15,28,.95);border:1px solid rgba(255,255,255,.1);border-radius:10px;backdrop-filter:blur(12px);overflow:hidden;min-width:100px;box-shadow:0 6px 24px rgba(0,0,0,.3);">
-                ${langs.map(l => { const L=LANG_LABELS[l]||{}; return `<button onclick="switchLang('${l}')" style="width:100%;padding:7px 12px;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.06);text-align:left;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;color:${l===activeLang?'#818cf8':'#cbd5e1'};display:flex;align-items:center;gap:6px;" onmouseover="this.style.background='rgba(255,255,255,.06)'" onmouseout="this.style.background='none'">${L.flag||''} ${l.toUpperCase()}</button>`; }).join('')}
+            <div id="pf-lang-dropdown">
+                ${langs.map(l => { const L=LANG_LABELS[l]||{}; return `<button class="pf-lang-opt${l===activeLang?' pf-lang-active':''}" onclick="switchLang('${l}')"><span class="pf-lang-flag">${L.flag||''}</span><span class="pf-lang-name">${L.name||l.toUpperCase()}</span>${l===activeLang?'<i class="ri-check-line pf-lang-check"></i>':''}</button>`; }).join('')}
             </div>
         </div>`;
     })() : '';
@@ -5617,16 +6375,29 @@ ${buildEditorSignatureHTML()}
     if(typeof initReadProgress==='function') initReadProgress();
     if(typeof initVisualEffects==='function') initVisualEffects();
     if(typeof initCounters==='function') initCounters();
+    if(typeof applyElementEffects==='function') applyElementEffects();
     if(typeof updateQualityBadge==='function') updateQualityBadge();
+    // Le thème vient peut-être de changer : on revérifie que le
+    // menu de navigation reste lisible dessus.
+    if((state.multiPage || (state.multilang && state.multilang.enabled))
+        && typeof ensureNavLegibility==='function'){
+        requestAnimationFrame(ensureNavLegibility);
+    }
     // Le thème ou le contenu vient peut-être de changer : on
     // recalcule la correction de lisibilité sur le nouveau rendu.
     if(state.autoFixContrast && typeof applyAutoFixContrast==='function'){
         requestAnimationFrame(applyAutoFixContrast);
     }
     if(typeof updatePhotoAnimBtn==='function') updatePhotoAnimBtn();
-    // Multi-pages: afficher seulement la section active
-    if(state.multiPage && typeof showOnlySection==='function'){
+    // Le mode retenu est transmis au portfolio, pour que le menu
+    // sache s'il doit changer de page ou faire défiler.
+    window.__mpMode = state.multiPageMode || 'pages';
+    if(state.multiPage && window.__mpMode !== 'scroll' && typeof showOnlySection==='function'){
         showOnlySection(window.currentPage||'pf-sec-hero');
+    } else if(state.multiPage){
+        // En mode défilement, toutes les rubriques restent visibles :
+        // on rétablit celles qu'un passage en mode pages aurait masquées.
+        vp.querySelectorAll('[data-page]').forEach(function(el){ el.style.display = ''; });
     }
     // Mise à jour prix en temps réel
     if(typeof updatePricingDisplay==='function') updatePricingDisplay();
@@ -5821,6 +6592,172 @@ function getAnimVisibleCSS(){
     return 'opacity:1 !important;transform:none !important;filter:none !important;';
 }
 
+// ── EFFETS CONTINUS SUR LES TITRES ET LES BOUTONS ─────────
+// ══════════════════════════════════════════════════════════
+// EFFETS PAR ÉLÉMENT
+// Chaque grand titre et chaque bouton peut recevoir son propre
+// effet, plutôt qu'un réglage unique appliqué à tous. La clé
+// 'all' sert de valeur par défaut pour ceux qui n'ont pas de
+// réglage propre.
+// ══════════════════════════════════════════════════════════
+const TITLE_TARGETS = [
+    { key:'name',    label:'Votre nom',       icon:'ri-user-3-line',       sel:'.pf-name' },
+    { key:'role',    label:'Votre métier',    icon:'ri-briefcase-line',    sel:'.pf-role' },
+    { key:'projects',label:'Titre Projets',   icon:'ri-grid-line',         sel:'.pf-section-title' },
+    { key:'skills',  label:'Titre Compétences',icon:'ri-shining-2-line',   sel:'.pf-skills-section h3' },
+    { key:'exp',     label:'Titre Parcours',  icon:'ri-route-line',        sel:'.pf-experience-section .pf-section-sub-title' },
+    { key:'cert',    label:'Titre Certifications',icon:'ri-medal-2-line',  sel:'.pf-certifications-section .pf-section-sub-title' },
+    { key:'testi',   label:'Titre Témoignages',icon:'ri-chat-quote-line',  sel:'.pf-testimonials-section .pf-section-sub-title' },
+    { key:'contact', label:'Titre Contact',   icon:'ri-send-plane-line',   sel:'.pf-contact-form-section .pf-section-sub-title' }
+];
+
+const BUTTON_TARGETS = [
+    { key:'cta',     label:'Bouton principal', icon:'ri-cursor-line',    sel:'.pf-contact-btn' },
+    { key:'skills',  label:'Compétences',      icon:'ri-price-tag-3-line',sel:'.pf-skill-chip' },
+    { key:'cv',      label:'Bouton CV',        icon:'ri-file-pdf-2-line', sel:'.pf-cv-btn' },
+    { key:'form',    label:'Bouton formulaire',icon:'ri-mail-send-line',  sel:'.pf-cform-btn' },
+    { key:'booking', label:'Bouton réservation',icon:'ri-calendar-check-line',sel:'.pf-booking-btn' }
+];
+
+// Pose l'attribut d'effet sur chaque élément concerné. Un
+// élément sans réglage propre reprend celui de 'all'.
+function applyElementEffects(){
+    const vp = document.getElementById('portfolio-viewport');
+    if(!vp) return;
+
+    const tAll = (state.titleFx && state.titleFx.all) || 'none';
+    TITLE_TARGETS.forEach(function(t){
+        const fx = (state.titleFx && state.titleFx[t.key]) || tAll;
+        vp.querySelectorAll(t.sel).forEach(function(el){
+            if(fx && fx !== 'none') el.setAttribute('data-tfx', fx);
+            else el.removeAttribute('data-tfx');
+        });
+    });
+
+    const bAll = (state.buttonFx && state.buttonFx.all) || 'none';
+    BUTTON_TARGETS.forEach(function(t){
+        const fx = (state.buttonFx && state.buttonFx[t.key]) || bAll;
+        vp.querySelectorAll(t.sel).forEach(function(el){
+            if(fx && fx !== 'none') el.setAttribute('data-bfx', fx);
+            else el.removeAttribute('data-bfx');
+        });
+    });
+}
+
+const TEXT_FX = [
+    {id:'none',       icon:'○',  name:'Aucun',        desc:'Titres sobres'},
+    {id:'shimmer',    icon:'✨', name:'Reflet',        desc:'Une lumière balaie'},
+    {id:'gradient',   icon:'▧',  name:'Dégradé',       desc:'Couleurs qui coulent'},
+    {id:'spotlight',  icon:'◑',  name:'Projecteur',    desc:'Faisceau qui traverse'},
+    {id:'glow',       icon:'◉',  name:'Lueur',         desc:'Halo qui respire'},
+    {id:'relief',     icon:'◨',  name:'Relief',        desc:'Ombre qui se creuse'},
+    {id:'breathe',    icon:'◐',  name:'Respiration',   desc:'Pulsation douce'},
+    {id:'float',      icon:'↕',  name:'Flottement',    desc:'Monte et descend'},
+    {id:'wave',       icon:'∿',  name:'Ondulation',    desc:'Léger balancement'},
+    {id:'tracking',   icon:'⇹',  name:'Espacement',    desc:'Les lettres s\'écartent'},
+    {id:'highlight',  icon:'▬',  name:'Surlignage',    desc:'Un bandeau passe'},
+    {id:'underline',  icon:'▁',  name:'Soulignement',  desc:'Trait qui se dessine'},
+    {id:'flicker',    icon:'⚡', name:'Néon',          desc:'Scintillement bref'},
+    {id:'focus',      icon:'◎',  name:'Mise au point', desc:'Net puis flou'},
+    {id:'typewriter', icon:'▌',  name:'Machine',       desc:'Curseur qui clignote'}
+];
+
+const BTN_FX = [
+    {id:'none',    icon:'○',  name:'Aucun',      desc:'Survol standard'},
+    {id:'sweep',   icon:'⟩',  name:'Balayage',   desc:'Lumière qui traverse'},
+    {id:'shine',   icon:'✦',  name:'Éclat',      desc:'Reflet en diagonale'},
+    {id:'curtain', icon:'▤',  name:'Rideau',     desc:'Voile qui monte'},
+    {id:'reveal',  icon:'▣',  name:'Ouverture',  desc:'Voile depuis le centre'},
+    {id:'fill',    icon:'▶',  name:'Remplissage',desc:'Se remplit de gauche'},
+    {id:'halo',    icon:'◎',  name:'Halo',       desc:'Lueur diffuse'},
+    {id:'outline', icon:'▢',  name:'Contour',    desc:'Trait qui tourne'},
+    {id:'border',  icon:'⬜', name:'Bordure',    desc:'Le cadre s\'épaissit'},
+    {id:'lift',    icon:'↑',  name:'Élévation',  desc:'Le bouton se soulève'},
+    {id:'press',   icon:'↓',  name:'Pression',   desc:'S\'enfonce au survol'},
+    {id:'tilt',    icon:'◣',  name:'Inclinaison',desc:'Bascule légèrement'},
+    {id:'shadow',  icon:'◧',  name:'Ombre',      desc:'Ombre portée décalée'},
+    {id:'morph',   icon:'⬟',  name:'Morphose',   desc:'Les coins changent'},
+    {id:'expand',  icon:'⇹',  name:'Écartement', desc:'Les lettres s\'espacent'}
+];
+
+// Une ligne par titre, avec sa propre liste d'effets. La
+// première ligne pilote tous ceux qui n'ont pas de réglage
+// particulier.
+function renderTextFxCatalog(){
+    const el = document.getElementById('text-fx-catalog');
+    if(!el) return;
+    if(!state.titleFx) state.titleFx = { all:'none' };
+
+    const opts = function(cur){
+        return TEXT_FX.map(function(a){
+            return '<option value="' + a.id + '"' + (a.id===cur?' selected':'') + '>' + a.name + '</option>';
+        }).join('');
+    };
+
+    let html = '<div class="fx-row fx-row-all">'
+        + '<i class="ri-stack-line"></i>'
+        + '<label>Tous les titres</label>'
+        + '<select onchange="updateTitleFx(\'all\',this.value)">' + opts(state.titleFx.all||'none') + '</select>'
+        + '</div>';
+
+    TITLE_TARGETS.forEach(function(t){
+        const cur = state.titleFx[t.key] || '';
+        html += '<div class="fx-row">'
+             + '<i class="' + t.icon + '"></i>'
+             + '<label>' + t.label + '</label>'
+             + '<select onchange="updateTitleFx(\'' + t.key + '\',this.value)">'
+             + '<option value=""' + (cur===''?' selected':'') + '>Comme tous</option>'
+             + opts(cur) + '</select></div>';
+    });
+
+    el.innerHTML = html;
+}
+
+function renderBtnFxCatalog(){
+    const el = document.getElementById('btn-fx-catalog');
+    if(!el) return;
+    if(!state.buttonFx) state.buttonFx = { all:'none' };
+
+    const opts = function(cur){
+        return BTN_FX.map(function(a){
+            return '<option value="' + a.id + '"' + (a.id===cur?' selected':'') + '>' + a.name + '</option>';
+        }).join('');
+    };
+
+    let html = '<div class="fx-row fx-row-all">'
+        + '<i class="ri-stack-line"></i>'
+        + '<label>Tous les boutons</label>'
+        + '<select onchange="updateButtonFx(\'all\',this.value)">' + opts(state.buttonFx.all||'none') + '</select>'
+        + '</div>';
+
+    BUTTON_TARGETS.forEach(function(t){
+        const cur = state.buttonFx[t.key] || '';
+        html += '<div class="fx-row">'
+             + '<i class="' + t.icon + '"></i>'
+             + '<label>' + t.label + '</label>'
+             + '<select onchange="updateButtonFx(\'' + t.key + '\',this.value)">'
+             + '<option value=""' + (cur===''?' selected':'') + '>Comme tous</option>'
+             + opts(cur) + '</select></div>';
+    });
+
+    el.innerHTML = html;
+}
+
+function updateTitleFx(key, value){
+    if(!state.titleFx) state.titleFx = { all:'none' };
+    if(key !== 'all' && value === '') delete state.titleFx[key];
+    else state.titleFx[key] = value;
+    render();
+}
+
+function updateButtonFx(key, value){
+    if(!state.buttonFx) state.buttonFx = { all:'none' };
+    if(key !== 'all' && value === '') delete state.buttonFx[key];
+    else state.buttonFx[key] = value;
+    render();
+}
+
+
 function initEditor(){
     // Les nouveaux interrupteurs d'effets reflètent l'état restauré
     // (brouillon local ou portfolio chargé depuis le cloud).
@@ -5834,6 +6771,9 @@ function initEditor(){
     if(tgAutoFix) tgAutoFix.checked = !!state.autoFixContrast;
     var tgCForm = document.getElementById('toggle-contactform');
     if(tgCForm) tgCForm.checked = !!state.contactForm;
+    var mpInfo = document.getElementById('multipage-info');
+    if(mpInfo) mpInfo.style.display = state.multiPage ? 'block' : 'none';
+    if(typeof updateMultiPageModeCards==='function') updateMultiPageModeCards();
     var cfInfo = document.getElementById('contactform-info');
     if(cfInfo) cfInfo.style.display = state.contactForm ? 'block' : 'none';
     var tgPrint = document.getElementById('toggle-printbtn');
@@ -5869,6 +6809,8 @@ function initEditor(){
         <div style="grid-column:1/-1;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:#f59e0b;padding:8px 0 6px;border-bottom:1px solid var(--ui-border);margin-bottom:4px;margin-top:4px;">🚀 Animations Avancées</div>
         ${renderAnimCards(advAnims)}`;
     renderEditorProjects();renderSkillTags();renderExperiences();renderCertifications();renderTestimonialsEditor();renderStatsEditor();renderSectionAnims();
+    if(typeof renderTextFxCatalog==='function') renderTextFxCatalog();
+    if(typeof renderBtnFxCatalog==='function') renderBtnFxCatalog();
 }
 
 function renderEditorProjects(){
@@ -5893,7 +6835,21 @@ function toggleMultiPage(val){
     state.multiPage = val;
     var info = document.getElementById('multipage-info');
     if(info) info.style.display = val ? 'block' : 'none';
+    updateMultiPageModeCards();
     render();
+}
+
+function setMultiPageMode(mode){
+    state.multiPageMode = mode;
+    updateMultiPageModeCards();
+    render();
+}
+
+function updateMultiPageModeCards(){
+    var s = document.getElementById('mp-mode-scroll');
+    var p = document.getElementById('mp-mode-pages');
+    if(s) s.classList.toggle('active', state.multiPageMode === 'scroll');
+    if(p) p.classList.toggle('active', state.multiPageMode !== 'scroll');
 }
 
 // ── EFFETS VISUELS AVANCÉS ────────────────────────────────
@@ -6058,6 +7014,103 @@ const AUTOFIX_TARGETS = [
     { sel:'.pf-footer',          large:false }
 ];
 
+// ══════════════════════════════════════════════════════════
+// LISIBILITÉ DU MENU DE NAVIGATION
+//
+// Le menu multi-pages empruntait la palette du thème à partir
+// d'une base claire fixe. Sur un thème clair, le fond ET le
+// texte devenaient clairs : tout se confondait. Sur les thèmes
+// à image de fond, le menu se noyait dans la photo.
+//
+// L'éditeur mesure donc lui-même la couleur réelle du texte du
+// portfolio, puis construit un fond de menu qui contraste
+// franchement avec elle. C'est toujours actif : la lisibilité
+// d'un élément d'interface ne doit pas dépendre d'un réglage
+// que l'utilisateur pourrait ne jamais activer.
+// ══════════════════════════════════════════════════════════
+function ensureNavLegibility(){
+    let tag = document.getElementById('nav-legibility-style');
+    if(!tag){
+        tag = document.createElement('style');
+        tag.id = 'nav-legibility-style';
+        document.head.appendChild(tag);
+    }
+
+    const vp = document.getElementById('portfolio-viewport');
+    if(!vp){ tag.textContent = ''; return; }
+
+    // On mesure sur un texte réel du portfolio plutôt que sur le
+    // conteneur : c'est cette couleur-là que le menu doit égaler.
+    const probe = vp.querySelector('.pf-bio')
+               || vp.querySelector('.pf-project-desc')
+               || vp.querySelector('.pf-container')
+               || vp;
+
+    const cs = getComputedStyle(probe);
+    let txt = parseRgb(cs.color);
+    if(!txt){ tag.textContent = ''; return; }
+
+    const lum = relLuminance(txt);
+    const textIsLight = lum > 0.5;
+
+    // On part du fond réel de la page pour conserver la teinte du
+    // thème, puis on décale sa luminosité jusqu'à obtenir un
+    // contraste franc avec le texte. Le menu reste ainsi dans la
+    // palette du thème au lieu d'être un rectangle blanc plat.
+    let base = effectiveBackground(probe) || (textIsLight ? {r:18,g:18,b:24} : {r:250,g:250,b:252});
+    const hsl = rgbToHsl(base);
+    // Un peu de saturation conservée pour que la teinte reste
+    // perceptible, sans virer au criard.
+    hsl.s = Math.min(0.35, hsl.s);
+    hsl.l = textIsLight ? Math.min(0.14, hsl.l * 0.5) : Math.max(0.95, 0.92 + hsl.l * 0.08);
+    let menuRgb = hslToRgb(hsl);
+
+    // Filet de sécurité : si le contraste reste insuffisant, on
+    // pousse jusqu'au bout du spectre.
+    if(contrastRatio(txt, menuRgb) < 4.5){
+        menuRgb = textIsLight ? {r:14,g:14,b:18} : {r:252,g:252,b:253};
+    }
+
+    const rgba = function(c,a){ return 'rgba(' + c.r + ',' + c.g + ',' + c.b + ',' + a + ')'; };
+    const menuBg   = rgba(menuRgb, .95);
+    const menuTxt  = textIsLight ? '#f1f5f9'              : '#18181b';
+    const menuLine = textIsLight ? 'rgba(255,255,255,.14)': 'rgba(0,0,0,.10)';
+    const tileBg   = textIsLight ? 'rgba(255,255,255,.10)': 'rgba(0,0,0,.06)';
+    const tileHov  = textIsLight ? 'rgba(255,255,255,.18)': 'rgba(0,0,0,.11)';
+    const itemHov  = textIsLight ? 'rgba(255,255,255,.09)': 'rgba(0,0,0,.055)';
+
+    tag.textContent = [
+        // Menu multi-pages
+        '#pf-hamburger-menu{',
+        '  background:' + menuBg + '!important;',
+        '  border-color:' + menuLine + '!important;',
+        '  color:' + menuTxt + '!important;',
+        '}',
+        '#pf-hamburger-menu a{color:' + menuTxt + '!important;opacity:.92!important;}',
+        '#pf-hamburger-menu a:hover{background:' + itemHov + '!important;opacity:1!important;}',
+        '#pf-hamburger-menu a i{background:' + tileBg + '!important;color:' + menuTxt + '!important;}',
+        '#pf-hamburger-menu a:hover i{background:' + tileHov + '!important;}',
+        // Sélecteur de langue — même traitement pour rester cohérent
+        '#pf-lang-dropdown{',
+        '  background:' + menuBg + '!important;',
+        '  color:' + menuTxt + '!important;',
+        '}',
+        '.pf-lang-opt{color:' + menuTxt + '!important;}',
+        '.pf-lang-opt:hover{background:' + itemHov + '!important;}',
+        '.pf-lang-opt.pf-lang-active{background:' + tileBg + '!important;}',
+        // Les deux boutons doivent rester visibles sur toute image
+        '#pf-hamburger-btn{',
+        '  background:' + (textIsLight ? 'rgba(0,0,0,.32)' : 'rgba(255,255,255,.55)') + '!important;',
+        '  border-color:' + menuLine + '!important;',
+        '}',
+        '#pf-hamburger-btn span{background:' + (textIsLight ? '#ffffff' : '#18181b') + '!important;}',
+        '#pf-lang-current-btn{',
+        '  background:' + (textIsLight ? 'rgba(0,0,0,.32)' : 'rgba(255,255,255,.55)') + '!important;',
+        '  border-color:' + menuLine + '!important;',
+        '}'
+    ].join('\n');
+}
+
 function applyAutoFixContrast(){
     let tag = document.getElementById('autofix-contrast-style');
     if(!tag){
@@ -6212,42 +7265,6 @@ function updatePortfolioPassword(val){
     state.passwordProtect.password = val;
 }
 
-function buildMultiPageNav(){
-    var sections = [
-        {id:'pf-sec-hero', label:'Accueil', icon:'ri-home-line'},
-    ];
-    if(state.showSkills && state.skills.length > 0)
-        sections.push({id:'pf-sec-skills', label:'Compétences', icon:'ri-code-s-slash-line'});
-    if(state.projects && state.projects.length > 0)
-        sections.push({id:'pf-sec-projects', label:'Projets', icon:'ri-folder-line'});
-    if(state.experiences && state.experiences.length > 0)
-        sections.push({id:'pf-sec-exp', label:'Parcours', icon:'ri-briefcase-line'});
-    if(state.certifications && state.certifications.length > 0)
-        sections.push({id:'pf-sec-cert', label:'Certifications', icon:'ri-award-line'});
-    sections.push({id:'pf-sec-contact', label:'Contact', icon:'ri-mail-line'});
-
-    var links = sections.map(function(s){
-        return '<button class="pf-mpnav-link anim-el" onclick="scrollToSection(\'' + s.id + '\')">'
-             + '<i class="' + s.icon + '" style="font-size:12px;margin-right:4px;"></i>' + s.label + '</button>';
-    }).join('');
-    return '<nav class="pf-multipage-nav">' + links + '</nav>';
-}
-
-function scrollToSection(sectionId){
-    var vp = document.getElementById('portfolio-viewport');
-    var el = vp ? vp.querySelector('#' + sectionId) : null;
-    if(el && vp){
-        var top = el.offsetTop - 60;
-        vp.scrollTo({top: top, behavior: 'smooth'});
-    }
-    // Mettre à jour l'onglet actif
-    vp && vp.querySelectorAll('.pf-mpnav-link').forEach(function(btn){
-        btn.classList.remove('active');
-        if(btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(sectionId))
-            btn.classList.add('active');
-    });
-}
-
 function buildFooterHTML(){
     if(!state.footer.enabled) return '';
     var parts = [];
@@ -6331,25 +7348,11 @@ function initInlineTextEdit(){
     var vp = document.getElementById('portfolio-viewport');
     if(!vp) return;
     
-    // Créer la toolbar flottante si elle n'existe pas
-    if(!document.getElementById('inline-toolbar')){
-        var tb = document.createElement('div');
-        tb.id = 'inline-toolbar';
-        tb.style.cssText = 'display:none;position:fixed;z-index:2147483647;background:rgba(15,23,42,.95);border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:6px 8px;gap:4px;display:none;flex-wrap:wrap;backdrop-filter:blur(12px);box-shadow:0 8px 32px rgba(0,0,0,.3);max-width:320px;';
-        tb.innerHTML = [
-            '<button onclick="inlineFormat(\'bold\')" title="Gras" style="width:28px;height:28px;border:none;background:rgba(255,255,255,.1);color:#fff;border-radius:6px;cursor:pointer;font-weight:700;font-size:13px;">B</button>',
-            '<button onclick="inlineFormat(\'italic\')" title="Italique" style="width:28px;height:28px;border:none;background:rgba(255,255,255,.1);color:#fff;border-radius:6px;cursor:pointer;font-style:italic;font-size:13px;">I</button>',
-            '<button onclick="inlineFormat(\'underline\')" title="Souligné" style="width:28px;height:28px;border:none;background:rgba(255,255,255,.1);color:#fff;border-radius:6px;cursor:pointer;text-decoration:underline;font-size:13px;">U</button>',
-            '<div style="width:1px;background:rgba(255,255,255,.2);margin:0 2px;"></div>',
-            '<div style="display:flex;align-items:center;gap:4px;"><span style="color:#aaa;font-size:10px;">Couleur</span><input type="color" value="#ffffff" id="inline-color-pick" oninput="inlineColor(this.value)" onchange="inlineColor(this.value)" style="width:24px;height:24px;border:none;border-radius:4px;cursor:pointer;padding:0;background:none;"></div>',
-            '<div style="display:flex;align-items:center;gap:4px;"><span style="color:#aaa;font-size:10px;">Taille</span><select onchange="inlineFontSize(this.value)" style="font-size:10px;background:rgba(255,255,255,.1);color:#fff;border:none;border-radius:4px;padding:2px 4px;"><option value="">Auto</option><option value="12px">12</option><option value="14px">14</option><option value="16px">16</option><option value="18px">18</option><option value="20px">20</option><option value="24px">24</option><option value="28px">28</option><option value="32px">32</option><option value="36px">36</option><option value="48px">48</option></select></div>',
-            '<button onclick="closeInlineToolbar()" style="width:24px;height:24px;border:none;background:rgba(255,0,0,.2);color:#fff;border-radius:6px;cursor:pointer;font-size:11px;margin-left:4px;">✕</button>'
-        ].join('');
-        document.body.appendChild(tb);
-        inlineToolbar = tb;
-    } else {
-        inlineToolbar = document.getElementById('inline-toolbar');
-    }
+    // La barre d'édition est désormais présente dans le HTML.
+    // L'ancien code la reconstruisait ici avec des styles en dur,
+    // ce qui aurait écrasé la version enrichie (police, tailles).
+    inlineToolbar = document.getElementById('inline-toolbar');
+    if(!inlineToolbar) return;
     
     // Clic sur textes éditables du portfolio
     var editableSelectors = '.pf-name,.pf-role,.pf-bio,.pf-section-title,.pf-project-title,.pf-project-desc';
@@ -6430,8 +7433,21 @@ function inlineColor(color){
     document.execCommand('foreColor', false, color);
 }
 function inlineFontSize(size){
-    if(!inlineEditTarget || !size) return;
-    inlineEditTarget.style.fontSize = size;
+    if(!inlineEditTarget) return;
+    // Une chaîne vide correspond à « Auto » : on retire le
+    // réglage pour rendre la main au thème. L'ancien code
+    // ignorait ce cas, il était donc impossible de revenir
+    // à la taille d'origine.
+    if(!size) inlineEditTarget.style.removeProperty('font-size');
+    else inlineEditTarget.style.fontSize = size;
+}
+
+// Permet de remplacer la police proposée par le thème sur un
+// texte précis, sans toucher au reste du portfolio.
+function inlineFontFamily(family){
+    if(!inlineEditTarget) return;
+    if(!family) inlineEditTarget.style.removeProperty('font-family');
+    else inlineEditTarget.style.fontFamily = family;
 }
 
 // ── MULTI-PAGES — sections isolées + hamburger 3D ──
@@ -6487,7 +7503,29 @@ function goToPage(e, sectionId){
     if(e) e.preventDefault();
     toggleHamburger(false);
     currentPage = sectionId;
-    showOnlySection(sectionId);
+
+    // Deux comportements selon le choix de l'utilisateur : soit
+    // chaque rubrique occupe sa propre page, soit tout tient sur
+    // une page et le menu fait défiler jusqu'à la bonne rubrique.
+    if(window.__mpMode === 'scroll') scrollToSection(sectionId);
+    else showOnlySection(sectionId);
+}
+
+// Mode « une seule page » : les rubriques restent toutes visibles,
+// le menu amène simplement le visiteur au bon endroit.
+function scrollToSection(sectionId){
+    var vp = document.getElementById('portfolio-viewport');
+    var target = (vp || document).querySelector('#' + sectionId);
+    if(!target) return;
+    // Dans l'éditeur c'est le cadre qui défile, dans le portfolio
+    // publié c'est la page entière : les deux cas sont traités.
+    if(vp && vp.scrollHeight > vp.clientHeight){
+        vp.scrollTo({ top: Math.max(0, target.offsetTop - vp.offsetTop - 12), behavior:'smooth' });
+    } else {
+        var abs = target.getBoundingClientRect().top
+                + (window.pageYOffset || document.documentElement.scrollTop) - 16;
+        window.scrollTo({ top: Math.max(0, abs), behavior:'smooth' });
+    }
 }
 
 function showOnlySection(activeId){
@@ -6507,15 +7545,6 @@ function showOnlySection(activeId){
     });
     // Scroller en haut
     vp.scrollTo({top:0, behavior:'smooth'});
-}
-
-function scrollToSection(e, sectionId){
-    if(e) e.preventDefault();
-    var vp = document.getElementById('portfolio-viewport');
-    var el = vp ? vp.querySelector('#'+sectionId) : null;
-    if(el && vp){
-        vp.scrollTo({top: Math.max(0, el.offsetTop - 56), behavior:'smooth'});
-    }
 }
 
 // Fermer le menu si clic hors
@@ -7437,7 +8466,7 @@ function doExport(){
     // querySelector('style') ne renvoie que le premier bloc, or ces
     // styles-là sont ajoutés au <head> bien après.
     let styles = document.querySelector('style').outerHTML;
-    ['custom-bg-style','anim-section-style','autofix-contrast-style'].forEach(function(id){
+    ['custom-bg-style','anim-section-style','autofix-contrast-style','nav-legibility-style'].forEach(function(id){
         const dyn = document.getElementById(id);
         if(dyn && dyn.textContent && dyn.textContent.trim() !== ''){
             styles += '\n' + dyn.outerHTML;
@@ -7808,6 +8837,67 @@ ${(state.passwordProtect && state.passwordProtect.enabled && state.passwordProte
 // l'éditeur et embarquées ici : le changement de langue est
 // instantané et fonctionne même hors ligne.
 window.__pfTranslations = ${JSON.stringify(state.translations || {})};
+// Mode de navigation retenu : défilement sur une page unique,
+// ou pages séparées.
+window.__mpMode = ${JSON.stringify(state.multiPageMode || 'pages')};
+
+// ── NAVIGATION MULTI-PAGES DU PORTFOLIO PUBLIÉ ───────────
+// Ces fonctions manquaient entièrement dans les portfolios
+// exportés : le menu appelait des fonctions inexistantes et ne
+// faisait donc rien du tout.
+var currentPage = 'pf-sec-hero';
+
+function toggleHamburger(forceState){
+    var menu = document.getElementById('pf-hamburger-menu');
+    if(!menu) return;
+    var isOpen = menu.style.display === 'flex';
+    var show = (forceState !== undefined) ? forceState : !isOpen;
+    if(show){ menu.style.display = 'flex'; menu.style.flexDirection = 'column'; }
+    else { menu.style.display = 'none'; }
+}
+
+function scrollToSection(sectionId){
+    var target = document.getElementById(sectionId);
+    if(!target) return;
+    var abs = target.getBoundingClientRect().top
+            + (window.pageYOffset || document.documentElement.scrollTop) - 16;
+    window.scrollTo({ top: Math.max(0, abs), behavior:'smooth' });
+}
+
+function showOnlySection(activeId){
+    var blocks = document.querySelectorAll('[data-page]');
+    for(var i=0;i<blocks.length;i++){
+        blocks[i].style.display = (blocks[i].getAttribute('data-page') === activeId) ? '' : 'none';
+    }
+    window.scrollTo({ top:0, behavior:'smooth' });
+}
+
+function goToPage(e, sectionId){
+    if(e) e.preventDefault();
+    toggleHamburger(false);
+    currentPage = sectionId;
+    if(window.__mpMode === 'scroll') scrollToSection(sectionId);
+    else showOnlySection(sectionId);
+}
+
+// En mode pages séparées, seule la première rubrique s'affiche
+// à l'ouverture.
+(function(){
+    function initNav(){
+        if(window.__mpMode !== 'scroll' && document.querySelector('[data-page]')){
+            showOnlySection('pf-sec-hero');
+        }
+    }
+    if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initNav);
+    else initNav();
+})();
+
+document.addEventListener('click', function(e){
+    if(e.target.closest && !e.target.closest('#pf-hamburger-btn') && !e.target.closest('#pf-hamburger-menu')){
+        var menu = document.getElementById('pf-hamburger-menu');
+        if(menu) menu.style.display = 'none';
+    }
+});
 
 var LANG_LABELS = ${JSON.stringify(LANG_LABELS)};
 var activeLang = 'fr';
@@ -7838,12 +8928,31 @@ function applyContentTranslation(vp, lang){
     for(var m=0;m<labels.length;m++){ setText(labels[m], 'stat.'+m+'.label'); }
 }
 
+function togglePfLangDropdown(){
+    var dd = document.getElementById('pf-lang-dropdown');
+    var w  = document.getElementById('pf-lang-widget');
+    if(!dd) return;
+    var open = dd.classList.toggle('pf-open');
+    if(w) w.classList.toggle('pf-lang-open', open);
+}
+
+document.addEventListener('click', function(e){
+    var w = document.getElementById('pf-lang-widget');
+    if(!w || !w.contains(e.target)){
+        var dd = document.getElementById('pf-lang-dropdown');
+        if(dd) dd.classList.remove('pf-open');
+        if(w) w.classList.remove('pf-lang-open');
+    }
+});
+
 function switchLang(lang){
     activeLang = lang;
     var L = LANG_LABELS[lang] || LANG_LABELS['fr'];
 
     var dd = document.getElementById('pf-lang-dropdown');
-    if(dd) dd.style.display = 'none';
+    if(dd) dd.classList.remove('pf-open');
+    var wgt = document.getElementById('pf-lang-widget');
+    if(wgt) wgt.classList.remove('pf-lang-open');
     var disp = document.getElementById('pf-lang-current');
     if(disp) disp.textContent = lang.toUpperCase();
 
@@ -8534,13 +9643,37 @@ function applyContentTranslation(vp, lang){
     vp.querySelectorAll('.pf-stat-label').forEach(function(el,i){ setText(el, 'stat.'+i+'.label'); });
 }
 
+// Ouverture du sélecteur de langue. Le passage par des classes
+// permet d'animer le chevron et la bordure, ce que l'ancien
+// basculement de style en ligne ne permettait pas.
+function togglePfLangDropdown(){
+    var dd = document.getElementById('pf-lang-dropdown');
+    var w  = document.getElementById('pf-lang-widget');
+    if(!dd) return;
+    var open = dd.classList.toggle('pf-open');
+    if(w) w.classList.toggle('pf-lang-open', open);
+}
+
+// Referme le menu si l'on clique ailleurs, comportement attendu
+// de tout menu déroulant.
+document.addEventListener('click', function(e){
+    var w = document.getElementById('pf-lang-widget');
+    if(!w || !w.contains(e.target)){
+        var dd = document.getElementById('pf-lang-dropdown');
+        if(dd) dd.classList.remove('pf-open');
+        if(w) w.classList.remove('pf-lang-open');
+    }
+});
+
 function switchLang(lang){
     activeLang = lang;
     const L = LANG_LABELS[lang] || LANG_LABELS['fr'];
 
     // Ferme le dropdown
     const dd = document.getElementById('pf-lang-dropdown');
-    if(dd) dd.style.display = 'none';
+    if(dd) dd.classList.remove('pf-open');
+    const wgt = document.getElementById('pf-lang-widget');
+    if(wgt) wgt.classList.remove('pf-lang-open');
 
     // Mise à jour du bouton langue (code ISO compact)
     const display = document.getElementById('pf-lang-current');
