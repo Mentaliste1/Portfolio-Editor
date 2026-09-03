@@ -4540,6 +4540,31 @@ radial-gradient(circle at 50% 50%,rgba(255,183,77,.06) 0%,transparent 50%);}
 }
 .msg-btn:hover{border-color:#3f3f46;color:#f1f5f9;}
 
+/* ── MENU DE RÉPONSE À UN MESSAGE ── */
+.msg-btn-reply{background:rgba(99,102,241,.14);border-color:#4f46e5;color:#a5b4fc;}
+.msg-btn-reply:hover{background:rgba(99,102,241,.24);color:#c7d2fe;}
+.msg-reply-menu{display:none;margin-top:9px;padding-top:9px;border-top:1px solid #24242c;}
+.msg-reply-menu.open{display:grid;gap:5px;}
+.reply-opt{
+    display:flex;align-items:center;gap:10px;
+    padding:9px 11px;border-radius:10px;
+    background:#18181f;border:1px solid #26262e;
+    text-decoration:none;cursor:pointer;
+    transition:border-color .18s ease, transform .18s ease, background .18s ease;
+}
+.reply-opt:hover{border-color:#3f3f4a;background:#1e1e26;transform:translateX(2px);}
+.reply-ico{
+    width:30px;height:30px;border-radius:9px;flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;font-size:15px;
+}
+.reply-opt span:last-child{display:flex;flex-direction:column;min-width:0;}
+.reply-opt b{font-size:12px;font-weight:700;color:#e4e4e7;}
+.reply-opt em{
+    font-size:10px;font-style:normal;color:#71717a;margin-top:1px;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.reply-none{font-size:11px;color:#52525b;text-align:center;padding:8px;background:#16161c;border-radius:9px;}
+
 /* ── QR CODE ── */
 #qr-modal {
   display:none; position:fixed; inset:0; background:rgba(0,0,0,0.82);
@@ -8400,6 +8425,10 @@ async function initiatePayment(){
             body: JSON.stringify({
                 email: paymentState.email,
                 amount: pricing.price,
+                // Le serveur recalcule le prix à partir de ces
+                // caractéristiques : le montant ci-dessus ne lui
+                // sert plus qu'à repérer une incohérence.
+                pricing: buildPricingFacts(),
                 method: paymentState.method,
                 portfolioKey: paymentState.reference,
                 name: paymentState.name,
@@ -10115,6 +10144,52 @@ function mobileDarkToggle(){
 /* ── BARÈME DE TARIFICATION — juste et proportionnel ─────────
    Chaque point reflète un vrai coût de production/complexité.
    Rien ne facture ce que l'utilisateur n'a pas produit dans SON portfolio. */
+// Décrit le portfolio pour que le serveur recalcule lui-même le
+// prix. On n'envoie que des caractéristiques vérifiables, jamais
+// le montant : le serveur fait foi. Auparavant le prix venait du
+// navigateur, et il suffisait de le modifier pour payer moins.
+function buildPricingFacts(){
+    const s = state;
+    const BASIC = ['fadeUp','blur','slide','scaleDown','bounce','rotateIn','drop','sweep',
+                   'fadeLeft','fadeRight','zoomIn','flipX','flipY','fadeDown','none'];
+    return {
+        hasBio:         !!(s.data.bio && s.data.bio.length > 10),
+        hasContactLink: !!(s.data.ctaLink && s.data.ctaLink !== '#'),
+        hasCV:          !!window.cvData,
+        hasSkills:      (s.skills||[]).length > 0,
+        hasSocials:     !!(s.showSocials && (s.data.linkedin||s.data.twitter||s.data.github||s.data.instagram)),
+        projects:       (s.projects||[]).length,
+        experiences:    (s.experiences||[]).length,
+        certifications: (s.certifications||[]).length,
+        themePhoto:     !!(s.activeTheme && s.activeTheme.indexOf('ph_') === 0),
+        customBg:       !!(s.custom && s.custom.bgImage),
+        advLayout:      ['classic','centered'].indexOf(s.activeLayout) === -1,
+        customFont:     !!s.overrideFont,
+        customColors:   !!(s.overrideColors && Object.keys(s.overrideColors).length > 0),
+        animSimple:     !!(s.activeAnim && s.activeAnim !== 'none'),
+        animAdvanced:   !!(s.activeAnim && BASIC.indexOf(s.activeAnim) === -1),
+        // Compte les sections réellement personnalisées : toutes
+        // ont une valeur par défaut, leur simple présence ne
+        // signifie pas que l'utilisateur les a modifiées.
+        multiAnim:      (function(){
+            if(!s.sectionAnims || typeof DEFAULT_SECTION_ANIMS === 'undefined') return false;
+            var changed = 0;
+            Object.keys(s.sectionAnims).forEach(function(k){
+                if(s.sectionAnims[k] !== DEFAULT_SECTION_ANIMS[k]) changed++;
+            });
+            return changed > 0;
+        })(),
+        photoAnim:      (typeof currentPhotoAnim !== 'undefined')
+                        && !!currentPhotoAnim && currentPhotoAnim !== 'none',
+        footer:         !!(s.footer && s.footer.enabled),
+        gallery:        (s.projects||[]).length >= 5,
+        booking:        !!(s.booking && s.booking.enabled),
+        chat:           !!(s.chat && s.chat.enabled),
+        multilang:      !!(s.multilang && s.multilang.enabled),
+        multiPage:      !!s.multiPage
+    };
+}
+
 const PRICING_RULES = [
     // Contenu de base (chaque section réellement remplie)
     { id:'about',       label:'Bio renseignée',           points:3,  isMultiplier:false, getValue:(s)=>s.data.bio&&s.data.bio.length>10 },
@@ -11834,23 +11909,103 @@ function renderMessages(data){
         const safe = function(s){
             return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
         };
-        const mailto = 'mailto:' + encodeURIComponent(m.sender_email)
-                     + '?subject=' + encodeURIComponent('Re: votre message');
+        // Le numéro n'est retenu que s'il contient assez de chiffres
+        // pour être utilisable : un champ mal rempli ne doit pas
+        // produire un bouton qui ne mène nulle part.
+        const digits = String(m.sender_phone||'').replace(/[^0-9]/g,'');
+        const hasPhone = digits.length >= 8;
 
         html += '<div class="msg-item' + (m.is_read ? '' : ' msg-unread') + '" id="msg-' + m.id + '">'
               + '<div class="msg-top"><span class="msg-from">' + safe(m.sender_name) + '</span>'
               + '<span class="msg-date">' + date + '</span></div>'
               + '<div class="msg-contact">' + safe(m.sender_email)
-              + (m.sender_phone ? ' · ' + safe(m.sender_phone) : '') + '</div>'
+              + (hasPhone ? ' · ' + safe(m.sender_phone) : '') + '</div>'
               + '<div class="msg-text">' + safe(m.message) + '</div>'
               + '<div class="msg-actions">'
-              + '<a class="msg-btn" href="' + mailto + '"><i class="ri-reply-line"></i> Répondre</a>'
-              + (m.sender_phone ? '<a class="msg-btn" href="https://wa.me/' + String(m.sender_phone).replace(/[^0-9]/g,'') + '" target="_blank" rel="noopener"><i class="ri-whatsapp-line"></i> WhatsApp</a>' : '')
+              + '<button class="msg-btn msg-btn-reply" onclick="openReplyMenu(\'' + m.id + '\')">'
+              + '<i class="ri-reply-line"></i> Répondre</button>'
               + (m.is_read ? '' : '<button class="msg-btn" onclick="markMessageRead(\'' + m.id + '\')"><i class="ri-check-line"></i> Marquer comme lu</button>')
-              + '</div></div>';
+              + '</div>'
+              + '<div class="msg-reply-menu" id="reply-' + m.id + '"></div>'
+              + '</div>';
+
+        window.__msgContacts = window.__msgContacts || {};
+        window.__msgContacts[m.id] = {
+            email: m.sender_email,
+            phone: hasPhone ? digits : null,
+            name: m.sender_name
+        };
     });
 
     body.innerHTML = html;
+}
+
+// Propose les moyens de réponse disponibles. Sur téléphone
+// s'ajoutent le SMS et l'appel, qui n'ont pas de sens sur
+// ordinateur — un lien d'appel y ouvrirait un logiciel que la
+// plupart des gens n'ont pas installé.
+function openReplyMenu(id){
+    const box = document.getElementById('reply-' + id);
+    const info = (window.__msgContacts || {})[id];
+    if(!box || !info) return;
+
+    // Un second clic referme le menu.
+    if(box.classList.contains('open')){
+        box.classList.remove('open');
+        box.innerHTML = '';
+        return;
+    }
+    document.querySelectorAll('.msg-reply-menu.open').forEach(function(el){
+        el.classList.remove('open');
+        el.innerHTML = '';
+    });
+
+    const isMobile = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)
+                     || window.innerWidth <= 768;
+
+    const prenom = String(info.name||'').trim().split(/\s+/)[0] || '';
+    const salut = prenom ? 'Bonjour ' + prenom + ',' : 'Bonjour,';
+    const corps = salut + '\n\nMerci pour votre message.\n\n';
+
+    let html = '';
+
+    const gmail = 'https://mail.google.com/mail/?view=cm&fs=1&to='
+                + encodeURIComponent(info.email)
+                + '&su=' + encodeURIComponent('Re : votre message')
+                + '&body=' + encodeURIComponent(corps);
+    html += '<a class="reply-opt" href="' + gmail + '" target="_blank" rel="noopener">'
+          + '<span class="reply-ico" style="background:rgba(234,67,53,.14);color:#ea4335;"><i class="ri-mail-line"></i></span>'
+          + '<span><b>Gmail</b><em>Répondre par courriel</em></span></a>';
+
+    const mailto = 'mailto:' + encodeURIComponent(info.email)
+                 + '?subject=' + encodeURIComponent('Re : votre message')
+                 + '&body=' + encodeURIComponent(corps);
+    html += '<a class="reply-opt" href="' + mailto + '">'
+          + '<span class="reply-ico" style="background:rgba(99,102,241,.14);color:#a5b4fc;"><i class="ri-at-line"></i></span>'
+          + '<span><b>Messagerie</b><em>Application par défaut</em></span></a>';
+
+    if(info.phone){
+        html += '<a class="reply-opt" href="https://wa.me/' + info.phone
+              + '?text=' + encodeURIComponent(corps) + '" target="_blank" rel="noopener">'
+              + '<span class="reply-ico" style="background:rgba(37,211,102,.14);color:#25D366;"><i class="ri-whatsapp-line"></i></span>'
+              + '<span><b>WhatsApp</b><em>Réponse immédiate</em></span></a>';
+
+        if(isMobile){
+            html += '<a class="reply-opt" href="sms:' + info.phone
+                  + '?body=' + encodeURIComponent(corps) + '">'
+                  + '<span class="reply-ico" style="background:rgba(59,130,246,.14);color:#60a5fa;"><i class="ri-message-2-line"></i></span>'
+                  + '<span><b>SMS</b><em>Message texte</em></span></a>';
+
+            html += '<a class="reply-opt" href="tel:' + info.phone + '">'
+                  + '<span class="reply-ico" style="background:rgba(251,191,36,.14);color:#fbbf24;"><i class="ri-phone-line"></i></span>'
+                  + '<span><b>Appeler</b><em>' + info.phone + '</em></span></a>';
+        }
+    } else {
+        html += '<div class="reply-none">Aucun numéro fourni par ce visiteur.</div>';
+    }
+
+    box.innerHTML = html;
+    box.classList.add('open');
 }
 
 async function markMessageRead(id){
