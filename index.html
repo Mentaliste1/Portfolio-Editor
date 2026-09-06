@@ -2269,6 +2269,68 @@ radial-gradient(circle at 50% 50%,rgba(255,183,77,.06) 0%,transparent 50%);}
     transition:border-color .2s ease;
 }
 .pf-book-in:focus{outline:none;border-color:currentColor;}
+
+/* ── LISTE DÉROULANTE DU MOTIF ──
+   Une liste native hérite de la couleur du texte du thème, mais
+   garde un fond blanc imposé par le système : sur un thème à
+   texte clair, les options devenaient blanches sur blanc, donc
+   illisibles. On fixe donc des couleurs explicites pour la liste
+   ouverte, indépendantes du thème. */
+select.pf-book-in{
+    appearance:none;-webkit-appearance:none;-moz-appearance:none;
+    padding-right:38px;
+    cursor:pointer;
+    /* Chevron dessiné en SVG, teinté par le thème */
+    background-image:url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2.2' stroke-linecap='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;
+    background-position:right 12px center;
+    background-size:17px;
+}
+select.pf-book-in option{
+    background-color:#15151c;
+    color:#f1f5f9;
+    padding:10px;
+    font-size:13.5px;
+}
+select.pf-book-in option:checked,
+select.pf-book-in option:hover{
+    background-color:#25252f;
+    color:#ffffff;
+}
+
+/* ── LISERÉ LUMINEUX AUTOUR DU PANNEAU ──
+   Un filet discret tourne le long du cadre, aux couleurs du
+   thème. Il reste léger pour ne pas détourner l'attention du
+   formulaire lui-même. */
+@keyframes bookBorderFlow{
+    0%,100%{background-position:0% 50%;}
+    50%    {background-position:100% 50%;}
+}
+.pf-book-panel{position:relative;}
+.pf-book-panel::before{
+    content:'';
+    position:absolute;inset:-1px;
+    border-radius:inherit;
+    padding:1px;
+    background:linear-gradient(115deg,
+        color-mix(in srgb, currentColor 45%, transparent),
+        color-mix(in srgb, currentColor 8%, transparent),
+        color-mix(in srgb, currentColor 55%, transparent),
+        color-mix(in srgb, currentColor 8%, transparent),
+        color-mix(in srgb, currentColor 45%, transparent));
+    background-size:300% 100%;
+    animation:bookBorderFlow 7s ease-in-out infinite;
+    -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite:xor;
+    mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    mask-composite:exclude;
+    pointer-events:none;
+}
+/* Le contenu passe au-dessus du liseré */
+.pf-book-panel > *{position:relative;z-index:1;}
+@media(prefers-reduced-motion:reduce){
+    .pf-book-panel::before{animation:none;}
+}
 .pf-book-area{resize:vertical;line-height:1.6;}
 .pf-book-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
 .pf-book-slots{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;}
@@ -9533,6 +9595,31 @@ function switchLang(lang){
     for(var c=0;c<cvBtns.length;c++){
         cvBtns[c].innerHTML = '<i class="ri-file-pdf-2-fill"></i> ' + (lang==='fr' ? 'Mon CV' : L.download);
     }
+
+    // L'icône de certificat garde son apparence : seule son
+    // infobulle change de langue.
+    var certDl = vp.querySelectorAll('.pf-cert-dl');
+    for(var q=0;q<certDl.length;q++){
+        certDl[q].setAttribute('data-tip', lang==='fr'
+            ? 'Télécharger le certificat' : (L.download || 'Download'));
+    }
+
+    // Met la coche sur la langue réellement choisie.
+    var ddx = document.getElementById('pf-lang-dropdown');
+    if(ddx){
+        var opts = ddx.querySelectorAll('.pf-lang-opt');
+        for(var z=0;z<opts.length;z++){
+            var on = opts[z].getAttribute('onclick') === "switchLang('" + lang + "')";
+            if(on) opts[z].classList.add('pf-lang-active');
+            else opts[z].classList.remove('pf-lang-active');
+            var ck = opts[z].querySelector('.pf-lang-check');
+            if(on && !ck){
+                var ic = document.createElement('i');
+                ic.className = 'ri-check-line pf-lang-check';
+                opts[z].appendChild(ic);
+            } else if(!on && ck){ ck.remove(); }
+        }
+    }
 }
 
 // Bascule clair / sombre choisie par le visiteur
@@ -10157,7 +10244,7 @@ async function translatePortfolio(){
     if(btn){ btn.disabled = true; btn.innerHTML = '<i class="ri-loader-4-line"></i> Traduction en cours…'; }
     if(!state.translations) state.translations = {};
 
-    let done = 0, failed = 0;
+    let done = 0, failed = 0, lastTranslateError = '';
 
     for(const lang of targets){
         if(status) status.textContent = 'Traduction vers ' + lang.toUpperCase() + '… (' + (done+1) + '/' + targets.length + ')';
@@ -10186,7 +10273,11 @@ async function translatePortfolio(){
             state.translations[lang] = map;
             done++;
         } catch(err){
+            // On retient la vraie cause pour la montrer à
+            // l'utilisateur : un échec silencieux le laissait
+            // croire que la traduction avait fonctionné.
             console.warn('[Traduction] Échec pour ' + lang + ':', err);
+            lastTranslateError = (err && err.message) ? err.message : String(err);
             failed++;
         }
     }
@@ -10199,7 +10290,21 @@ async function translatePortfolio(){
         } else if(done > 0){
             status.textContent = '⚠️ ' + done + ' langue(s) traduite(s), ' + failed + ' en échec. Réessayez pour les manquantes.';
         } else {
-            status.textContent = '❌ La traduction a échoué. Vérifiez que la fonction « translate » est bien déployée.';
+            // Message précis plutôt que générique : la cause est
+            // presque toujours l'un de ces trois cas.
+            let why = lastTranslateError || '';
+            let hint = '';
+            if(/401|session|connect/i.test(why)){
+                hint = 'Reconnectez-vous, puis réessayez.';
+            } else if(/404|not found|introuvable/i.test(why)){
+                hint = 'La fonction « translate » n\'est pas joignable — vérifiez son nom dans Supabase.';
+            } else if(/quota|limit|429/i.test(why)){
+                hint = 'Le service de traduction a atteint sa limite. Réessayez plus tard.';
+            } else {
+                hint = 'Ouvrez la console du navigateur (F12) pour voir le détail.';
+            }
+            status.innerHTML = '❌ La traduction a échoué.<br><span style="opacity:.8;">'
+                             + (why ? why + ' — ' : '') + hint + '</span>';
         }
     }
     render();
@@ -10272,6 +10377,24 @@ function switchLang(lang){
     const display = document.getElementById('pf-lang-current');
     if(display) display.textContent = lang.toUpperCase();
 
+    // La coche indiquant la langue active restait sur le français :
+    // elle n'était posée qu'au premier rendu de la liste, jamais
+    // mise à jour ensuite.
+    if(dd){
+        dd.querySelectorAll('.pf-lang-opt').forEach(function(opt){
+            const isOn = opt.getAttribute('onclick') === "switchLang('" + lang + "')";
+            opt.classList.toggle('pf-lang-active', isOn);
+            const chk = opt.querySelector('.pf-lang-check');
+            if(isOn && !chk){
+                const i = document.createElement('i');
+                i.className = 'ri-check-line pf-lang-check';
+                opt.appendChild(i);
+            } else if(!isOn && chk){
+                chk.remove();
+            }
+        });
+    }
+
     // ── Traduction complète du portfolio ──────────────
     const vp = document.getElementById('portfolio-viewport');
     if(!vp) return;
@@ -10313,9 +10436,21 @@ function switchLang(lang){
         el.innerHTML = '<i class="ri-calendar-2-line"></i> ' + L.book;
     });
 
-    // Bouton CV
-    vp.querySelectorAll('a[download]').forEach(el=>{
-        el.innerHTML = '<i class="ri-file-pdf-2-fill" style="font-size:16px;"></i> ' + L.download;
+    // Bouton CV — on cible la classe précise. Le sélecteur
+    // 'a[download]' visait auparavant TOUS les liens de
+    // téléchargement, y compris l'icône de certificat, qui se
+    // transformait donc en « Télécharger mon CV ».
+    vp.querySelectorAll('.pf-cv-btn').forEach(el=>{
+        el.innerHTML = '<i class="ri-file-pdf-2-fill"></i> '
+                     + (lang === 'fr' ? 'Mon CV' : L.download);
+    });
+
+    // Icône de certificat : seule son infobulle est traduite,
+    // l'icône elle-même ne doit jamais être remplacée par du texte.
+    vp.querySelectorAll('.pf-cert-dl').forEach(el=>{
+        el.setAttribute('data-tip', lang === 'fr'
+            ? 'Télécharger le certificat'
+            : (L.download || 'Download'));
     });
 
     // Traductions supplémentaires selon langue
