@@ -40,8 +40,28 @@ body{
 a{color:inherit;}
 .wrap{max-width:1160px;margin:0 auto;padding:0 24px;}
 
-/* ══ Fond ══ */
-.bgfx{position:fixed;inset:0;pointer-events:none;z-index:0;}
+/* ══ Fond ══
+   Un rendu WebGL anime le fond en profondeur. Il reste
+   volontairement discret : un voile sombre et une vignette sont
+   posés par-dessus pour que le texte demeure parfaitement
+   lisible en toutes circonstances. Si WebGL n'est pas
+   disponible, les dégradés CSS assurent seuls le rendu. */
+#glbg{
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  opacity:0;transition:opacity 1.2s ease;
+}
+#glbg.ready{opacity:.62;}
+#glbg canvas{display:block;width:100%;height:100%;}
+
+/* Voile de lisibilité — assombrit le fond animé sans le masquer */
+.bg-veil{
+  background:
+    linear-gradient(rgba(7,6,14,.42), rgba(7,6,14,.42)),
+    radial-gradient(120% 90% at 50% 30%, transparent 30%, rgba(7,6,14,.72) 100%);
+  z-index:1;
+}
+
+.bgfx{position:fixed;inset:0;pointer-events:none;z-index:1;}
 .bg-a{background:radial-gradient(48% 40% at 18% 6%, rgba(124,107,255,.4), transparent 68%);animation:drift1 30s ease-in-out infinite;}
 .bg-b{background:radial-gradient(42% 36% at 84% 34%, rgba(201,165,255,.2), transparent 66%);animation:drift2 38s ease-in-out infinite;}
 .bg-c{background:radial-gradient(36% 24% at 50% 100%, rgba(255,180,84,.1), transparent 72%);}
@@ -343,10 +363,12 @@ footer{position:relative;z-index:2;border-top:1px solid var(--line);padding:46px
 </head>
 <body>
 
+<div id="glbg"></div>
 <div class="bgfx bg-a"></div>
 <div class="bgfx bg-b"></div>
 <div class="bgfx bg-c"></div>
 <div class="bgfx bg-grid"></div>
+<div class="bgfx bg-veil"></div>
 
 <nav class="nav" id="nav">
   <div class="wrap nav-in">
@@ -748,6 +770,282 @@ function go(which){
   const t = EDITORS[which];
   if(t) window.location.href = t;
 }
+
+/* ══════════════════════════════════════════════════════
+   FOND ANIMÉ — rendu WebGL
+   Adapté d'un nuanceur de dégradé animé, en JavaScript natif.
+
+   Trois précautions gouvernent ce code :
+   • La lisibilité — le rendu reste sombre et discret, avec un
+     voile posé par-dessus. Aucun texte ne doit devenir difficile
+     à lire, quelle que soit l'image du moment.
+   • La performance — la définition est plafonnée, l'animation se
+     met en pause quand l'onglet est masqué, et le rendu est
+     entièrement abandonné sur les appareils modestes.
+   • Le repli — sans WebGL, les dégradés CSS suffisent. La page
+     reste identique en tout point, simplement moins vivante.
+   ══════════════════════════════════════════════════════ */
+(function(){
+  var host = document.getElementById('glbg');
+  if(!host) return;
+
+  // ── Faut-il seulement l'activer ? ────────────────────
+  // Sur un appareil peu puissant, ce rendu coûterait plus qu'il
+  // n'apporte : les dégradés CSS prennent alors le relais.
+  // Quand on renonce, on retire aussi le conteneur : inutile de
+  // laisser un élément fixe vide dans la page.
+  function abandon(){ if(host && host.parentNode) host.remove(); }
+
+  try{
+    if(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return abandon();
+    if(navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 2) return abandon();
+    if(navigator.deviceMemory && navigator.deviceMemory <= 2) return abandon();
+    var conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    if(conn && (conn.saveData || /^(slow-)?2g$/.test(conn.effectiveType || ''))) return abandon();
+  } catch(e){}
+
+  var canvas = document.createElement('canvas');
+  host.appendChild(canvas);
+
+  var gl = null;
+  try{
+    gl = canvas.getContext('webgl2', { premultipliedAlpha:true, alpha:true, antialias:false });
+  } catch(e){}
+  if(!gl) return abandon();
+
+  /* ── Palette ──
+     Construite sur les couleurs de Mental Studio, volontairement
+     sombre : le fond doit soutenir le texte, jamais rivaliser
+     avec lui. */
+  var P = {
+    color1: '#07060E',   // le noir encré du site
+    color2: '#4A3BA8',   // indigo assourdi
+    color3: '#120E28',   // violet très sombre
+    rotation: -40,
+    proportion: 46,
+    scale: 0.30,
+    speed: 14,           // lent : un fond ne doit pas distraire
+    distortion: 6,
+    swirl: 58,
+    swirlIterations: 7,
+    softness: 100,
+    offset: -160,
+    shape: 0,            // 0 = damier, 1 = rayures, 2 = bord
+    shapeSize: 34
+  };
+
+  var VERT = '#version 300 es\n'
+    + 'in vec4 a_position;\n'
+    + 'void main(){ gl_Position = a_position; }';
+
+  var FRAG = '#version 300 es\n'
++ 'precision highp float;\n'
++ 'uniform float u_time;\n'
++ 'uniform float u_pixelRatio;\n'
++ 'uniform vec2 u_resolution;\n'
++ 'uniform float u_scale;\n'
++ 'uniform float u_rotation;\n'
++ 'uniform vec4 u_color1;\n'
++ 'uniform vec4 u_color2;\n'
++ 'uniform vec4 u_color3;\n'
++ 'uniform float u_proportion;\n'
++ 'uniform float u_softness;\n'
++ 'uniform float u_shape;\n'
++ 'uniform float u_shapeScale;\n'
++ 'uniform float u_distortion;\n'
++ 'uniform float u_swirl;\n'
++ 'uniform float u_swirlIterations;\n'
++ 'out vec4 fragColor;\n'
++ '#define TWO_PI 6.28318530718\n'
++ '#define PI 3.14159265358979323846\n'
++ 'vec2 rotate(vec2 uv, float th){ return mat2(cos(th), sin(th), -sin(th), cos(th)) * uv; }\n'
++ 'float random(vec2 st){ return fract(sin(dot(st.xy, vec2(12.9898,78.233))) * 43758.5453123); }\n'
++ 'float noise(vec2 st){\n'
++ '  vec2 i = floor(st); vec2 f = fract(st);\n'
++ '  float a = random(i);\n'
++ '  float b = random(i + vec2(1.0,0.0));\n'
++ '  float c = random(i + vec2(0.0,1.0));\n'
++ '  float d = random(i + vec2(1.0,1.0));\n'
++ '  vec2 u = f * f * (3.0 - 2.0 * f);\n'
++ '  float x1 = mix(a,b,u.x); float x2 = mix(c,d,u.x);\n'
++ '  return mix(x1,x2,u.y);\n'
++ '}\n'
++ 'vec4 blend_colors(vec4 c1, vec4 c2, vec4 c3, float mixer, float edgesWidth, float edge_blur){\n'
++ '  vec3 color1 = c1.rgb * c1.a;\n'
++ '  vec3 color2 = c2.rgb * c2.a;\n'
++ '  vec3 color3 = c3.rgb * c3.a;\n'
++ '  float r1 = smoothstep(.0 + .35*edgesWidth, .7 - .35*edgesWidth + .5*edge_blur, mixer);\n'
++ '  float r2 = smoothstep(.3 + .35*edgesWidth, 1. - .35*edgesWidth + edge_blur, mixer);\n'
++ '  vec3 b2 = mix(color1, color2, r1);\n'
++ '  float o2 = mix(c1.a, c2.a, r1);\n'
++ '  vec3 c = mix(b2, color3, r2);\n'
++ '  float o = mix(o2, c3.a, r2);\n'
++ '  return vec4(c, o);\n'
++ '}\n'
++ 'void main(){\n'
++ '  vec2 uv = gl_FragCoord.xy / u_resolution.xy;\n'
++ '  float t = .5 * u_time;\n'
++ '  float noise_scale = .0005 + .006 * u_scale;\n'
++ '  uv -= .5;\n'
++ '  uv *= (noise_scale * u_resolution);\n'
++ '  uv = rotate(uv, u_rotation * .5 * PI);\n'
++ '  uv /= u_pixelRatio;\n'
++ '  uv += .5;\n'
++ '  float n1 = noise(uv * 1. + t);\n'
++ '  float n2 = noise(uv * 2. - t);\n'
++ '  float angle = n1 * TWO_PI;\n'
++ '  uv.x += 4. * u_distortion * n2 * cos(angle);\n'
++ '  uv.y += 4. * u_distortion * n2 * sin(angle);\n'
++ '  float it = ceil(clamp(u_swirlIterations, 1., 30.));\n'
++ '  for(float i = 1.; i <= it; i++){\n'
++ '    uv.x += clamp(u_swirl, 0., 2.) / i * cos(t + i * 1.5 * uv.y);\n'
++ '    uv.y += clamp(u_swirl, 0., 2.) / i * cos(t + i * 1.0 * uv.x);\n'
++ '  }\n'
++ '  float proportion = clamp(u_proportion, 0., 1.);\n'
++ '  float shape = 0.; float mixer = 0.;\n'
++ '  if(u_shape < .5){\n'
++ '    vec2 s_uv = uv * (.5 + 3.5 * u_shapeScale);\n'
++ '    shape = .5 + .5 * sin(s_uv.x) * cos(s_uv.y);\n'
++ '    mixer = shape + .48 * sign(proportion - .5) * pow(abs(proportion - .5), .5);\n'
++ '  } else if(u_shape < 1.5){\n'
++ '    vec2 s_uv = uv * (.25 + 3. * u_shapeScale);\n'
++ '    float f = fract(s_uv.y);\n'
++ '    shape = smoothstep(.0,.55,f) * smoothstep(1.,.45,f);\n'
++ '    mixer = shape + .48 * sign(proportion - .5) * pow(abs(proportion - .5), .5);\n'
++ '  } else {\n'
++ '    float sh = 1. - uv.y; sh -= .5;\n'
++ '    sh /= (noise_scale * u_resolution.y); sh += .5;\n'
++ '    float ss = .2 * (1. - u_shapeScale);\n'
++ '    shape = smoothstep(.45 - ss, .55 + ss, sh + .3 * (proportion - .5));\n'
++ '    mixer = shape;\n'
++ '  }\n'
++ '  vec4 cm = blend_colors(u_color1, u_color2, u_color3, mixer, 1. - clamp(u_softness,0.,1.), .01 + .01 * u_scale);\n'
++ '  fragColor = vec4(cm.rgb, cm.a);\n'
++ '}';
+
+  function compile(type, src){
+    var s = gl.createShader(type);
+    gl.shaderSource(s, src);
+    gl.compileShader(s);
+    if(!gl.getShaderParameter(s, gl.COMPILE_STATUS)){
+      console.warn('[Fond] Nuanceur refusé:', gl.getShaderInfoLog(s));
+      return null;
+    }
+    return s;
+  }
+
+  var vs = compile(gl.VERTEX_SHADER, VERT);
+  var fs = compile(gl.FRAGMENT_SHADER, FRAG);
+  if(!vs || !fs) return abandon();
+
+  var prog = gl.createProgram();
+  gl.attachShader(prog, vs);
+  gl.attachShader(prog, fs);
+  gl.linkProgram(prog);
+  if(!gl.getProgramParameter(prog, gl.LINK_STATUS)){
+    console.warn('[Fond] Programme non lié:', gl.getProgramInfoLog(prog));
+    return abandon();
+  }
+  gl.useProgram(prog);
+
+  var buf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER,
+    new Float32Array([-1,-1, 1,-1, -1,1, -1,1, 1,-1, 1,1]), gl.STATIC_DRAW);
+  var loc = gl.getAttribLocation(prog, 'a_position');
+  gl.enableVertexAttribArray(loc);
+  gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+
+  var U = {};
+  ['u_time','u_resolution','u_pixelRatio','u_scale','u_rotation',
+   'u_color1','u_color2','u_color3','u_proportion','u_softness',
+   'u_shape','u_shapeScale','u_distortion','u_swirl','u_swirlIterations']
+   .forEach(function(n){ U[n] = gl.getUniformLocation(prog, n); });
+
+  function hex2rgba(h){
+    var r=0,g=0,b=0,a=1;
+    if(h.charAt(0) === '#'){
+      var c = h.slice(1);
+      if(c.length === 3){
+        r = parseInt(c[0]+c[0],16)/255;
+        g = parseInt(c[1]+c[1],16)/255;
+        b = parseInt(c[2]+c[2],16)/255;
+      } else if(c.length >= 6){
+        r = parseInt(c.slice(0,2),16)/255;
+        g = parseInt(c.slice(2,4),16)/255;
+        b = parseInt(c.slice(4,6),16)/255;
+        if(c.length === 8) a = parseInt(c.slice(6,8),16)/255;
+      }
+    }
+    return [r,g,b,a];
+  }
+
+  // La définition est plafonnée : au-delà, le gain visuel est nul
+  // et le coût réel sur mobile.
+  function dpr(){ return Math.min(window.devicePixelRatio || 1, 1.5); }
+
+  function resize(){
+    var w = host.clientWidth  || window.innerWidth;
+    var h = host.clientHeight || window.innerHeight;
+    var p = dpr();
+    canvas.width  = Math.round(w * p);
+    canvas.height = Math.round(h * p);
+    canvas.style.width  = w + 'px';
+    canvas.style.height = h + 'px';
+    gl.viewport(0, 0, canvas.width, canvas.height);
+  }
+  resize();
+
+  var rt = null;
+  window.addEventListener('resize', function(){
+    clearTimeout(rt);
+    rt = setTimeout(resize, 180);
+  }, { passive:true });
+
+  var c1 = hex2rgba(P.color1), c2 = hex2rgba(P.color2), c3 = hex2rgba(P.color3);
+  var start = performance.now();
+  var raf = null;
+  var visible = true;
+
+  function frame(now){
+    if(!visible){ raf = null; return; }
+    var elapsed = (now - start) / 1000;
+    var sp = (P.speed / 100) * 5;
+
+    gl.uniform1f(U.u_time, elapsed * sp + P.offset * 0.01);
+    gl.uniform2f(U.u_resolution, canvas.width, canvas.height);
+    gl.uniform1f(U.u_pixelRatio, dpr());
+    gl.uniform1f(U.u_scale, P.scale);
+    gl.uniform1f(U.u_rotation, (P.rotation * Math.PI) / 180);
+    gl.uniform4f(U.u_color1, c1[0], c1[1], c1[2], c1[3]);
+    gl.uniform4f(U.u_color2, c2[0], c2[1], c2[2], c2[3]);
+    gl.uniform4f(U.u_color3, c3[0], c3[1], c3[2], c3[3]);
+    gl.uniform1f(U.u_proportion, P.proportion / 100);
+    gl.uniform1f(U.u_softness, P.softness / 100);
+    gl.uniform1f(U.u_shape, P.shape);
+    gl.uniform1f(U.u_shapeScale, P.shapeSize / 100);
+    gl.uniform1f(U.u_distortion, P.distortion / 50);
+    gl.uniform1f(U.u_swirl, P.swirl / 100);
+    gl.uniform1f(U.u_swirlIterations, P.swirl === 0 ? 0 : P.swirlIterations);
+
+    gl.drawArrays(gl.TRIANGLES, 0, 6);
+    raf = requestAnimationFrame(frame);
+  }
+
+  // Onglet masqué : on arrête tout. Aucune raison de consommer
+  // batterie et processeur pour une page qu'on ne regarde pas.
+  document.addEventListener('visibilitychange', function(){
+    visible = !document.hidden;
+    if(visible && !raf){
+      start = performance.now() - 1;
+      raf = requestAnimationFrame(frame);
+    }
+  });
+
+  raf = requestAnimationFrame(frame);
+  // Apparition en fondu : évite le à-coup au chargement.
+  requestAnimationFrame(function(){ host.classList.add('ready'); });
+})();
 
 /* ── Apparition au défilement ───────────────────── */
 (function(){
