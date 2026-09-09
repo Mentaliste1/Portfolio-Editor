@@ -213,6 +213,18 @@ body{
 }
 .upload:hover{border-color:var(--ui-accent);color:var(--ui-accent);}
 
+/* ── Promotions ── */
+.promo-box{
+  margin:10px 0;padding:10px;border-radius:11px;
+  background:var(--ui-bg);border:1px dashed var(--ui-border);
+  transition:border-color .2s, background .2s;
+}
+.promo-box.on{
+  border-style:solid;border-color:#e11d2e;
+  background:rgba(225,29,46,.06);
+}
+.promo-box .tog{background:transparent;border:none;padding:0;}
+
 /* ── Personnalisation ── */
 .cust-row{
   display:flex;align-items:center;justify-content:space-between;gap:10px;
@@ -603,6 +615,16 @@ body{
 
         <div class="sec-label"><i class="ri-sparkling-2-line"></i> Animations<div class="sec-line"></div></div>
         <div class="fld">
+          <label>Fond animé</label>
+          <select id="f-liveBg" onchange="setF('liveBg',this.value)"></select>
+          <p class="hint">Un mouvement lent, construit sur les couleurs de votre thème.</p>
+        </div>
+        <div class="fld">
+          <label>Description au survol</label>
+          <select id="f-descFx" onchange="setF('descFx',this.value)"></select>
+          <p class="hint">Ce qui se passe quand le client survole la description d'un produit.</p>
+        </div>
+        <div class="fld">
           <label>Apparition au défilement</label>
           <select id="f-anim" onchange="setF('anim',this.value)">
             <option value="none">Aucune</option>
@@ -645,6 +667,21 @@ body{
         <div class="fld">
           <label>Horaires</label>
           <input type="text" id="f-hours" oninput="setF('hours',this.value)" placeholder="Lun–Sam · 8h–19h">
+        </div>
+        <div class="fld">
+          <label>Lien Google Maps</label>
+          <input type="url" id="f-mapsUrl" oninput="setF('mapsUrl',this.value)" placeholder="https://maps.app.goo.gl/...">
+          <p class="hint">
+            Dans Google Maps, trouvez votre boutique, appuyez sur <strong>Partager</strong>,
+            puis copiez le lien ici. Une carte apparaîtra sur votre site.
+          </p>
+        </div>
+        <div class="tog">
+          <div>
+            <div class="tog-t">Carte sur le site</div>
+            <div class="tog-d">Vos clients vous localisent d'un clic</div>
+          </div>
+          <button class="sw on" id="sw-showMap" onclick="toggleF('showMap',this)"></button>
         </div>
 
         <div class="sec-label"><i class="ri-shopping-bag-3-line"></i> Commandes<div class="sec-line"></div></div>
@@ -1116,6 +1153,8 @@ let state = {
   category  : 'mode',
   theme     : 'editorial',
   custom    : {},
+  liveBg    : 'souffle',
+  descFx    : 'monte',
   layout    : 'grid',
   currency  : 'FCFA',
   anim      : 'up',
@@ -1132,6 +1171,8 @@ let state = {
   whatsapp  : '',
   email     : '',
   address   : '',
+  mapsUrl   : '',
+  showMap   : true,
   hours     : 'Lun–Sam · 8h–19h',
 
   facebook  : '', instagram:'', tiktok:'',
@@ -1284,6 +1325,68 @@ function updItem(kind, id, field, val){
   render(); scheduleSave();
 }
 
+/* ── PROMOTIONS ──────────────────────────────────────
+   Le commerçant fixe soit un pourcentage, soit un prix promo.
+   Les deux restent synchronisés : changer l'un met l'autre à
+   jour, pour qu'il n'y ait jamais d'incohérence affichée. */
+function findItem(kind, id){
+  const list = kind === 'service' ? state.services : state.products;
+  return list.find(function(p){ return p.id === id; });
+}
+
+function togglePromo(kind, id, btn){
+  const p = findItem(kind, id);
+  if(!p) return;
+  p.promo = !p.promo;
+  if(p.promo){
+    // Une réduction de 10 % par défaut : le commerçant n'a
+    // qu'à ajuster plutôt que tout saisir.
+    if(!p.promoPct) p.promoPct = 10;
+    p.promoPrice = Math.round(p.price * (1 - p.promoPct/100));
+  }
+  if(btn) btn.classList.toggle('on', p.promo);
+  renderLists(); render(); scheduleSave();
+}
+
+function applyPromoPct(kind, id, val){
+  const p = findItem(kind, id);
+  if(!p) return;
+  const pct = Math.max(1, Math.min(90, parseInt(val) || 0));
+  p.promoPct = pct;
+  p.promoPrice = Math.round(p.price * (1 - pct/100));
+  // On met à jour le champ jumeau sans reconstruire la liste,
+  // pour ne pas perdre le curseur de saisie.
+  const card = document.querySelector('[data-item="' + id + '"]');
+  if(card){
+    const inputs = card.querySelectorAll('.promo-box input[type=number]');
+    if(inputs[1]) inputs[1].value = p.promoPrice;
+  }
+  render(); scheduleSave();
+}
+
+function applyPromoPrice(kind, id, val){
+  const p = findItem(kind, id);
+  if(!p) return;
+  const price = Math.max(0, parseInt(val) || 0);
+  p.promoPrice = price;
+  p.promoPct = p.price > 0 ? Math.round((1 - price/p.price) * 100) : 0;
+  const card = document.querySelector('[data-item="' + id + '"]');
+  if(card){
+    const inputs = card.querySelectorAll('.promo-box input[type=number]');
+    if(inputs[0]) inputs[0].value = p.promoPct;
+  }
+  render(); scheduleSave();
+}
+
+/* Une promotion expirée ne doit plus s'appliquer : le prix
+   normal revient de lui-même, sans intervention. */
+function promoActive(p){
+  if(!p || !p.promo) return false;
+  if(!p.promoUntil) return true;
+  const end = new Date(p.promoUntil + 'T23:59:59');
+  return !isNaN(end.getTime()) && end >= new Date();
+}
+
 function delItem(kind, id){
   if(!confirm('Supprimer cet élément ?')) return;
   if(kind === 'service') state.services = state.services.filter(p => p.id !== id);
@@ -1358,6 +1461,24 @@ function renderLists(){
       + '<div class="item-body">'
       +   '<div class="fld"><label>Nom</label><input type="text" value="' + esc(p.name) + '" oninput="updItem(\'' + kind + '\',' + p.id + ',\'name\',this.value)"></div>'
       +   '<div class="fld"><label>Prix</label><input type="number" value="' + (p.price||0) + '" oninput="updItem(\'' + kind + '\',' + p.id + ',\'price\',parseInt(this.value)||0)"></div>'
+      +   '<div class="promo-box' + (p.promo ? ' on' : '') + '">'
+      +     '<div class="tog" style="margin-bottom:' + (p.promo ? '10px' : '0') + ';">'
+      +       '<div><div class="tog-t">En promotion</div>'
+      +       '<div class="tog-d">Prix barré et étiquette sur le site</div></div>'
+      +       '<button class="sw' + (p.promo ? ' on' : '') + '" onclick="togglePromo(\'' + kind + '\',' + p.id + ',this)"></button>'
+      +     '</div>'
+      +     (p.promo
+              ? '<div class="fld-row">'
+              +   '<div class="fld" style="margin-bottom:8px;"><label>Réduction (%)</label>'
+              +     '<input type="number" min="1" max="90" value="' + (p.promoPct||10) + '" oninput="applyPromoPct(\'' + kind + '\',' + p.id + ',this.value)"></div>'
+              +   '<div class="fld" style="margin-bottom:8px;"><label>Prix promo</label>'
+              +     '<input type="number" value="' + (p.promoPrice||0) + '" oninput="applyPromoPrice(\'' + kind + '\',' + p.id + ',this.value)"></div>'
+              + '</div>'
+              + '<div class="fld" style="margin-bottom:0;"><label>Fin de la promotion (facultatif)</label>'
+              +   '<input type="date" value="' + esc(p.promoUntil||'') + '" oninput="updItem(\'' + kind + '\',' + p.id + ',\'promoUntil\',this.value)"></div>'
+              + '<p class="hint" style="margin-top:6px;">Passé cette date, le prix normal revient automatiquement.</p>'
+              : '')
+      +   '</div>'
       +   '<div class="fld"><label>Rayon</label><select onchange="updItem(\'' + kind + '\',' + p.id + ',\'group\',this.value)">'
       +     '<option value=""' + (!p.group ? ' selected' : '') + '>Sans rayon</option>'
       +     (state.groups||[]).map(function(g){
@@ -1438,15 +1559,33 @@ function pickTheme(k){
 }
 
 /* ── Synchronisation du panneau avec l'état ──────── */
+/* Remplit les listes construites à partir des catalogues, pour
+   qu'ajouter une animation n'oblige jamais à toucher au HTML. */
+function fillFxSelects(){
+  const bg = $('f-liveBg');
+  if(bg && !bg.options.length){
+    bg.innerHTML = Object.keys(LIVE_BG).map(function(k){
+      return '<option value="' + k + '">' + LIVE_BG[k].name + '</option>';
+    }).join('');
+  }
+  const df = $('f-descFx');
+  if(df && !df.options.length){
+    df.innerHTML = Object.keys(DESC_FX).map(function(k){
+      return '<option value="' + k + '">' + DESC_FX[k].name + '</option>';
+    }).join('');
+  }
+}
+
 function syncPanel(){
+  fillFxSelects();
   const map = ['name','tagline','about','prodTitle','phone','whatsapp','email',
-               'address','hours','facebook','instagram','tiktok','zones'];
+               'address','hours','facebook','instagram','tiktok','zones','mapsUrl'];
   map.forEach(k => { const el = $('f-' + k); if(el) el.value = state[k] || ''; });
-  ['layout','currency','anim','hover'].forEach(k => {
+  ['layout','currency','anim','hover','liveBg','descFx'].forEach(k => {
     const el = $('f-' + k); if(el) el.value = state[k];
   });
   const d = $('f-delivery'); if(d) d.value = state.delivery || 0;
-  ['orders','waOrder','showHero','showAbout','showSearch','showWa','showGroups'].forEach(k => {
+  ['orders','waOrder','showHero','showAbout','showSearch','showWa','showGroups','showMap'].forEach(k => {
     const el = $('sw-' + k); if(el) el.classList.toggle('on', !!state[k]);
   });
   if(state.logo){ const l = $('logo-lbl'); if(l) l.textContent = 'Image chargée ✓'; }
@@ -1508,6 +1647,167 @@ function resetSite(){
    Chaque famille de carte, de bannière et de décor produit un
    rendu réellement différent — pas une simple recoloration.
    ══════════════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════════════
+   FONDS ANIMÉS
+   Des voiles qui dérivent lentement, construits sur les
+   couleurs du thème. Le mouvement est volontairement lent :
+   un fond doit donner de la vie, jamais distraire de la
+   lecture ou du produit.
+   ══════════════════════════════════════════════════════ */
+const LIVE_BG = {
+  aucun: { name:'Aucun', css:'' },
+
+  souffle: { name:'Souffle', css:
+    '.sv-live{position:fixed;inset:0;z-index:0;pointer-events:none;'
+    + 'background:radial-gradient(46% 40% at 22% 18%, color-mix(in srgb,var(--acc) 26%,transparent), transparent 68%),'
+    + 'radial-gradient(42% 36% at 80% 76%, color-mix(in srgb,var(--acc) 16%,transparent), transparent 66%);'
+    + 'animation:bgSouffle 26s ease-in-out infinite;}'
+    + '@keyframes bgSouffle{0%,100%{transform:none;opacity:.85;}'
+    + '50%{transform:translate3d(5vw,4vh,0) scale(1.16);opacity:1;}}' },
+
+  aurore: { name:'Aurore', css:
+    '.sv-live{position:fixed;inset:0;z-index:0;pointer-events:none;'
+    + 'background:linear-gradient(115deg,'
+    + 'color-mix(in srgb,var(--acc) 22%,transparent) 0%, transparent 32%,'
+    + 'color-mix(in srgb,var(--acc) 14%,transparent) 55%, transparent 78%,'
+    + 'color-mix(in srgb,var(--acc) 20%,transparent) 100%);'
+    + 'background-size:280% 280%;animation:bgAurore 22s ease-in-out infinite;}'
+    + '@keyframes bgAurore{0%,100%{background-position:0% 50%;}50%{background-position:100% 50%;}}' },
+
+  ondes: { name:'Ondes', css:
+    '.sv-live{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.5;'
+    + 'background:repeating-radial-gradient(circle at 50% 120%,'
+    + 'transparent 0 38px, color-mix(in srgb,var(--acc) 12%,transparent) 38px 40px);'
+    + 'animation:bgOndes 18s linear infinite;}'
+    + '@keyframes bgOndes{from{background-position:0 0;}to{background-position:0 -80px;}}' },
+
+  poussiere: { name:'Poussière', css:
+    '.sv-live{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.55;'
+    + 'background-image:radial-gradient(color-mix(in srgb,var(--acc) 34%,transparent) 1.4px, transparent 1.4px);'
+    + 'background-size:38px 38px;animation:bgPoussiere 30s linear infinite;}'
+    + '@keyframes bgPoussiere{from{background-position:0 0;}to{background-position:38px 76px;}}' },
+
+  faisceau: { name:'Faisceau', css:
+    '.sv-live{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}'
+    + '.sv-live::after{content:"";position:absolute;top:-40%;left:-30%;'
+    + 'width:60%;height:200%;transform:rotate(18deg);'
+    + 'background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--acc) 16%,transparent),transparent);'
+    + 'animation:bgFaisceau 14s ease-in-out infinite;}'
+    + '@keyframes bgFaisceau{0%,100%{transform:translateX(-30%) rotate(18deg);opacity:0;}'
+    + '45%,55%{opacity:1;}100%{transform:translateX(230%) rotate(18deg);}}' },
+
+  derive: { name:'Dérive', css:
+    '.sv-live{position:fixed;inset:0;z-index:0;pointer-events:none;'
+    + 'background-image:'
+    + 'linear-gradient(color-mix(in srgb,var(--ink) 6%,transparent) 1px, transparent 1px),'
+    + 'linear-gradient(90deg, color-mix(in srgb,var(--ink) 6%,transparent) 1px, transparent 1px);'
+    + 'background-size:60px 60px;animation:bgDerive 40s linear infinite;}'
+    + '@keyframes bgDerive{from{background-position:0 0, 0 0;}to{background-position:60px 60px, 60px 60px;}}' },
+
+  pulsation: { name:'Pulsation', css:
+    '.sv-live{position:fixed;inset:0;z-index:0;pointer-events:none;'
+    + 'background:radial-gradient(60% 50% at 50% 0%, color-mix(in srgb,var(--acc) 24%,transparent), transparent 70%);'
+    + 'animation:bgPulse 9s ease-in-out infinite;}'
+    + '@keyframes bgPulse{0%,100%{opacity:.55;transform:scale(1);}50%{opacity:1;transform:scale(1.14);}}' },
+
+  vapeur: { name:'Vapeur', css:
+    '.sv-live{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.7;'
+    + 'background:'
+    + 'radial-gradient(34% 26% at 18% 30%, color-mix(in srgb,var(--acc) 20%,transparent), transparent 64%),'
+    + 'radial-gradient(30% 24% at 72% 22%, color-mix(in srgb,var(--acc) 14%,transparent), transparent 62%),'
+    + 'radial-gradient(36% 28% at 50% 84%, color-mix(in srgb,var(--acc) 18%,transparent), transparent 66%);'
+    + 'background-size:200% 200%;animation:bgVapeur 34s ease-in-out infinite;}'
+    + '@keyframes bgVapeur{0%,100%{background-position:0% 0%;}'
+    + '33%{background-position:60% 40%;}66%{background-position:30% 80%;}}' }
+};
+
+/* ══════════════════════════════════════════════════════
+   ANIMATION DES DESCRIPTIONS
+   Se déclenche au survol de la carte et s'arrête quand le
+   curseur repart — exactement le comportement demandé.
+   ══════════════════════════════════════════════════════ */
+const DESC_FX = {
+  none:      { name:'Aucune' },
+  defile:    { name:'Défilement' },
+  machine:   { name:'Machine à écrire' },
+  devoile:   { name:'Dévoilement' },
+  surligne:  { name:'Surlignage' },
+  monte:     { name:'Montée' }
+};
+
+function descFxCSS(){
+  return [
+  /* Défilement horizontal continu, comme un bandeau. Le texte
+     ne bouge qu'au survol : au repos il reste lisible. */
+  '.sv-card-dwrap{overflow:hidden;}',
+  '.dfx-defile .sv-card-d{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}',
+  '.sv-card:hover .dfx-defile .sv-card-d,',
+  '.dfx-defile:hover .sv-card-d{',
+  '  text-overflow:clip;',
+  '  animation:dfxDefile 9s linear infinite;',
+  '}',
+  '@keyframes dfxDefile{0%{transform:translateX(0);}8%{transform:translateX(0);}',
+  '100%{transform:translateX(calc(-100% + 180px));}}',
+
+  /* Machine à écrire : le texte s efface puis se réécrit. */
+  '.dfx-machine .sv-card-d{white-space:nowrap;overflow:hidden;}',
+  '.sv-card:hover .dfx-machine .sv-card-d,',
+  '.dfx-machine:hover .sv-card-d{',
+  '  animation:dfxMachine 5s steps(48) infinite;',
+  '  border-right:1.5px solid currentColor;',
+  '}',
+  '@keyframes dfxMachine{0%{width:0;}45%{width:100%;}55%{width:100%;}100%{width:0;}}',
+
+  /* Dévoilement : un voile glisse et découvre le texte. */
+  '.dfx-devoile .sv-card-d{position:relative;}',
+  '.dfx-devoile .sv-card-d::after{content:"";position:absolute;inset:0;',
+  '  background:var(--surf);transform-origin:right;transition:transform .5s ease;}',
+  '.sv-card:hover .dfx-devoile .sv-card-d::after,',
+  '.dfx-devoile:hover .sv-card-d::after{transform:scaleX(0);}',
+
+  /* Surlignage progressif */
+  '.dfx-surligne .sv-card-d{',
+  '  background-image:linear-gradient(color-mix(in srgb,var(--acc) 20%,transparent),',
+  '                                   color-mix(in srgb,var(--acc) 20%,transparent));',
+  '  background-repeat:no-repeat;background-position:0 50%;background-size:0% 88%;',
+  '  transition:background-size .55s ease;',
+  '}',
+  '.sv-card:hover .dfx-surligne .sv-card-d,',
+  '.dfx-surligne:hover .sv-card-d{background-size:100% 88%;}',
+
+  /* Montée douce */
+  '.dfx-monte .sv-card-d{transform:translateY(6px);opacity:.65;',
+  '  transition:transform .4s cubic-bezier(.2,.9,.25,1),opacity .4s ease;}',
+  '.sv-card:hover .dfx-monte .sv-card-d,',
+  '.dfx-monte:hover .sv-card-d{transform:none;opacity:1;}',
+
+  /* Une personne qui préfère moins d animation ne subit rien. */
+  '@media(prefers-reduced-motion:reduce){',
+  '  .sv-card-d{animation:none!important;transition:none!important;}',
+  '  .dfx-devoile .sv-card-d::after{transform:scaleX(0);}',
+  '}'
+  ].join('\n');
+}
+
+/* ══════════════════════════════════════════════════════
+   PROMOTIONS — habillage
+   ══════════════════════════════════════════════════════ */
+function promoCSS(){
+  return [
+  '.sv-promo{',
+  '  position:absolute;top:10px;right:10px;z-index:2;',
+  '  padding:5px 11px;border-radius:100px;',
+  '  background:#E11D2E;color:#fff;',
+  '  font-size:11.5px;font-weight:800;letter-spacing:.02em;',
+  '  box-shadow:0 6px 16px -6px rgba(225,29,46,.9);',
+  '  animation:promoPop 2.6s ease-in-out infinite;',
+  '}',
+  '@keyframes promoPop{0%,100%{transform:scale(1);}50%{transform:scale(1.08);}}',
+  '.sv-old{opacity:.5;font-weight:500;margin-right:4px;font-size:.82em;}',
+  '@media(prefers-reduced-motion:reduce){.sv-promo{animation:none;}}'
+  ].join('\n');
+}
+
 function themeCSS(T){
   var R = T.radius || '14px';
   var out = [];
@@ -1636,6 +1936,12 @@ function buildSiteHTML(forExport){
   /* ── Un produit ── */
   const card = (p, kind) => {
     const soldOut = !p.stock;
+    const onPromo = promoActive(p);
+    const shownPrice = onPromo ? p.promoPrice : p.price;
+    // La classe d'animation de description est portée par la
+    // carte : l'effet se déclenche au survol, côté CSS.
+    const descCls = (state.descFx && state.descFx !== 'none')
+      ? ' dfx-' + state.descFx : '';
     return '<article class="sv-card' + animCls + (soldOut ? ' sv-out' : '') + '"'
       + ' data-name="' + esc(p.name).toLowerCase() + '"'
       + ' data-group="' + esc(p.group || '') + '">'
@@ -1643,12 +1949,18 @@ function buildSiteHTML(forExport){
       +   (p.img ? '<img src="' + p.img + '" alt="' + esc(p.name) + '" loading="lazy">'
                  : '<div class="sv-noimg"><i class="ri-image-line"></i></div>')
       +   (soldOut ? '<span class="sv-badge">Épuisé</span>' : '')
+      +   (onPromo && !soldOut ? '<span class="sv-promo">-' + (p.promoPct||0) + '%</span>' : '')
       + '</div>'
       + '<div class="sv-card-body">'
       +   '<h3 class="sv-card-t">' + esc(p.name) + '</h3>'
-      +   (p.desc ? '<p class="sv-card-d">' + esc(p.desc) + '</p>' : '')
+      +   (p.desc
+            ? '<div class="sv-card-dwrap' + descCls + '"><p class="sv-card-d" data-full="' + esc(p.desc) + '">'
+              + esc(p.desc) + '</p></div>'
+            : '')
       +   '<div class="sv-card-foot">'
-      +     '<span class="sv-price">' + money(p.price) + ' ' + cur + '</span>'
+      +     '<span class="sv-price">'
+      +       (onPromo ? '<s class="sv-old">' + money(p.price) + '</s> ' : '')
+      +       money(shownPrice) + ' ' + cur + '</span>'
       +     (!soldOut && state.orders
                 ? '<button class="sv-add" onclick="svAdd(' + p.id + ',\'' + kind + '\')"><i class="ri-add-line"></i> Ajouter</button>'
                 : (!soldOut && wa
@@ -1836,6 +2148,28 @@ function buildSiteHTML(forExport){
     .sv-info-v{font-size:14px;font-weight:600;word-break:break-word;}
     .sv-info-v a{color:inherit;text-decoration:none;}
 
+    /* Carte d'adresse : un aperçu se déplie au survol, et le
+       clic ouvre Google Maps. Sur mobile, il est toujours
+       visible — il n'y a pas de survol au doigt. */
+    .sv-has-map{position:relative;cursor:pointer;}
+    .sv-mapcard{
+      display:block;overflow:hidden;
+      max-height:0;opacity:0;
+      transition:max-height .38s cubic-bezier(.2,.9,.25,1), opacity .3s ease, margin .38s ease;
+    }
+    .sv-has-map:hover .sv-mapcard{max-height:96px;opacity:1;margin-top:10px;}
+    .sv-mapcard-in{
+      display:block;padding:11px 13px;border-radius:12px;
+      background:color-mix(in srgb,var(--acc) 12%,transparent);
+      border:1px solid color-mix(in srgb,var(--acc) 26%,transparent);
+    }
+    .sv-mapcard-in i{font-size:17px;color:var(--acc);display:block;margin-bottom:4px;}
+    .sv-mapcard-in b{display:block;font-size:12.5px;font-weight:700;}
+    .sv-mapcard-in em{display:block;font-style:normal;font-size:11px;color:var(--mute);margin-top:2px;}
+    @media(hover:none){
+      .sv-mapcard{max-height:96px;opacity:1;margin-top:10px;}
+    }
+
     .sv-foot{
       border-top:1px solid color-mix(in srgb,var(--ink) 9%,transparent);
       padding:30px 0;margin-top:20px;
@@ -1882,12 +2216,20 @@ function buildSiteHTML(forExport){
        décor. C'est ce qui fait qu'un thème ne ressemble pas
        simplement au précédent recoloré. */
     ${themeCSS(T)}
+
+    /* Fond animé, animations de description, promotions */
+    ${(LIVE_BG[state.liveBg] || LIVE_BG.aucun).css}
+    ${descFxCSS()}
+    ${promoCSS()}
+    /* Le contenu passe au-dessus du fond animé */
+    .sv-nav,.sv-hero,.sv-sec,.sv-foot{position:relative;z-index:2;}
   `;
 
   /* ── Corps du site ── */
   const initial = (state.name || 'M').trim().charAt(0).toUpperCase();
   const html = `
   <div class="sv">
+    ${state.liveBg && state.liveBg !== 'aucun' ? '<div class="sv-live"></div>' : ''}
     <nav class="sv-nav"><div class="sv-wrap sv-nav-in">
       <div class="sv-brand">
         ${state.logo ? '<img class="sv-logo" src="' + state.logo + '" alt="">' : '<div class="sv-logo-txt">' + esc(initial) + '</div>'}
@@ -1954,7 +2296,21 @@ function buildSiteHTML(forExport){
         ${state.phone ? '<div class="sv-info-c' + animCls + '"><i class="ri-phone-line"></i><div><div class="sv-info-l">Téléphone</div><div class="sv-info-v"><a href="tel:' + esc(state.phone) + '">' + esc(state.phone) + '</a></div></div></div>' : ''}
         ${wa ? '<div class="sv-info-c' + animCls + '"><i class="ri-whatsapp-line"></i><div><div class="sv-info-l">WhatsApp</div><div class="sv-info-v"><a href="https://wa.me/' + wa + '" target="_blank" rel="noopener">Écrire un message</a></div></div></div>' : ''}
         ${state.email ? '<div class="sv-info-c' + animCls + '"><i class="ri-mail-line"></i><div><div class="sv-info-l">Email</div><div class="sv-info-v"><a href="mailto:' + esc(state.email) + '">' + esc(state.email) + '</a></div></div></div>' : ''}
-        ${state.address ? '<div class="sv-info-c' + animCls + '"><i class="ri-map-pin-line"></i><div><div class="sv-info-l">Adresse</div><div class="sv-info-v">' + esc(state.address) + '</div></div></div>' : ''}
+        ${state.address
+          ? '<div class="sv-info-c' + animCls + (state.showMap && state.mapsUrl ? ' sv-has-map' : '') + '">'
+            + '<i class="ri-map-pin-line"></i><div><div class="sv-info-l">Adresse</div>'
+            + '<div class="sv-info-v">'
+            + (state.showMap && state.mapsUrl
+                ? '<a href="' + esc(state.mapsUrl) + '" target="_blank" rel="noopener">' + esc(state.address)
+                  + ' <i class="ri-external-link-line" style="font-size:.85em;opacity:.6;"></i></a>'
+                + '<span class="sv-mapcard"><span class="sv-mapcard-in">'
+                +   '<i class="ri-road-map-line"></i>'
+                +   '<b>Voir sur Google Maps</b>'
+                +   '<em>Itinéraire depuis votre position</em>'
+                + '</span></span>'
+                : esc(state.address))
+            + '</div></div></div>'
+          : ''}
         ${state.hours ? '<div class="sv-info-c' + animCls + '"><i class="ri-time-line"></i><div><div class="sv-info-l">Horaires</div><div class="sv-info-v">' + esc(state.hours) + '</div></div></div>' : ''}
         ${state.zones ? '<div class="sv-info-c' + animCls + '"><i class="ri-truck-line"></i><div><div class="sv-info-l">Livraison</div><div class="sv-info-v">' + esc(state.zones) + (state.delivery > 0 ? ' · ' + money(state.delivery) + ' ' + cur : ' · offerte') + '</div></div></div>' : ''}
       </div>
@@ -2089,8 +2445,11 @@ function cartMarkup(){
 /* Le script du panier, construit avec les données du site.
    Il est injecté tel quel dans le fichier exporté. */
 function cartScript(ownerId){
+  // Le panier reçoit le prix RÉELLEMENT affiché : si une
+  // promotion est active, c'est celui-là. Sans cela le client
+  // verrait un prix barré et paierait le prix fort.
   var catalogue = state.products.concat(state.services).map(function(p){
-    return { id:p.id, name:p.name, price:p.price };
+    return { id:p.id, name:p.name, price: promoActive(p) ? p.promoPrice : p.price };
   });
   var waNum = String(state.whatsapp || state.phone || '').replace(/[^0-9]/g,'');
 
