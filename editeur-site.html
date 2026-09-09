@@ -7,7 +7,7 @@
 <link rel="icon" type="image/jpeg" href="/favicon.jpg">
 
 <link rel="stylesheet" media="print" onload="this.media='all'"
-      href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,700&family=Playfair+Display:wght@700&family=Space+Grotesk:wght@400;700&family=Bebas+Neue&family=Plus+Jakarta+Sans:wght@400;600;800&display=swap">
+      href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,700&family=Playfair+Display:wght@700&family=Space+Grotesk:wght@400;700&family=Bebas+Neue&family=Plus+Jakarta+Sans:wght@400;600;800&family=Cinzel:wght@600;800&family=Cormorant+Garamond:wght@300;600&family=Josefin+Sans:wght@300;400;600;700&display=swap">
 <link rel="stylesheet" media="print" onload="this.media='all'"
       href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css"
       onerror="var a=document.createElement('link');a.rel='stylesheet';a.href='https://unpkg.com/remixicon@3.5.0/fonts/remixicon.css';document.head.appendChild(a);">
@@ -16,16 +16,19 @@
 /* ═══════════════════════════════════════════════════════
    INTERFACE DE L'ÉDITEUR
    ═══════════════════════════════════════════════════════ */
+/* Palette identique à celle de l'éditeur portfolio : les deux
+   éditeurs doivent se ressembler, l'utilisateur passe de l'un
+   à l'autre. Un noir neutre, pas un bleu nuit. */
 :root{
-  --ui-bg:#08070F;
-  --ui-panel:#0E0C1A;
-  --ui-surface:#15132A;
-  --ui-border:#241F3D;
-  --ui-text:#F2EFFF;
-  --ui-muted:#8E86B8;
-  --ui-accent:#7C6BFF;
-  --ui-accent-2:#FFB454;
-  --ui-glow:rgba(124,107,255,.14);
+  --ui-bg:#000000;
+  --ui-panel:#0a0a0a;
+  --ui-surface:#141414;
+  --ui-border:#262626;
+  --ui-text:#f1f5f9;
+  --ui-muted:#71717a;
+  --ui-accent:#818cf8;
+  --ui-accent-2:#fbbf24;
+  --ui-glow:rgba(129,140,248,0.15);
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 html,body{height:100%;overflow:hidden;}
@@ -154,7 +157,7 @@ body{
 .btn-primary{
   background:linear-gradient(135deg,var(--ui-accent),#A855F7);
   border:none;color:#fff;
-  box-shadow:0 12px 28px -12px rgba(124,107,255,.8);
+  box-shadow:0 12px 28px -12px rgba(129,140,248,.7);
 }
 .btn-primary:hover{background:linear-gradient(135deg,#8B7BFF,#B366FF);}
 .btn-add{
@@ -210,6 +213,39 @@ body{
 }
 .upload:hover{border-color:var(--ui-accent);color:var(--ui-accent);}
 
+/* ── Personnalisation ── */
+.cust-row{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:9px 11px;margin-bottom:6px;border-radius:10px;
+  background:var(--ui-surface);border:1px solid var(--ui-border);
+}
+.cust-row label{font-size:12px;font-weight:600;color:var(--ui-text);margin:0;}
+.cust-right{display:flex;align-items:center;gap:6px;}
+.cust-row input[type=color]{
+  width:34px;height:28px;border-radius:7px;cursor:pointer;padding:2px;
+  background:var(--ui-bg);border:1px solid var(--ui-border);
+}
+.cust-x{
+  width:26px;height:26px;border-radius:7px;cursor:pointer;
+  background:transparent;border:1px solid var(--ui-border);
+  color:var(--ui-muted);font-size:13px;
+  display:grid;place-items:center;transition:.16s;
+}
+.cust-x:hover{border-color:var(--ui-accent);color:var(--ui-accent);}
+
+/* ── Rayons ── */
+.grp-row{
+  display:flex;align-items:center;gap:9px;
+  background:var(--ui-surface);border:1px solid var(--ui-border);
+  border-radius:10px;padding:9px 11px;margin-bottom:6px;
+}
+.grp-row i{color:var(--ui-accent);font-size:15px;flex-shrink:0;}
+.grp-n{flex:1;font-size:12.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.grp-c{
+  font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:100px;
+  background:var(--ui-glow);color:var(--ui-accent);flex-shrink:0;
+}
+
 /* ── Thèmes ── */
 .themes{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
 .theme{
@@ -218,7 +254,15 @@ body{
 }
 .theme:hover{border-color:var(--ui-accent);transform:translateY(-2px);}
 .theme.on{border-color:var(--ui-accent);}
-.theme-sw{height:46px;}
+.theme-sw{height:52px;position:relative;overflow:hidden;}
+.tsw-a{position:absolute;right:8px;bottom:8px;width:18px;height:18px;border-radius:50%;}
+.tsw-b{position:absolute;left:8px;top:9px;width:26px;height:11px;border-radius:3px;opacity:.9;}
+.theme-group{
+  grid-column:1/-1;font-size:9.5px;font-weight:700;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ui-muted);margin:14px 0 7px;
+}
+.theme-group:first-child{margin-top:0;}
+#theme-list{display:block;}
 .theme-n{
   padding:7px 9px;font-size:11px;font-weight:600;
   background:var(--ui-surface);text-align:center;
@@ -228,7 +272,7 @@ body{
 .preview{
   flex:1;display:flex;flex-direction:column;
   background:
-    radial-gradient(60% 50% at 50% 0%, rgba(124,107,255,.09), transparent 70%),
+    radial-gradient(60% 50% at 50% 0%, rgba(129,140,248,.07), transparent 70%),
     var(--ui-bg);
   overflow:hidden;
 }
@@ -498,6 +542,25 @@ body{
           <label>Titre de la section</label>
           <input type="text" id="f-prodTitle" oninput="setF('prodTitle',this.value)" placeholder="Nos produits">
         </div>
+        <div class="sec-label" style="margin-top:16px;"><i class="ri-folders-line"></i> Rayons<div class="sec-line"></div></div>
+        <p class="hint" style="margin-bottom:9px;">
+          Regroupez vos articles : téléphones, ordinateurs, accessoires…
+          Vos clients filtrent d'un clic sur le site.
+        </p>
+        <div class="tog">
+          <div>
+            <div class="tog-t">Afficher les rayons</div>
+            <div class="tog-d">Des onglets de filtrage sur le site</div>
+          </div>
+          <button class="sw on" id="sw-showGroups" onclick="toggleF('showGroups',this)"></button>
+        </div>
+        <div id="group-list"></div>
+        <div style="display:flex;gap:8px;">
+          <input type="text" id="new-group" placeholder="Nom du rayon" style="flex:1;padding:10px 12px;border-radius:10px;background:var(--ui-surface);border:1px solid var(--ui-border);color:var(--ui-text);font-family:inherit;font-size:13px;" onkeydown="if(event.key==='Enter')addGroup()">
+          <button class="btn" style="width:auto;padding:10px 16px;" onclick="addGroup()"><i class="ri-add-line"></i></button>
+        </div>
+
+        <div class="sec-label" style="margin-top:18px;"><i class="ri-price-tag-3-line"></i> Articles<div class="sec-line"></div></div>
         <div id="prod-list"></div>
         <button class="btn btn-add" onclick="addProduct()"><i class="ri-add-line"></i> Ajouter un produit</button>
 
@@ -510,6 +573,12 @@ body{
       <div class="tab" id="tab-style">
         <div class="sec-label"><i class="ri-palette-line"></i> Thème<div class="sec-line"></div></div>
         <div class="themes" id="theme-list"></div>
+
+        <div class="sec-label" style="margin-top:18px;"><i class="ri-brush-line"></i> Personnaliser<div class="sec-line"></div></div>
+        <p class="hint" style="margin-bottom:10px;">
+          Ajustez le thème choisi. Chaque réglage laissé sur « Du thème » suit le thème.
+        </p>
+        <div id="custom-list"></div>
 
         <div class="sec-label"><i class="ri-layout-line"></i> Disposition<div class="sec-line"></div></div>
         <div class="fld">
@@ -700,41 +769,353 @@ const DRAFT_KEY = 'mental_studio_site_draft_v1';
 /* Les catégories d'activité. Chacune ajuste le vocabulaire du
    site — on ne parle pas de « produits » à un coiffeur. */
 const CATEGORIES = [
-  { id:'mode',      icon:'ri-t-shirt-line',        name:'Mode & Vêtements',  word:'articles',  theme:'elegance' },
+  { id:'mode',      icon:'ri-t-shirt-line',        name:'Mode & Vêtements',  word:'articles',  theme:'editorial' },
   { id:'tech',      icon:'ri-smartphone-line',     name:'Téléphones & Tech', word:'produits',  theme:'techno' },
   { id:'parfum',    icon:'ri-flask-line',          name:'Parfums & Beauté',  word:'produits',  theme:'luxe' },
-  { id:'alim',      icon:'ri-restaurant-line',     name:'Alimentation',      word:'plats',     theme:'gourmand' },
-  { id:'services',  icon:'ri-tools-line',          name:'Services',          word:'prestations', theme:'pro' },
-  { id:'beaute',    icon:'ri-scissors-line',       name:'Beauté & Coiffure', word:'prestations', theme:'douceur' },
-  { id:'immo',      icon:'ri-home-4-line',         name:'Immobilier',        word:'biens',     theme:'pro' },
+  { id:'alim',      icon:'ri-restaurant-line',     name:'Alimentation',      word:'plats',     theme:'marche' },
+  { id:'services',  icon:'ri-tools-line',          name:'Services',          word:'prestations', theme:'clinique' },
+  { id:'beaute',    icon:'ri-scissors-line',       name:'Beauté & Coiffure', word:'prestations', theme:'pastel' },
+  { id:'immo',      icon:'ri-home-4-line',         name:'Immobilier',        word:'biens',     theme:'clinique' },
   { id:'auto',      icon:'ri-car-line',            name:'Auto & Mécanique',  word:'véhicules', theme:'techno' },
-  { id:'artisanat', icon:'ri-hammer-line',         name:'Artisanat',         word:'créations', theme:'terre' },
+  { id:'artisanat', icon:'ri-hammer-line',         name:'Artisanat',         word:'créations', theme:'terracotta' },
   { id:'sante',     icon:'ri-heart-pulse-line',    name:'Santé & Pharmacie', word:'produits',  theme:'clinique' },
-  { id:'formation', icon:'ri-graduation-cap-line', name:'Formation',         word:'formations', theme:'pro' },
-  { id:'autre',     icon:'ri-shapes-line',         name:'Autre activité',    word:'produits',  theme:'elegance' }
+  { id:'formation', icon:'ri-graduation-cap-line', name:'Formation',         word:'formations', theme:'clinique' },
+  { id:'autre',     icon:'ri-shapes-line',         name:'Autre activité',    word:'produits',  theme:'editorial' }
 ];
 
-/* Les thèmes. Chacun définit une palette et une typographie
-   complètes ; le site en hérite entièrement. */
+/* ══════════════════════════════════════════════════════
+   THÈMES
+   Chaque thème porte une palette ET une structure : forme des
+   cartes, traitement de la bannière, rythme, décor. C'est ce
+   qui distingue un thème conçu d'une simple recoloration.
+
+   card  : plat · surélevé · contour · verre · brut · doux
+   hero  : centré · scindé · bandeau · minimal · immersif
+   deco  : aucun · trame · lueur · courbe · rayures · tampon
+   ══════════════════════════════════════════════════════ */
 const THEMES = {
-  elegance: { name:'Élégance',  bg:'#FFFFFF', surf:'#F7F5F2', ink:'#1A1614', mute:'#7A716B', accent:'#B08968', head:"'Playfair Display',serif",   body:"'DM Sans',sans-serif" },
-  techno:   { name:'Techno',    bg:'#0A0E1A', surf:'#121829', ink:'#E8EEFF', mute:'#8494B8', accent:'#3B82F6', head:"'Space Grotesk',sans-serif", body:"'DM Sans',sans-serif" },
-  luxe:     { name:'Luxe',      bg:'#0D0A0F', surf:'#171220', ink:'#F5EFFA', mute:'#A093B0', accent:'#C9A227', head:"'Playfair Display',serif",   body:"'DM Sans',sans-serif" },
-  gourmand: { name:'Gourmand',  bg:'#FFF9F0', surf:'#FFF0DC', ink:'#2B1810', mute:'#8A6F5C', accent:'#E2711D', head:"'Bebas Neue',sans-serif",    body:"'DM Sans',sans-serif" },
-  pro:      { name:'Pro',       bg:'#FFFFFF', surf:'#F1F5F9', ink:'#0F172A', mute:'#64748B', accent:'#0F766E', head:"'Plus Jakarta Sans',sans-serif", body:"'DM Sans',sans-serif" },
-  douceur:  { name:'Douceur',   bg:'#FFF7FA', surf:'#FFEBF3', ink:'#3D1F2E', mute:'#9C7285', accent:'#DB2777', head:"'Playfair Display',serif",   body:"'DM Sans',sans-serif" },
-  terre:    { name:'Terre',     bg:'#FAF6F0', surf:'#EFE6D9', ink:'#2E2419', mute:'#7D6E58', accent:'#8B5E34', head:"'Syne',sans-serif",          body:"'DM Sans',sans-serif" },
-  clinique: { name:'Clinique',  bg:'#FFFFFF', surf:'#EFF9F8', ink:'#12303A', mute:'#5D7C86', accent:'#0891B2', head:"'Plus Jakarta Sans',sans-serif", body:"'DM Sans',sans-serif" },
-  nuit:     { name:'Nuit',      bg:'#0B0B0F', surf:'#16161D', ink:'#F0F0F5', mute:'#8B8B99', accent:'#A855F7', head:"'Syne',sans-serif",          body:"'DM Sans',sans-serif" },
-  nature:   { name:'Nature',    bg:'#F6FAF6', surf:'#E6F2E6', ink:'#16261A', mute:'#5E7A64', accent:'#3F7D3F', head:"'Syne',sans-serif",          body:"'DM Sans',sans-serif" },
-  audace:   { name:'Audace',    bg:'#FFFDF5', surf:'#FFF3C4', ink:'#1A1500', mute:'#7A6E3D', accent:'#EAB308', head:"'Bebas Neue',sans-serif",    body:"'DM Sans',sans-serif" },
-  minimal:  { name:'Minimal',   bg:'#FAFAFA', surf:'#F0F0F0', ink:'#111111', mute:'#737373', accent:'#111111', head:"'DM Sans',sans-serif",       body:"'DM Sans',sans-serif" }
+
+  /* ── Clairs et éditoriaux ─────────────────────────── */
+  editorial: {
+    name:'Éditorial', group:'Clair',
+    bg:'#FFFDF9', surf:'#F5F1E8', ink:'#14110C', mute:'#6E6558', accent:'#1A1A1A',
+    head:"'Playfair Display',serif", body:"'DM Sans',sans-serif",
+    card:'contour', hero:'scinde', deco:'rayures', radius:'2px', weight:700
+  },
+  suisse: {
+    name:'Suisse', group:'Clair',
+    bg:'#FFFFFF', surf:'#F2F2F2', ink:'#0A0A0A', mute:'#6B6B6B', accent:'#E11D2E',
+    head:"'Plus Jakarta Sans',sans-serif", body:"'DM Sans',sans-serif",
+    card:'plat', hero:'minimal', deco:'trame', radius:'0px', weight:800
+  },
+  papier: {
+    name:'Papier', group:'Clair',
+    bg:'#FBF7EF', surf:'#F1E9DA', ink:'#2A2318', mute:'#7C7060', accent:'#9A6B3F',
+    head:"'Cormorant Garamond',serif", body:"'DM Sans',sans-serif",
+    card:'doux', hero:'centre', deco:'courbe', radius:'20px', weight:600
+  },
+  boutique: {
+    name:'Boutique', group:'Clair',
+    bg:'#FFFFFF', surf:'#FAF7F4', ink:'#191512', mute:'#8A7F74', accent:'#B08968',
+    head:"'Playfair Display',serif", body:"'DM Sans',sans-serif",
+    card:'contour', hero:'bandeau', deco:'lueur', radius:'4px', weight:700
+  },
+  pastel: {
+    name:'Pastel', group:'Clair',
+    bg:'#FEFAFF', surf:'#F6EDFB', ink:'#2E1F38', mute:'#8B7A97', accent:'#A855F7',
+    head:"'Josefin Sans',sans-serif", body:"'DM Sans',sans-serif",
+    card:'doux', hero:'centre', deco:'courbe', radius:'26px', weight:700
+  },
+  clinique: {
+    name:'Clinique', group:'Clair',
+    bg:'#FFFFFF', surf:'#EEF9F9', ink:'#0F2E36', mute:'#5A7C85', accent:'#0891B2',
+    head:"'Plus Jakarta Sans',sans-serif", body:"'DM Sans',sans-serif",
+    card:'surelever', hero:'scinde', deco:'aucun', radius:'16px', weight:800
+  },
+  nature: {
+    name:'Nature', group:'Clair',
+    bg:'#F7FBF6', surf:'#E7F2E4', ink:'#12241A', mute:'#5C7A65', accent:'#2F7D45',
+    head:"'Syne',sans-serif", body:"'DM Sans',sans-serif",
+    card:'doux', hero:'immersif', deco:'courbe', radius:'22px', weight:800
+  },
+  terracotta: {
+    name:'Terracotta', group:'Clair',
+    bg:'#FDF6F0', surf:'#F5E4D7', ink:'#2E1B12', mute:'#8A6A56', accent:'#C05621',
+    head:"'Syne',sans-serif", body:"'DM Sans',sans-serif",
+    card:'surelever', hero:'bandeau', deco:'rayures', radius:'14px', weight:800
+  },
+
+  /* ── Affirmés ──────────────────────────────────────── */
+  brutal: {
+    name:'Néo-brutal', group:'Affirmé',
+    bg:'#FFFEF2', surf:'#FFFFFF', ink:'#000000', mute:'#4A4A4A', accent:'#FF4D00',
+    head:"'Bebas Neue',sans-serif", body:"'DM Sans',sans-serif",
+    card:'brut', hero:'minimal', deco:'trame', radius:'0px', weight:800
+  },
+  marche: {
+    name:'Marché', group:'Affirmé',
+    bg:'#FFF9EC', surf:'#FFEFCE', ink:'#241505', mute:'#7A5A2E', accent:'#E2711D',
+    head:"'Bebas Neue',sans-serif", body:"'DM Sans',sans-serif",
+    card:'brut', hero:'bandeau', deco:'tampon', radius:'6px', weight:800
+  },
+  sport: {
+    name:'Sport', group:'Affirmé',
+    bg:'#0C0C0F', surf:'#17171D', ink:'#FFFFFF', mute:'#8A8A99', accent:'#D9F21C',
+    head:"'Bebas Neue',sans-serif", body:"'DM Sans',sans-serif",
+    card:'brut', hero:'immersif', deco:'rayures', radius:'4px', weight:800
+  },
+  retro: {
+    name:'Rétro', group:'Affirmé',
+    bg:'#1E1206', surf:'#2E1D0C', ink:'#FFE9C7', mute:'#B08F63', accent:'#F2A03D',
+    head:"'Bebas Neue',sans-serif", body:"'DM Sans',sans-serif",
+    card:'contour', hero:'centre', deco:'rayures', radius:'10px', weight:800
+  },
+  mono: {
+    name:'Monochrome', group:'Affirmé',
+    bg:'#0A0A0A', surf:'#161616', ink:'#FAFAFA', mute:'#8A8A8A', accent:'#FFFFFF',
+    head:"'Syne',sans-serif", body:"'DM Sans',sans-serif",
+    card:'contour', hero:'minimal', deco:'trame', radius:'0px', weight:800
+  },
+
+  /* ── Sombres et sophistiqués ───────────────────────── */
+  verre: {
+    name:'Verre', group:'Sombre',
+    bg:'#070B18', surf:'rgba(255,255,255,.06)', ink:'#EAF0FF', mute:'#8CA0C8', accent:'#5B8CFF',
+    head:"'Space Grotesk',sans-serif", body:"'DM Sans',sans-serif",
+    card:'verre', hero:'immersif', deco:'lueur', radius:'20px', weight:700
+  },
+  neon: {
+    name:'Néon', group:'Sombre',
+    bg:'#06060D', surf:'#101021', ink:'#F0F0FF', mute:'#8888AA', accent:'#00F0C8',
+    head:"'Space Grotesk',sans-serif", body:"'DM Sans',sans-serif",
+    card:'contour', hero:'immersif', deco:'lueur', radius:'12px', weight:700
+  },
+  luxe: {
+    name:'Luxe', group:'Sombre',
+    bg:'#0B0810', surf:'#16101E', ink:'#F5EFFA', mute:'#9E90AE', accent:'#C9A227',
+    head:"'Cinzel',serif", body:"'DM Sans',sans-serif",
+    card:'contour', hero:'bandeau', deco:'lueur', radius:'2px', weight:700
+  },
+  bijou: {
+    name:'Bijou', group:'Sombre',
+    bg:'#0A0F14', surf:'#132029', ink:'#E9F6FF', mute:'#7C97A8', accent:'#00C2A8',
+    head:"'Playfair Display',serif", body:"'DM Sans',sans-serif",
+    card:'verre', hero:'scinde', deco:'lueur', radius:'18px', weight:700
+  },
+  aurore: {
+    name:'Aurore', group:'Sombre',
+    bg:'#080614', surf:'rgba(255,255,255,.05)', ink:'#F2EEFF', mute:'#9A8FC0', accent:'#A855F7',
+    head:"'Syne',sans-serif", body:"'DM Sans',sans-serif",
+    card:'verre', hero:'immersif', deco:'lueur', radius:'24px', weight:800
+  },
+  nuit: {
+    name:'Nuit profonde', group:'Sombre',
+    bg:'#08090C', surf:'#12141A', ink:'#EDEFF5', mute:'#858B9C', accent:'#6C8CFF',
+    head:"'Plus Jakarta Sans',sans-serif", body:"'DM Sans',sans-serif",
+    card:'surelever', hero:'scinde', deco:'trame', radius:'18px', weight:800
+  },
+  techno: {
+    name:'Techno', group:'Sombre',
+    bg:'#080C16', surf:'#111827', ink:'#E6EEFF', mute:'#7E92B8', accent:'#3B82F6',
+    head:"'Space Grotesk',sans-serif", body:"'DM Sans',sans-serif",
+    card:'contour', hero:'minimal', deco:'trame', radius:'10px', weight:700
+  },
+  minuit: {
+    name:'Minuit rose', group:'Sombre',
+    bg:'#120610', surf:'#1E0B1A', ink:'#FFE9F7', mute:'#B085A5', accent:'#FF4D9D',
+    head:"'Josefin Sans',sans-serif", body:"'DM Sans',sans-serif",
+    card:'verre', hero:'centre', deco:'lueur', radius:'22px', weight:700
+  },
+  foret: {
+    name:'Forêt', group:'Sombre',
+    bg:'#06120C', surf:'#0E2318', ink:'#DCFCE9', mute:'#6E9C82', accent:'#34D399',
+    head:"'Syne',sans-serif", body:"'DM Sans',sans-serif",
+    card:'surelever', hero:'immersif', deco:'courbe', radius:'20px', weight:800
+  }
 };
+
+
+/* ══════════════════════════════════════════════════════
+   FONDS DE THÈME
+   Un thème ne se limite pas à des couleurs plates : le fond
+   porte une grande part de l'identité. Chaque motif est
+   construit à partir des couleurs du thème, il s'adapte donc
+   automatiquement si l'utilisateur les personnalise.
+   ══════════════════════════════════════════════════════ */
+const BACKDROPS = {
+  aucun:    { name:'Aucun',       css:'' },
+
+  degrade:  { name:'Dégradé',     css:
+    'background-image:linear-gradient(165deg, color-mix(in srgb,var(--acc) 12%,var(--bg)) 0%, var(--bg) 55%);' },
+
+  halo:     { name:'Halo',        css:
+    'background-image:radial-gradient(58% 45% at 50% 0%, color-mix(in srgb,var(--acc) 20%,transparent), transparent 70%);' },
+
+  maille:   { name:'Maille',      css:
+    'background-image:'
+    + 'radial-gradient(38% 32% at 12% 8%, color-mix(in srgb,var(--acc) 22%,transparent), transparent 65%),'
+    + 'radial-gradient(34% 30% at 88% 24%, color-mix(in srgb,var(--ink) 12%,transparent), transparent 62%),'
+    + 'radial-gradient(40% 34% at 60% 92%, color-mix(in srgb,var(--acc) 14%,transparent), transparent 68%);' },
+
+  grille:   { name:'Grille',      css:
+    'background-image:'
+    + 'linear-gradient(color-mix(in srgb,var(--ink) 7%,transparent) 1px, transparent 1px),'
+    + 'linear-gradient(90deg, color-mix(in srgb,var(--ink) 7%,transparent) 1px, transparent 1px);'
+    + 'background-size:56px 56px;' },
+
+  points:   { name:'Pointillés',  css:
+    'background-image:radial-gradient(color-mix(in srgb,var(--ink) 12%,transparent) 1.2px, transparent 1.2px);'
+    + 'background-size:22px 22px;' },
+
+  diagonal: { name:'Diagonales',  css:
+    'background-image:repeating-linear-gradient(45deg,'
+    + 'color-mix(in srgb,var(--ink) 4%,transparent) 0 1px, transparent 1px 14px);' },
+
+  vagues:   { name:'Vagues',      css:
+    'background-image:'
+    + 'radial-gradient(120% 70% at 50% -20%, color-mix(in srgb,var(--acc) 16%,transparent), transparent 60%),'
+    + 'radial-gradient(120% 60% at 50% 120%, color-mix(in srgb,var(--acc) 10%,transparent), transparent 60%);' },
+
+  bruit:    { name:'Grain',       css:
+    'background-image:url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'120\' height=\'120\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'.9\' numOctaves=\'3\'/%3E%3C/filter%3E%3Crect width=\'120\' height=\'120\' filter=\'url(%23n)\' opacity=\'.35\'/%3E%3C/svg%3E");' }
+};
+
+/* Chaque thème propose un fond par défaut, cohérent avec son
+   caractère. L'utilisateur peut en choisir un autre. */
+const THEME_BACKDROP = {
+  editorial:'diagonal', suisse:'grille',    papier:'bruit',    boutique:'halo',
+  pastel:'vagues',      clinique:'degrade', nature:'vagues',   terracotta:'diagonal',
+  brutal:'grille',      marche:'diagonal',  sport:'diagonal',  retro:'bruit',
+  mono:'grille',        verre:'maille',     neon:'halo',       luxe:'halo',
+  bijou:'maille',       aurore:'maille',    nuit:'grille',     techno:'grille',
+  minuit:'halo',        foret:'vagues'
+};
+
+/* ══════════════════════════════════════════════════════
+   PERSONNALISATION
+   L'utilisateur ajuste les couleurs et la typographie du thème
+   choisi. Ses réglages priment, le reste suit le thème.
+   ══════════════════════════════════════════════════════ */
+const FONT_CHOICES = [
+  { v:'', n:'Police du thème' },
+  { v:"'Syne',sans-serif", n:'Syne' },
+  { v:"'DM Sans',sans-serif", n:'DM Sans' },
+  { v:"'Playfair Display',serif", n:'Playfair Display' },
+  { v:"'Cormorant Garamond',serif", n:'Cormorant' },
+  { v:"'Cinzel',serif", n:'Cinzel' },
+  { v:"'Space Grotesk',sans-serif", n:'Space Grotesk' },
+  { v:"'Plus Jakarta Sans',sans-serif", n:'Plus Jakarta' },
+  { v:"'Josefin Sans',sans-serif", n:'Josefin Sans' },
+  { v:"'Bebas Neue',sans-serif", n:'Bebas Neue' }
+];
+
+/* Fusionne le thème choisi avec les réglages personnels. */
+function activeTheme(){
+  const base = THEMES[state.theme] || THEMES.editorial;
+  const c = state.custom || {};
+  return {
+    name  : base.name,
+    bg    : c.bg    || base.bg,
+    surf  : c.surf  || base.surf,
+    ink   : c.ink   || base.ink,
+    mute  : c.mute  || base.mute,
+    accent: c.accent|| base.accent,
+    head  : c.head  || base.head,
+    body  : c.body  || base.body,
+    card  : c.card  || base.card,
+    hero  : c.hero  || base.hero,
+    deco  : base.deco,
+    radius: c.radius|| base.radius,
+    weight: base.weight,
+    backdrop: c.backdrop || THEME_BACKDROP[state.theme] || 'aucun'
+  };
+}
+
+function setCustom(key, val){
+  if(!state.custom) state.custom = {};
+  if(val === '' || val === null) delete state.custom[key];
+  else state.custom[key] = val;
+  render();
+  scheduleSave();
+}
+
+function resetCustom(){
+  if(!confirm('Rétablir l\'apparence d\'origine du thème ?')) return;
+  state.custom = {};
+  syncCustomPanel();
+  render();
+  scheduleSave();
+}
+
+function renderCustomPanel(){
+  const el = $('custom-list');
+  if(!el) return;
+  const T = activeTheme();
+  const c = state.custom || {};
+
+  const colorRow = function(key, label, val){
+    return '<div class="cust-row">'
+      + '<label>' + label + '</label>'
+      + '<div class="cust-right">'
+      +   '<input type="color" value="' + val + '" oninput="setCustom(\'' + key + '\',this.value)">'
+      +   (c[key] ? '<button class="cust-x" onclick="setCustom(\'' + key + '\',\'\')" title="Rétablir"><i class="ri-arrow-go-back-line"></i></button>' : '')
+      + '</div></div>';
+  };
+
+  let html = '';
+  html += colorRow('bg',    'Fond',        T.bg.indexOf('rgba')===0 ? '#101010' : T.bg);
+  html += colorRow('surf',  'Cartes',      T.surf.indexOf('rgba')===0 ? '#1a1a1a' : T.surf);
+  html += colorRow('ink',   'Texte',       T.ink);
+  html += colorRow('accent','Couleur vive',T.accent);
+
+  const fontSel = function(key, label, cur){
+    return '<div class="fld"><label>' + label + '</label><select onchange="setCustom(\'' + key + '\',this.value)">'
+      + FONT_CHOICES.map(function(f){
+          return '<option value="' + f.v.replace(/"/g,'&quot;') + '"' + (cur === f.v ? ' selected' : '') + '>' + f.n + '</option>';
+        }).join('')
+      + '</select></div>';
+  };
+  html += fontSel('head', 'Police des titres', c.head || '');
+  html += fontSel('body', 'Police du texte',   c.body || '');
+
+  html += '<div class="fld"><label>Motif de fond</label><select onchange="setCustom(\'backdrop\',this.value)">'
+       + Object.keys(BACKDROPS).map(function(k){
+           return '<option value="' + k + '"' + (T.backdrop === k ? ' selected' : '') + '>' + BACKDROPS[k].name + '</option>';
+         }).join('')
+       + '</select></div>';
+
+  html += '<div class="fld"><label>Forme des cartes</label><select onchange="setCustom(\'card\',this.value)">'
+       + [['','Du thème'],['plat','Plate'],['surelever','Surélevée'],['contour','Contour'],
+          ['verre','Verre'],['brut','Brute'],['doux','Douce']]
+          .map(function(o){ return '<option value="' + o[0] + '"' + ((c.card||'') === o[0] ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('')
+       + '</select></div>';
+
+  html += '<div class="fld"><label>Bannière</label><select onchange="setCustom(\'hero\',this.value)">'
+       + [['','Du thème'],['centre','Centrée'],['scinde','Deux colonnes'],
+          ['bandeau','Bandeau'],['minimal','Minimale'],['immersif','Immersive']]
+          .map(function(o){ return '<option value="' + o[0] + '"' + ((c.hero||'') === o[0] ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('')
+       + '</select></div>';
+
+  html += '<div class="fld"><label>Arrondi des angles</label><select onchange="setCustom(\'radius\',this.value)">'
+       + [['','Du thème'],['0px','Aucun'],['6px','Léger'],['14px','Moyen'],['22px','Marqué'],['30px','Très arrondi']]
+          .map(function(o){ return '<option value="' + o[0] + '"' + ((c.radius||'') === o[0] ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('')
+       + '</select></div>';
+
+  if(Object.keys(c).length){
+    html += '<button class="btn" style="margin-top:10px;" onclick="resetCustom()">'
+         +  '<i class="ri-refresh-line"></i> Rétablir le thème d\'origine</button>';
+  }
+
+  el.innerHTML = html;
+}
+
+function syncCustomPanel(){ renderCustomPanel(); }
 
 /* L'état complet du site en construction. */
 let state = {
   category  : 'mode',
-  theme     : 'elegance',
+  theme     : 'editorial',
+  custom    : {},
   layout    : 'grid',
   currency  : 'FCFA',
   anim      : 'up',
@@ -765,10 +1146,15 @@ let state = {
   showSearch: false,
   showWa    : true,
 
+  // Les rayons de la boutique. Un commerçant qui vend des
+  // téléphones ET des ordinateurs veut les séparer.
+  groups    : ['Téléphones', 'Ordinateurs', 'Accessoires'],
+  showGroups: true,
+
   products  : [
-    { id:1, name:'Robe longue fleurie', price:15000, desc:'Coupe fluide, tissu léger. Tailles S à XL.', img:'', stock:true },
-    { id:2, name:'Ensemble deux pièces', price:32000, desc:'Coton premium, finitions soignées.', img:'', stock:true },
-    { id:3, name:'Foulard en soie',      price:8500,  desc:'Motifs exclusifs, fabriqué à la main.', img:'', stock:true }
+    { id:1, name:'Robe longue fleurie', price:15000, desc:'Coupe fluide, tissu léger. Tailles S à XL.', img:'', stock:true, group:'' },
+    { id:2, name:'Ensemble deux pièces', price:32000, desc:'Coton premium, finitions soignées.', img:'', stock:true, group:'' },
+    { id:3, name:'Foulard en soie',      price:8500,  desc:'Motifs exclusifs, fabriqué à la main.', img:'', stock:true, group:'' }
   ],
   services  : [],
   siteId    : null
@@ -865,7 +1251,7 @@ function uploadProdImg(e, id, kind){
 /* ── Produits et services ────────────────────────── */
 function addProduct(){
   const id = Date.now();
-  state.products.push({ id, name:'Nouveau produit', price:0, desc:'', img:'', stock:true });
+  state.products.push({ id, name:'Nouveau produit', price:0, desc:'', img:'', stock:true, group:'' });
   renderLists(); render(); scheduleSave();
   setTimeout(() => {
     const el = document.querySelector('[data-item="' + id + '"]');
@@ -875,7 +1261,7 @@ function addProduct(){
 
 function addService(){
   const id = Date.now();
-  state.services.push({ id, name:'Nouvelle prestation', price:0, desc:'', img:'', stock:true });
+  state.services.push({ id, name:'Nouvelle prestation', price:0, desc:'', img:'', stock:true, group:'' });
   renderLists(); render(); scheduleSave();
 }
 
@@ -907,6 +1293,55 @@ function delItem(kind, id){
 
 function toggleItem(el){ el.closest('.item').classList.toggle('open'); }
 
+/* ── RAYONS ──────────────────────────────────────── */
+function renderGroups(){
+  const el = $('group-list');
+  if(!el) return;
+  if(!state.groups) state.groups = [];
+  if(!state.groups.length){
+    el.innerHTML = '<p class="hint" style="text-align:center;padding:10px 0;">Aucun rayon. Tous les articles s\'affichent ensemble.</p>';
+    return;
+  }
+  el.innerHTML = state.groups.map(function(g, i){
+    const n = state.products.filter(function(p){ return p.group === g; }).length;
+    return '<div class="grp-row">'
+      + '<i class="ri-folder-line"></i>'
+      + '<span class="grp-n">' + esc(g) + '</span>'
+      + '<span class="grp-c">' + n + '</span>'
+      + '<button class="item-del" onclick="delGroup(' + i + ')"><i class="ri-close-line"></i></button>'
+      + '</div>';
+  }).join('');
+}
+
+function addGroup(){
+  const input = $('new-group');
+  if(!input) return;
+  const name = input.value.trim();
+  if(!name) return;
+  if(!state.groups) state.groups = [];
+  // Un rayon en double n'aurait aucun sens : on l'ignore.
+  if(state.groups.indexOf(name) !== -1){ input.value = ''; return; }
+  state.groups.push(name);
+  input.value = '';
+  renderGroups(); renderLists(); render(); scheduleSave();
+}
+
+function delGroup(i){
+  const name = state.groups[i];
+  if(!name) return;
+  const used = state.products.filter(function(p){ return p.group === name; }).length;
+  const msg = used > 0
+    ? 'Supprimer le rayon « ' + name + ' » ?\n\n' + used + ' article(s) resteront visibles, sans rayon.'
+    : 'Supprimer le rayon « ' + name + ' » ?';
+  if(!confirm(msg)) return;
+  // Les articles ne sont jamais supprimés avec leur rayon : ils
+  // reviennent simplement dans la liste générale.
+  state.products.forEach(function(p){ if(p.group === name) p.group = ''; });
+  state.services.forEach(function(p){ if(p.group === name) p.group = ''; });
+  state.groups.splice(i, 1);
+  renderGroups(); renderLists(); render(); scheduleSave();
+}
+
 function renderLists(){
   const build = (list, kind, empty) => {
     if(!list.length) return '<p class="hint" style="text-align:center;padding:14px 0;">' + empty + '</p>';
@@ -923,6 +1358,12 @@ function renderLists(){
       + '<div class="item-body">'
       +   '<div class="fld"><label>Nom</label><input type="text" value="' + esc(p.name) + '" oninput="updItem(\'' + kind + '\',' + p.id + ',\'name\',this.value)"></div>'
       +   '<div class="fld"><label>Prix</label><input type="number" value="' + (p.price||0) + '" oninput="updItem(\'' + kind + '\',' + p.id + ',\'price\',parseInt(this.value)||0)"></div>'
+      +   '<div class="fld"><label>Rayon</label><select onchange="updItem(\'' + kind + '\',' + p.id + ',\'group\',this.value)">'
+      +     '<option value=""' + (!p.group ? ' selected' : '') + '>Sans rayon</option>'
+      +     (state.groups||[]).map(function(g){
+              return '<option value="' + esc(g) + '"' + (p.group === g ? ' selected' : '') + '>' + esc(g) + '</option>';
+            }).join('')
+      +   '</select></div>'
       +   '<div class="fld"><label>Description</label><textarea oninput="updItem(\'' + kind + '\',' + p.id + ',\'desc\',this.value)">' + esc(p.desc) + '</textarea></div>'
       +   '<div class="fld"><label>Photo</label>'
       +     '<label class="upload" for="up-' + kind + '-' + p.id + '"><i class="ri-image-add-line"></i> ' + (p.img ? 'Remplacer' : 'Ajouter une photo') + '</label>'
@@ -959,18 +1400,41 @@ function pickCategory(id){
 }
 
 function renderThemes(){
-  $('theme-list').innerHTML = Object.keys(THEMES).map(k => {
-    const t = THEMES[k];
-    return '<div class="theme' + (state.theme === k ? ' on' : '') + '" onclick="pickTheme(\'' + k + '\')">'
-      + '<div class="theme-sw" style="background:linear-gradient(135deg,' + t.bg + ' 48%,' + t.accent + ' 52%);"></div>'
-      + '<div class="theme-n">' + t.name + '</div></div>';
-  }).join('');
+  // Les thèmes sont présentés par famille : vingt-deux vignettes
+  // en vrac seraient illisibles.
+  const groups = {};
+  Object.keys(THEMES).forEach(function(k){
+    const g = THEMES[k].group || 'Autres';
+    (groups[g] = groups[g] || []).push(k);
+  });
+
+  let html = '';
+  ['Clair','Affirmé','Sombre','Autres'].forEach(function(g){
+    if(!groups[g]) return;
+    html += '<div class="theme-group">' + g + '</div><div class="themes">';
+    html += groups[g].map(function(k){
+      const t = THEMES[k];
+      // L'aperçu suggère la structure : fond, surface, accent.
+      return '<div class="theme' + (state.theme === k ? ' on' : '') + '" onclick="pickTheme(\'' + k + '\')" title="' + esc(t.name) + '">'
+        + '<div class="theme-sw" style="background:' + t.bg + ';">'
+        +   '<span class="tsw-a" style="background:' + t.accent + ';"></span>'
+        +   '<span class="tsw-b" style="background:' + (t.surf.indexOf('rgba')===0 ? 'rgba(255,255,255,.14)' : t.surf) + ';"></span>'
+        + '</div>'
+        + '<div class="theme-n">' + t.name + '</div></div>';
+    }).join('');
+    html += '</div>';
+  });
+  $('theme-list').innerHTML = html;
 }
 
 function pickTheme(k){
   state.theme = k;
   state.themeTouched = true;
-  renderThemes(); render(); scheduleSave();
+  // Changer de thème remet les réglages personnels à zéro :
+  // sinon les couleurs de l'ancien thème resteraient collées
+  // au nouveau, avec un résultat incohérent.
+  state.custom = {};
+  renderThemes(); renderCustomPanel(); render(); scheduleSave();
 }
 
 /* ── Synchronisation du panneau avec l'état ──────── */
@@ -982,7 +1446,7 @@ function syncPanel(){
     const el = $('f-' + k); if(el) el.value = state[k];
   });
   const d = $('f-delivery'); if(d) d.value = state.delivery || 0;
-  ['orders','waOrder','showHero','showAbout','showSearch','showWa'].forEach(k => {
+  ['orders','waOrder','showHero','showAbout','showSearch','showWa','showGroups'].forEach(k => {
     const el = $('sw-' + k); if(el) el.classList.toggle('on', !!state[k]);
   });
   if(state.logo){ const l = $('logo-lbl'); if(l) l.textContent = 'Image chargée ✓'; }
@@ -1000,10 +1464,30 @@ function scheduleSave(){
   }, 900);
 }
 
+// L'état par défaut est figé au démarrage : il sert de référence
+// pour compléter les brouillons anciens.
+const DEFAULT_STATE = JSON.parse(JSON.stringify(state));
+
 function restoreDraft(){
   try{
     const raw = localStorage.getItem(DRAFT_KEY);
-    if(raw) Object.assign(state, JSON.parse(raw));
+    if(!raw) return;
+    const saved = JSON.parse(raw);
+    Object.assign(state, saved);
+
+    // Un brouillon enregistré avant l'ajout d'une fonctionnalité
+    // ne contient pas ses réglages. Sans ce complément, la
+    // fonctionnalité semblait absente pour les anciens
+    // utilisateurs — c'est ce qui faisait disparaître les rayons.
+    Object.keys(DEFAULT_STATE).forEach(function(k){
+      if(state[k] === undefined || state[k] === null){
+        state[k] = JSON.parse(JSON.stringify(DEFAULT_STATE[k]));
+      }
+    });
+
+    // Les articles créés avant les rayons n'ont pas ce champ.
+    (state.products || []).forEach(function(p){ if(p.group === undefined) p.group = ''; });
+    (state.services || []).forEach(function(p){ if(p.group === undefined) p.group = ''; });
   }catch(e){}
 }
 
@@ -1019,8 +1503,130 @@ function resetSite(){
    fonction sert à l'aperçu et à l'export : ce que l'utilisateur
    voit est exactement ce qu'il téléchargera.
    ══════════════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════════════
+   STRUCTURE DES THÈMES
+   Chaque famille de carte, de bannière et de décor produit un
+   rendu réellement différent — pas une simple recoloration.
+   ══════════════════════════════════════════════════════ */
+function themeCSS(T){
+  var R = T.radius || '14px';
+  var out = [];
+
+  /* ── Forme des cartes ── */
+  if(T.card === 'plat'){
+    out.push('.sv-card{background:var(--surf);border:none;box-shadow:none;}');
+    out.push('.sv-card-img{border-radius:0;}');
+  }
+  else if(T.card === 'surelever'){
+    out.push('.sv-card{background:var(--surf);border:none;box-shadow:0 4px 18px -8px rgba(0,0,0,.28);}');
+    out.push('.sv-card:hover{box-shadow:0 22px 44px -18px rgba(0,0,0,.42);}');
+  }
+  else if(T.card === 'contour'){
+    out.push('.sv-card{background:transparent;border:1px solid color-mix(in srgb,var(--ink) 16%,transparent);box-shadow:none;}');
+    out.push('.sv-card:hover{border-color:var(--acc);}');
+    out.push('.sv-card-body{border-top:1px solid color-mix(in srgb,var(--ink) 10%,transparent);}');
+  }
+  else if(T.card === 'verre'){
+    out.push('.sv-card{background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.12);'
+           + 'backdrop-filter:blur(16px) saturate(1.4);-webkit-backdrop-filter:blur(16px) saturate(1.4);'
+           + 'box-shadow:0 18px 46px -22px rgba(0,0,0,.7), inset 0 1px 0 rgba(255,255,255,.08);}');
+    out.push('.sv-card:hover{background:rgba(255,255,255,.09);border-color:rgba(255,255,255,.22);}');
+  }
+  else if(T.card === 'brut'){
+    // Bordure épaisse et ombre franche, sans flou : le trait
+    // assumé du néo-brutalisme.
+    out.push('.sv-card{background:var(--surf);border:2.5px solid var(--ink);'
+           + 'box-shadow:6px 6px 0 0 var(--ink);transition:transform .18s,box-shadow .18s;}');
+    out.push('.sv-card:hover{transform:translate(-3px,-3px);box-shadow:9px 9px 0 0 var(--acc);}');
+    out.push('.sv-add{border-width:2.5px;box-shadow:3px 3px 0 0 var(--ink);}');
+    out.push('.sv-cta{box-shadow:5px 5px 0 0 var(--ink);border:2.5px solid var(--ink);}');
+  }
+  else { /* doux */
+    out.push('.sv-card{background:var(--surf);border:none;box-shadow:0 10px 30px -14px rgba(0,0,0,.2);}');
+    out.push('.sv-card:hover{box-shadow:0 24px 48px -20px rgba(0,0,0,.3);}');
+  }
+  out.push('.sv-card,.sv-card-img{border-radius:' + R + ';}');
+  out.push('.sv-card-img{border-bottom-left-radius:0;border-bottom-right-radius:0;}');
+
+  /* ── Bannière ── */
+  if(T.hero === 'scinde'){
+    out.push('.sv-hero{text-align:left;padding-top:clamp(40px,6vw,80px);}');
+    out.push('.sv-hero-in{display:grid;grid-template-columns:1.15fr .85fr;gap:38px;align-items:center;}');
+    out.push('.sv-hero-side{height:230px;border-radius:' + R + ';background:var(--surf);'
+           + 'background-size:cover;background-position:center;}');
+    out.push('.sv-tag{margin-left:0;}');
+    out.push('@media(max-width:760px){.sv-hero-in{grid-template-columns:1fr;}.sv-hero-side{height:170px;}}');
+  }
+  else if(T.hero === 'bandeau'){
+    out.push('.sv-hero{padding:0;text-align:left;}');
+    out.push('.sv-hero-in{padding:clamp(40px,6vw,84px) 0;border-bottom:2px solid color-mix(in srgb,var(--ink) 14%,transparent);}');
+    out.push('.sv-h1{max-width:16ch;}');
+    out.push('.sv-tag{margin-left:0;}');
+  }
+  else if(T.hero === 'minimal'){
+    out.push('.sv-hero{text-align:left;padding:clamp(34px,5vw,64px) 0;}');
+    out.push('.sv-h1{max-width:18ch;}');
+    out.push('.sv-tag{margin-left:0;}');
+    out.push('.sv-hero-img{display:none;}');
+  }
+  else if(T.hero === 'immersif'){
+    out.push('.sv-hero{padding:clamp(60px,10vw,130px) 0;}');
+    out.push('.sv-hero-img{opacity:.34;}');
+    out.push('.sv-hero::after{content:"";position:absolute;inset:0;'
+           + 'background:radial-gradient(60% 70% at 50% 40%, color-mix(in srgb,var(--acc) 22%,transparent), transparent 70%);'
+           + 'pointer-events:none;}');
+  }
+  /* 'centre' est le comportement par défaut */
+
+  /* ── Décor ── */
+  if(T.deco === 'trame'){
+    out.push('.sv-hero{background-image:'
+           + 'linear-gradient(color-mix(in srgb,var(--ink) 6%,transparent) 1px, transparent 1px),'
+           + 'linear-gradient(90deg, color-mix(in srgb,var(--ink) 6%,transparent) 1px, transparent 1px);'
+           + 'background-size:54px 54px;}');
+  }
+  else if(T.deco === 'lueur'){
+    out.push('.sv-hero::before{content:"";position:absolute;top:-30%;left:50%;'
+           + 'transform:translateX(-50%);width:80%;height:150%;pointer-events:none;'
+           + 'background:radial-gradient(circle, color-mix(in srgb,var(--acc) 26%,transparent), transparent 62%);'
+           + 'animation:svGlow 9s ease-in-out infinite;}');
+    out.push('@keyframes svGlow{0%,100%{opacity:.6;transform:translateX(-50%) scale(1);}'
+           + '50%{opacity:1;transform:translateX(-50%) scale(1.12);}}');
+  }
+  else if(T.deco === 'courbe'){
+    out.push('.sv-hero{border-bottom-left-radius:46% 22%;border-bottom-right-radius:46% 22%;'
+           + 'background-color:var(--surf);}');
+    out.push('.sv-sec-t{position:relative;display:inline-block;}');
+    out.push('.sv-sec-t::after{content:"";position:absolute;left:0;bottom:-6px;width:100%;height:6px;'
+           + 'border-radius:100px;background:color-mix(in srgb,var(--acc) 32%,transparent);}');
+  }
+  else if(T.deco === 'rayures'){
+    out.push('.sv-hero{background-image:repeating-linear-gradient(115deg,'
+           + 'color-mix(in srgb,var(--acc) 7%,transparent) 0 2px, transparent 2px 16px);}');
+    out.push('.sv-sec-t{border-left:5px solid var(--acc);padding-left:15px;}');
+  }
+  else if(T.deco === 'tampon'){
+    out.push('.sv-price{display:inline-block;padding:3px 11px;border-radius:100px;'
+           + 'background:var(--acc);color:var(--bg);font-size:13.5px;}');
+    out.push('.sv-sec-t{text-transform:uppercase;letter-spacing:.02em;}');
+  }
+
+  /* ── Épaisseur des titres ── */
+  if(T.weight){
+    out.push('.sv-h1,.sv-sec-t,.sv-card-t{font-weight:' + T.weight + ';}');
+  }
+
+  /* Les boutons suivent l'arrondi du thème, sauf les pastilles
+     qui restent volontairement circulaires. */
+  if(T.radius === '0px' || T.radius === '2px' || T.radius === '4px'){
+    out.push('.sv-cta,.sv-add,.sv-cart-btn{border-radius:' + R + ';}');
+  }
+
+  return out.join('\n');
+}
+
 function buildSiteHTML(forExport){
-  const T = THEMES[state.theme] || THEMES.elegance;
+  const T = activeTheme();
   const cat = CATEGORIES.find(c => c.id === state.category) || CATEGORIES[0];
   const cur = esc(state.currency);
   const wa  = String(state.whatsapp || state.phone || '').replace(/[^0-9]/g,'');
@@ -1030,7 +1636,9 @@ function buildSiteHTML(forExport){
   /* ── Un produit ── */
   const card = (p, kind) => {
     const soldOut = !p.stock;
-    return '<article class="sv-card' + animCls + (soldOut ? ' sv-out' : '') + '" data-name="' + esc(p.name).toLowerCase() + '">'
+    return '<article class="sv-card' + animCls + (soldOut ? ' sv-out' : '') + '"'
+      + ' data-name="' + esc(p.name).toLowerCase() + '"'
+      + ' data-group="' + esc(p.group || '') + '">'
       + '<div class="sv-card-img">'
       +   (p.img ? '<img src="' + p.img + '" alt="' + esc(p.name) + '" loading="lazy">'
                  : '<div class="sv-noimg"><i class="ri-image-line"></i></div>')
@@ -1050,6 +1658,12 @@ function buildSiteHTML(forExport){
       + '</div></article>';
   };
 
+  // On n'affiche que les rayons contenant au moins un article :
+  // un onglet vide déçoit le visiteur.
+  const usedGroups = (state.groups || []).filter(function(g){
+    return state.products.some(function(p){ return p.group === g; });
+  });
+
   const prods = state.products.map(p => card(p,'product')).join('');
   const servs = state.services.map(p => card(p,'service')).join('');
 
@@ -1065,8 +1679,13 @@ function buildSiteHTML(forExport){
     .sv{
       --bg:${T.bg};--surf:${T.surf};--ink:${T.ink};
       --mute:${T.mute};--acc:${T.accent};
-      background:var(--bg);color:var(--ink);
+      background-color:var(--bg);color:var(--ink);
       font-family:${T.body};line-height:1.6;
+      /* Le motif de fond du thème, ou celui choisi par
+         l'utilisateur. Il dérive des couleurs, donc il suit
+         automatiquement toute personnalisation. */
+      ${(BACKDROPS[T.backdrop] || BACKDROPS.aucun).css}
+      background-attachment:fixed;
     }
     .sv *{box-sizing:border-box;}
     .sv-wrap{max-width:1080px;margin:0 auto;padding:0 24px;}
@@ -1142,6 +1761,21 @@ function buildSiteHTML(forExport){
       font-family:inherit;font-size:14px;outline:none;
     }
     .sv-search i{color:var(--mute);font-size:17px;}
+
+    /* Onglets de rayon */
+    .sv-tabs{
+      display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px;
+    }
+    .sv-tab{
+      padding:9px 18px;border-radius:100px;cursor:pointer;
+      border:1.5px solid color-mix(in srgb,var(--ink) 14%,transparent);
+      background:transparent;color:var(--mute);
+      font-family:inherit;font-size:13px;font-weight:600;
+      transition:background .2s,color .2s,border-color .2s,transform .2s;
+      white-space:nowrap;
+    }
+    .sv-tab:hover{border-color:var(--acc);color:var(--ink);transform:translateY(-1px);}
+    .sv-tab.on{background:var(--acc);color:var(--bg);border-color:var(--acc);}
 
     .sv-grid{display:grid;gap:18px;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));}
     .sv-grid.lay-list{grid-template-columns:1fr;}
@@ -1243,6 +1877,11 @@ function buildSiteHTML(forExport){
     @media(prefers-reduced-motion:reduce){
       .sv-anim{opacity:1;transform:none;transition:none;}
     }
+
+    /* Structure propre au thème : forme des cartes, bannière,
+       décor. C'est ce qui fait qu'un thème ne ressemble pas
+       simplement au précédent recoloré. */
+    ${themeCSS(T)}
   `;
 
   /* ── Corps du site ── */
@@ -1267,10 +1906,15 @@ function buildSiteHTML(forExport){
     <header class="sv-hero">
       ${state.hero ? '<div class="sv-hero-img" style="background-image:url(' + state.hero + ')"></div>' : ''}
       <div class="sv-wrap sv-hero-in">
-        <h1 class="sv-h1">${esc(state.name)}</h1>
-        <p class="sv-tag">${esc(state.tagline)}</p>
-        ${state.products.length || state.services.length
-          ? '<a class="sv-cta" href="#sv-prod">Découvrir <i class="ri-arrow-down-line"></i></a>' : ''}
+        <div>
+          <h1 class="sv-h1">${esc(state.name)}</h1>
+          <p class="sv-tag">${esc(state.tagline)}</p>
+          ${state.products.length || state.services.length
+            ? '<a class="sv-cta" href="#sv-prod">Découvrir <i class="ri-arrow-down-line"></i></a>' : ''}
+        </div>
+        ${T.hero === 'scinde'
+          ? '<div class="sv-hero-side"' + (state.hero ? ' style="background-image:url(' + state.hero + ')"' : '') + '></div>'
+          : ''}
       </div>
     </header>` : ''}
 
@@ -1279,6 +1923,13 @@ function buildSiteHTML(forExport){
       <h2 class="sv-sec-t${animCls}">${esc(state.prodTitle)}</h2>
       <p class="sv-sec-s">${state.products.length} ${state.products.length > 1 ? 'articles disponibles' : 'article disponible'}</p>
       ${state.showSearch ? '<div class="sv-search"><i class="ri-search-line"></i><input type="text" placeholder="Rechercher…" oninput="svSearch(this.value)"></div>' : ''}
+      ${(state.showGroups && usedGroups.length)
+        ? '<div class="sv-tabs"><button class="sv-tab on" onclick="svFilter(this,\'\')">Tout voir</button>'
+          + usedGroups.map(function(g){
+              return '<button class="sv-tab" onclick="svFilter(this,\'' + esc(g) + '\')">' + esc(g) + '</button>';
+            }).join('')
+          + '</div>'
+        : ''}
       <div class="sv-grid lay-${esc(state.layout)}" id="sv-grid">${prods}</div>
     </div></section>` : ''}
 
@@ -1535,13 +2186,32 @@ function cartScript(ownerId){
   '  setTimeout(function(){ t.classList.remove("in"); setTimeout(function(){ t.remove(); }, 350); }, 2200);',
   '}',
   '',
-  'function svSearch(q){',
-  '  q = String(q||"").toLowerCase().trim();',
+  'var SV_GROUP = "";',
+  '',
+  'function svFilter(btn, g){',
+  '  SV_GROUP = g || "";',
+  '  var tabs = document.querySelectorAll(".sv-tab");',
+  '  for(var i=0;i<tabs.length;i++) tabs[i].classList.remove("on");',
+  '  if(btn) btn.classList.add("on");',
+  '  svApply();',
+  '}',
+  '',
+  '// Le filtre par rayon et la recherche se combinent : on',
+  '// applique les deux ensemble plutôt que l un après l autre.',
+  'var SV_QUERY = "";',
+  'function svApply(){',
   '  var cards = document.querySelectorAll("#sv-grid .sv-card");',
   '  for(var i=0;i<cards.length;i++){',
-  '    var n = cards[i].getAttribute("data-name") || "";',
-  '    cards[i].style.display = (!q || n.indexOf(q) !== -1) ? "" : "none";',
+  '    var c = cards[i];',
+  '    var okG = !SV_GROUP || c.getAttribute("data-group") === SV_GROUP;',
+  '    var okQ = !SV_QUERY || (c.getAttribute("data-name")||"").indexOf(SV_QUERY) !== -1;',
+  '    c.style.display = (okG && okQ) ? "" : "none";',
   '  }',
+  '}',
+  '',
+  'function svSearch(q){',
+  '  SV_QUERY = String(q||"").toLowerCase().trim();',
+  '  svApply();',
   '}',
   '',
   'function svOrderSay(msg, ok){',
@@ -1647,7 +2317,7 @@ function exportSite(){
 '<meta property="og:type" content="website">',
 (state.logo ? '<link rel="icon" href="' + state.logo + '">' : ''),
 '<link rel="stylesheet" media="print" onload="this.media=\'all\'"',
-'      href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,700&family=Playfair+Display:wght@700&family=Space+Grotesk:wght@400;700&family=Bebas+Neue&family=Plus+Jakarta+Sans:wght@400;600;800&display=swap">',
+'      href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,700&family=Playfair+Display:wght@700&family=Space+Grotesk:wght@400;700&family=Bebas+Neue&family=Plus+Jakarta+Sans:wght@400;600;800&family=Cinzel:wght@600;800&family=Cormorant+Garamond:wght@300;600&family=Josefin+Sans:wght@300;400;600;700&display=swap">',
 '<link rel="stylesheet" media="print" onload="this.media=\'all\'"',
 '      href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css"',
 '      onerror="var a=document.createElement(\'link\');a.rel=\'stylesheet\';a.href=\'https://unpkg.com/remixicon@3.5.0/fonts/remixicon.css\';document.head.appendChild(a);">',
@@ -1951,6 +2621,8 @@ async function setOrderStatus(id, newStatus){
 restoreDraft();
 renderCats();
 renderThemes();
+renderCustomPanel();
+renderGroups();
 renderLists();
 syncPanel();
 </script>
