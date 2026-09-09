@@ -2339,6 +2339,29 @@ cartScript(owner),
 '</html>'
   ].join('\n');
 
+  // Même contrôle que pour l'éditeur portfolio : on vérifie que
+  // le script embarqué est valide avant de livrer le fichier.
+  // Un script cassé donnerait un site sans panier ni filtres.
+  const problems = [];
+  try{
+    const re = /<script[^>]*>([\s\S]*?)<\/script>/gi;
+    let m, n = 0;
+    while((m = re.exec(doc)) !== null){
+      n++;
+      if(!m[1].trim()) continue;
+      try{ new Function(m[1]); }
+      catch(err){ problems.push('Script ' + n + ' : ' + (err.message||'syntaxe invalide')); }
+    }
+    if(doc.indexOf('sv-wrap') === -1) problems.push('Contenu principal absent.');
+  } catch(e){ problems.push('Vérification impossible.'); }
+
+  if(problems.length){
+    console.error('[Export] Fichier refusé :', problems);
+    alert('Le fichier n\'a pas pu être généré correctement.\n\n'
+        + 'Contactez-nous, nous corrigeons cela tout de suite.');
+    return;
+  }
+
   const blob = new Blob([doc], { type:'text/html;charset=utf-8' });
   const url  = URL.createObjectURL(blob);
   const a    = document.createElement('a');

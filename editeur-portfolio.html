@@ -4676,6 +4676,42 @@ select.pf-book-in option:hover{
 .acct-switch:hover{background:rgba(255,180,84,.22)!important;color:#FFD9A0!important;}
 .acct-sep{height:1px;background:#1e1e26;margin:6px 10px;}
 
+/* ── MENU COMPTE SUR MOBILE ──
+   Le panneau d'édition n'occupe que 55 % de l'écran sur
+   téléphone, mais le menu était calé sur la hauteur totale :
+   il débordait donc du panneau et sa partie basse devenait
+   inatteignable. Sur mobile, il devient une feuille ancrée
+   à l'écran, indépendante du panneau. */
+@media(max-width:768px){
+  #account-menu{
+    position:fixed!important;
+    top:auto!important;
+    right:10px!important;
+    left:10px!important;
+    bottom:12px!important;
+    min-width:0!important;
+    width:auto!important;
+    max-height:min(72dvh, calc(100dvh - 120px))!important;
+    overflow-y:auto!important;
+    -webkit-overflow-scrolling:touch;
+    border-radius:18px!important;
+    box-shadow:0 -10px 50px rgba(0,0,0,.75)!important;
+    animation:acctSheet .26s cubic-bezier(.2,.9,.25,1);
+  }
+  @keyframes acctSheet{
+    from{opacity:0;transform:translateY(24px);}
+    to{opacity:1;transform:none;}
+  }
+  /* Un voile derrière la feuille : on comprend qu'elle est au
+     premier plan, et un appui à côté la referme. */
+  #account-menu-veil{
+    display:none;position:fixed;inset:0;z-index:9998;
+    background:rgba(0,0,0,.5);backdrop-filter:blur(2px);
+  }
+  #account-menu-veil.on{display:block;}
+  .account-menu-item{padding:13px 14px!important;font-size:13.5px!important;}
+}
+
 /* Barre de défilement discrète du menu compte */
 #account-menu::-webkit-scrollbar{width:6px;}
 #account-menu::-webkit-scrollbar-track{background:transparent;}
@@ -5514,6 +5550,7 @@ select.pf-book-in option:hover{
                     <span id="sync-label">Sauvegardé</span>
                 </div>
 
+                <div id="account-menu-veil" onclick="closeAccountMenu()"></div>
                 <div id="account-wrapper" style="position:relative;margin-left:6px;">
 
                     <button id="account-avatar-btn" onclick="toggleAccountMenu(event)" title="Mon compte"
@@ -9387,6 +9424,44 @@ function proceedDownload(){
     }, 1000);
 }
 
+/* ══════════════════════════════════════════════════════
+   CONTRÔLE AVANT TÉLÉCHARGEMENT
+   Une erreur de syntaxe dans le script embarqué rend le
+   portfolio publié à moitié vide : tout ce qui apparaît au
+   défilement reste invisible. C'est arrivé une fois, en
+   production, chez un client qui avait payé.
+
+   On vérifie donc chaque script embarqué AVANT de livrer le
+   fichier. En cas de problème, on refuse le téléchargement
+   plutôt que de remettre un portfolio cassé.
+   ══════════════════════════════════════════════════════ */
+function verifyExport(html){
+    const problems = [];
+    try{
+        // On isole chaque bloc de script du document produit.
+        const re = /<script[^>]*>([\s\S]*?)<\/script>/gi;
+        let m, idx = 0;
+        while((m = re.exec(html)) !== null){
+            idx++;
+            const body = m[1];
+            if(!body.trim()) continue;
+            try{
+                // new Function analyse la syntaxe sans exécuter.
+                new Function(body);
+            } catch(err){
+                problems.push('Script ' + idx + ' : ' + (err.message || 'syntaxe invalide'));
+            }
+        }
+        // Le portfolio doit contenir ses sections principales.
+        if(html.indexOf('portfolio-viewport') === -1 && html.indexOf('pf-hero') === -1){
+            problems.push('Contenu principal absent du fichier.');
+        }
+    } catch(e){
+        problems.push('Vérification impossible : ' + e.message);
+    }
+    return problems;
+}
+
 function doExport(){
     const vpH = document.getElementById('portfolio-viewport').outerHTML;
 
@@ -9697,7 +9772,7 @@ function renderSlots(taken){
         out += '<button type="button" class="pf-book-slot'
              + (bookChosenSlot===s?' pf-slot-on':'') + '"'
              + (busy?' disabled title="Créneau déjà pris"':'')
-             + ' onclick="pickSlot(\'' + s + '\')">' + s + '</button>';
+             + ' onclick="pickSlot(\\'' + s + '\\')">' + s + '</button>';
     }
     box.innerHTML = out;
 }
@@ -10390,6 +10465,19 @@ ${scripts}
 ${antiSpamScript}
 </body>
 </html>`;
+
+    // Contrôle avant livraison : un fichier au script cassé
+    // s'afficherait à moitié vide chez l'utilisateur. Mieux vaut
+    // refuser le téléchargement que remettre un portfolio
+    // inutilisable — surtout après paiement.
+    const problems = verifyExport(h);
+    if(problems.length){
+        console.error('[Export] Fichier refusé :', problems);
+        if(typeof showToast === 'function'){
+            showToast('Le fichier n\'a pas pu être généré correctement. Écrivez-nous depuis le menu compte, nous corrigeons cela tout de suite.');
+        }
+        return;
+    }
 
     const b = new Blob([h], {type:'text/html;charset=utf-8'});
     const u = URL.createObjectURL(b);
@@ -12118,12 +12206,23 @@ function toggleAccountMenu(event) {
   if (event) event.stopPropagation();
   const menu = document.getElementById('account-menu');
   if (!menu) return;
-  menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
+  const open = menu.style.display !== 'block';
+  menu.style.display = open ? 'block' : 'none';
+  // Sur mobile le menu devient une feuille : un voile derrière
+  // signale qu'elle est au premier plan et permet de refermer
+  // d'un appui à côté.
+  const veil = document.getElementById('account-menu-veil');
+  if (veil) veil.classList.toggle('on', open);
+  // On ramène la vue en haut du menu à chaque ouverture, sinon
+  // il garde la position de défilement précédente.
+  if (open) menu.scrollTop = 0;
 }
 
 function closeAccountMenu() {
   const menu = document.getElementById('account-menu');
   if (menu) menu.style.display = 'none';
+  const veil = document.getElementById('account-menu-veil');
+  if (veil) veil.classList.remove('on');
 }
 
 document.addEventListener('click', (e) => {
