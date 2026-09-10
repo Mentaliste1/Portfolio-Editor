@@ -355,6 +355,68 @@ footer{position:relative;z-index:2;border-top:1px solid var(--line);padding:46px
   .stripe-in{grid-template-columns:1fr 1fr;gap:22px;}
   .f-grid{grid-template-columns:1fr;}
 }
+/* ── Téléphone ──
+   L'audit a montré qu'aucun palier n'existait sous 760px :
+   sur un écran de 360px, la maquette et les grilles restaient
+   dimensionnées pour un ordinateur. */
+@media(max-width:560px){
+  .wrap{padding:0 16px;}
+  section{padding:clamp(40px,9vw,60px) 0;}
+
+  /* La maquette gardait une colonne fixe de 96px, ce qui ne
+     laissait presque rien à l'aperçu. */
+  .mock-body{grid-template-columns:76px 1fr;min-height:240px;}
+  .mock-view{padding:12px;}
+  .mock-name{font-size:16px;}
+  .mock-bio{font-size:7px;}
+  .mock-card{height:30px;}
+  .mock-url{max-width:120px;font-size:9px;}
+
+  .hero-ctas{flex-direction:column;}
+  .hero-ctas .btn{width:100%;justify-content:center;}
+  .hero-note{font-size:12px;align-items:flex-start;}
+
+  .path{padding:22px;}
+  .path-pv{height:104px;}
+  .steps,.feats{gap:12px;}
+  .step,.feat{padding:20px;}
+
+  .price-box{padding:26px 20px;}
+  .price-list{max-width:100%;}
+  .pay-row{gap:6px;}
+  .pay-c{font-size:11px;padding:7px 12px;}
+
+  .q-h{padding:15px 16px;font-size:13.5px;}
+  .q-b p{padding:0 16px 16px;font-size:13px;}
+
+  .final{padding:28px 20px;}
+  .final > .final-in > div{flex-direction:column;}
+  .final .btn{width:100%;justify-content:center;}
+
+  .f-bar{flex-direction:column;text-align:center;gap:10px;}
+}
+
+/* ── Très petit écran ── */
+@media(max-width:380px){
+  .wrap{padding:0 13px;}
+  .brand-n{font-size:15px;}
+  .brand-m{width:34px;height:34px;border-radius:11px;}
+  .gbtn{padding:7px 7px 7px 13px;font-size:12.5px;}
+  .gcircle,.gav{width:28px;height:28px;}
+  .stripe-in{grid-template-columns:1fr;gap:16px;}
+  .mock-body{grid-template-columns:1fr;}
+  .mock-side{flex-direction:row;flex-wrap:wrap;gap:6px;border-right:none;
+             border-bottom:1px solid var(--line);}
+  .mock-side > div{flex:1;min-width:60px;}
+  .eyebrow{font-size:11px;padding:6px 12px;}
+}
+
+/* ── Écran large ──
+   Au-delà de 1400px, le contenu ne doit pas s'étirer sans fin. */
+@media(min-width:1400px){
+  .wrap{max-width:1240px;}
+}
+
 @media(prefers-reduced-motion:reduce){
   *{animation-duration:.01ms!important;transition-duration:.01ms!important;}
   .rev{opacity:1;transform:none;}

@@ -452,29 +452,136 @@ body{
 .od-btn.no{background:rgba(239,68,68,.1);border-color:#7f1d1d;color:#f87171;}
 
 /* ── Mobile ── */
+/* ── Barre flottante ──
+   Elle ne barre plus tout le bas de l'écran : arrondie,
+   centrée, et rétractable d'un appui sur sa poignée. */
 #mob-nav{
-  display:none;position:fixed;bottom:0;left:0;right:0;z-index:900;
-  background:var(--ui-panel);border-top:1px solid var(--ui-border);
-  padding:8px 10px calc(8px + env(safe-area-inset-bottom));
+  display:none;
+  position:fixed;left:50%;bottom:calc(12px + env(safe-area-inset-bottom));
+  transform:translateX(-50%);
+  z-index:9000;
+  flex-direction:column;align-items:center;
+  transition:transform .35s cubic-bezier(.34,1.2,.64,1);
+  max-width:calc(100vw - 20px);
 }
-#mob-nav .rail-btn{width:100%;height:46px;border-radius:12px;}
-.mob-row{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;}
+#mob-nav.hidden{
+  transform:translateX(-50%) translateY(calc(100% - 16px));
+}
+#mob-nav.hidden #mob-arrow{transform:rotate(180deg);}
+
+#mob-handle{
+  display:flex;align-items:center;justify-content:center;
+  width:46px;height:19px;flex-shrink:0;
+  background:rgba(12,12,12,.9);
+  border:1px solid var(--ui-border);border-bottom:none;
+  border-radius:10px 10px 0 0;
+  color:var(--ui-muted);font-size:13px;cursor:pointer;
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  -webkit-tap-highlight-color:transparent;
+}
+#mob-handle:active{color:var(--ui-text);}
+#mob-arrow{transition:transform .35s ease;}
+
+.mob-shell{
+  display:flex;align-items:center;gap:6px;
+  padding:7px;border-radius:20px;
+  background:rgba(12,12,12,.92);
+  border:1px solid var(--ui-border);
+  backdrop-filter:blur(18px) saturate(1.4);
+  -webkit-backdrop-filter:blur(18px) saturate(1.4);
+  box-shadow:0 14px 40px -12px rgba(0,0,0,.8);
+  max-width:100%;overflow-x:auto;scrollbar-width:none;
+}
+.mob-shell::-webkit-scrollbar{display:none;}
+
+.mob-split{display:flex;gap:3px;flex-shrink:0;}
+.mob-sp{
+  width:34px;height:38px;border-radius:11px;flex-shrink:0;
+  background:transparent;border:none;color:var(--ui-muted);
+  font-size:16px;cursor:pointer;transition:.18s;
+  display:grid;place-items:center;
+}
+.mob-sp:active{background:var(--ui-surface);}
+.mob-sp.on{background:var(--ui-glow);color:var(--ui-accent);}
+
+.mob-sep{width:1px;height:26px;background:var(--ui-border);flex-shrink:0;}
+
+.mob-row{display:flex;gap:2px;}
+.mob-btn{
+  display:flex;flex-direction:column;align-items:center;gap:2px;
+  min-width:52px;padding:6px 4px;border-radius:12px;flex-shrink:0;
+  background:transparent;border:none;color:var(--ui-muted);
+  font-family:inherit;font-size:9px;font-weight:600;cursor:pointer;
+  transition:background .18s, color .18s;
+  -webkit-tap-highlight-color:transparent;
+}
+.mob-btn i{font-size:17px;}
+.mob-btn.on{background:var(--ui-glow);color:var(--ui-accent);}
+.mob-btn:active{background:var(--ui-surface);}
+
+/* Répartition entre panneau et aperçu */
+#app.split-edit .panel{max-height:76dvh;}
+#app.split-edit .preview{min-height:0;}
+#app.split-view .panel{max-height:0;border-bottom:none;overflow:hidden;}
+#app.split-view .preview{flex:1;}
+.panel{transition:max-height .32s cubic-bezier(.4,0,.2,1);}
 
 @media(max-width:1024px){
   .panel{width:300px;}
 }
+/* ── Adaptation de l'éditeur aux écrans ──
+   L'utilisateur construit souvent son site depuis un
+   téléphone : le panneau et l'aperçu doivent rester
+   utilisables ensemble. */
 @media(max-width:820px){
   #app{flex-direction:column;}
   .rail{display:none;}
   .panel{
-    width:100%;height:auto;max-height:46vh;
+    width:100%;height:auto;
+    max-height:52dvh;
     border-right:none;border-bottom:1px solid var(--ui-border);
   }
   .preview{flex:1;min-height:0;}
   .pv-stage{padding:10px;}
-  #mob-nav{display:block;}
-  body{padding-bottom:70px;}
+  #mob-nav{display:flex;}
+  /* La barre flotte : plus besoin de réserver toute la hauteur
+     du bas, seulement de quoi ne pas masquer l'aperçu. */
+  body{padding-bottom:0;}
+  .pv-stage{padding-bottom:96px;}
   .pv-devs{display:none;}
+  .panel-body{padding:14px;}
+  .cats{grid-template-columns:repeat(3,1fr);}
+  .themes{grid-template-columns:repeat(3,1fr);}
+}
+
+@media(max-width:560px){
+  .panel{max-height:56dvh;}
+  .panel-body{padding:12px;}
+  .cats{grid-template-columns:1fr 1fr;}
+  .themes{grid-template-columns:1fr 1fr;}
+  .fld-row{grid-template-columns:1fr;}
+  .panel-head{padding:12px 14px;}
+  .panel-title{font-size:14px;}
+  /* Les listes déroulantes doivent rester touchables au doigt :
+     en dessous de 16px, les navigateurs mobiles zooment au
+     moment de la saisie. */
+  .fld input,.fld textarea,.fld select{font-size:16px;padding:11px 12px;}
+  .pv-url{max-width:150px;font-size:10px;}
+  .item-head{padding:12px;}
+  .grp-row{padding:11px;}
+  .cust-row{padding:11px;}
+}
+
+@media(max-width:400px){
+  .cats{grid-template-columns:1fr;}
+  .mob-row{gap:3px;}
+  #mob-nav .rail-btn{height:42px;font-size:17px;}
+}
+
+/* Écran bas de plafond : on rend le panneau plus discret pour
+   laisser voir l'aperçu. */
+@media(max-height:620px) and (max-width:820px){
+  .panel{max-height:44dvh;}
 }
 </style>
 </head>
@@ -626,22 +733,11 @@ body{
         </div>
         <div class="fld">
           <label>Apparition au défilement</label>
-          <select id="f-anim" onchange="setF('anim',this.value)">
-            <option value="none">Aucune</option>
-            <option value="fade">Fondu</option>
-            <option value="up">Glissement vers le haut</option>
-            <option value="zoom">Zoom</option>
-            <option value="flip">Retournement</option>
-          </select>
+          <select id="f-anim" onchange="setF('anim',this.value)"></select>
         </div>
         <div class="fld">
           <label>Effet au survol des produits</label>
-          <select id="f-hover" onchange="setF('hover',this.value)">
-            <option value="lift">Élévation</option>
-            <option value="zoom">Agrandissement de l'image</option>
-            <option value="glow">Halo lumineux</option>
-            <option value="none">Aucun</option>
-          </select>
+          <select id="f-hover" onchange="setF('hover',this.value)"></select>
         </div>
       </div>
 
@@ -780,15 +876,48 @@ body{
   </div>
 </div>
 
-<nav id="mob-nav">
-  <div class="mob-row">
-    <button class="rail-btn on" onclick="switchTab('infos',this)"><i class="ri-store-2-line"></i></button>
-    <button class="rail-btn" onclick="switchTab('catalogue',this)"><i class="ri-price-tag-3-line"></i></button>
-    <button class="rail-btn" onclick="switchTab('style',this)"><i class="ri-palette-line"></i></button>
-    <button class="rail-btn" onclick="switchTab('contact',this)"><i class="ri-customer-service-2-line"></i></button>
-    <button class="rail-btn" onclick="switchTab('avance',this)"><i class="ri-equalizer-3-line"></i></button>
+<!-- Barre flottante, rétractable, comme dans l'éditeur
+     portfolio. Elle ne prend plus toute la largeur du bas. -->
+<div id="mob-nav">
+  <button id="mob-handle" onclick="toggleMobNav()" aria-label="Afficher ou cacher la barre">
+    <i class="ri-arrow-up-s-line" id="mob-arrow"></i>
+  </button>
+
+  <div class="mob-shell">
+    <!-- Répartition entre le panneau et l'aperçu -->
+    <div class="mob-split">
+      <button class="mob-sp" id="sp-edit" onclick="setSplit('edit',this)" title="Agrandir l'éditeur">
+        <i class="ri-layout-top-line"></i>
+      </button>
+      <button class="mob-sp on" id="sp-half" onclick="setSplit('half',this)" title="Moitié-moitié">
+        <i class="ri-layout-row-line"></i>
+      </button>
+      <button class="mob-sp" id="sp-view" onclick="setSplit('view',this)" title="Agrandir le site">
+        <i class="ri-layout-bottom-line"></i>
+      </button>
+    </div>
+
+    <div class="mob-sep"></div>
+
+    <div class="mob-row">
+      <button class="mob-btn on" data-tab="infos" onclick="switchTab('infos',this)">
+        <i class="ri-store-2-line"></i><span>Infos</span>
+      </button>
+      <button class="mob-btn" data-tab="catalogue" onclick="switchTab('catalogue',this)">
+        <i class="ri-price-tag-3-line"></i><span>Produits</span>
+      </button>
+      <button class="mob-btn" data-tab="style" onclick="switchTab('style',this)">
+        <i class="ri-palette-line"></i><span>Style</span>
+      </button>
+      <button class="mob-btn" data-tab="contact" onclick="switchTab('contact',this)">
+        <i class="ri-customer-service-2-line"></i><span>Contact</span>
+      </button>
+      <button class="mob-btn" data-tab="avance" onclick="switchTab('avance',this)">
+        <i class="ri-equalizer-3-line"></i><span>Avancé</span>
+      </button>
+    </div>
   </div>
-</nav>
+</div>
 
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
@@ -968,6 +1097,179 @@ const THEMES = {
     bg:'#06120C', surf:'#0E2318', ink:'#DCFCE9', mute:'#6E9C82', accent:'#34D399',
     head:"'Syne',sans-serif", body:"'DM Sans',sans-serif",
     card:'surelever', hero:'immersif', deco:'courbe', radius:'20px', weight:800
+  },
+
+  /* ── Clairs — suite ──────────────────────────────── */
+  galerie: {
+    name:'Galerie', group:'Clair',
+    bg:'#FFFFFF', surf:'#FAFAF8', ink:'#111110', mute:'#7C7A74', accent:'#2E2E2C',
+    head:"'Cormorant Garamond',serif", body:"'DM Sans',sans-serif",
+    card:'contour', hero:'minimal', deco:'aucun', radius:'0px', weight:600
+  },
+  atelier: {
+    name:'Atelier', group:'Clair',
+    bg:'#FAF7F2', surf:'#EFE7DC', ink:'#251E15', mute:'#7E7059', accent:'#A0522D',
+    head:"'Syne',sans-serif", body:"'DM Sans',sans-serif",
+    card:'brut', hero:'scinde', deco:'rayures', radius:'8px', weight:800
+  },
+  marbre: {
+    name:'Marbre', group:'Clair',
+    bg:'#F8F8F6', surf:'#EDEDE8', ink:'#1C1C1A', mute:'#79796F', accent:'#A98A3F',
+    head:"'Cinzel',serif", body:"'DM Sans',sans-serif",
+    card:'contour', hero:'bandeau', deco:'lueur', radius:'3px', weight:700
+  },
+  lin: {
+    name:'Lin', group:'Clair',
+    bg:'#FBF9F4', surf:'#F0EADF', ink:'#2B2620', mute:'#82796B', accent:'#8C7A5B',
+    head:"'Cormorant Garamond',serif", body:"'DM Sans',sans-serif",
+    card:'doux', hero:'centre', deco:'courbe', radius:'18px', weight:600
+  },
+  studio: {
+    name:'Studio', group:'Clair',
+    bg:'#F4F4F5', surf:'#FFFFFF', ink:'#18181B', mute:'#71717A', accent:'#27272A',
+    head:"'Plus Jakarta Sans',sans-serif", body:"'DM Sans',sans-serif",
+    card:'surelever', hero:'scinde', deco:'aucun', radius:'12px', weight:800
+  },
+  ceramique: {
+    name:'Céramique', group:'Clair',
+    bg:'#FCF8F5', surf:'#F2E6DE', ink:'#332520', mute:'#8D7268', accent:'#B5654A',
+    head:"'Josefin Sans',sans-serif", body:"'DM Sans',sans-serif",
+    card:'doux', hero:'immersif', deco:'courbe', radius:'24px', weight:700
+  },
+  riviera: {
+    name:'Riviera', group:'Clair',
+    bg:'#FBFCFD', surf:'#E8F1F7', ink:'#12283A', mute:'#5F7E93', accent:'#1B6CA8',
+    head:"'Josefin Sans',sans-serif", body:"'DM Sans',sans-serif",
+    card:'surelever', hero:'bandeau', deco:'courbe', radius:'16px', weight:700
+  },
+  botanique: {
+    name:'Botanique', group:'Clair',
+    bg:'#F9FBF7', surf:'#E9F1E3', ink:'#1B2A17', mute:'#63795A', accent:'#4C7A34',
+    head:"'Cormorant Garamond',serif", body:"'DM Sans',sans-serif",
+    card:'contour', hero:'centre', deco:'rayures', radius:'6px', weight:600
+  },
+
+  /* ── Affirmés — suite ────────────────────────────── */
+  kiosque: {
+    name:'Kiosque', group:'Affirmé',
+    bg:'#FFFFFF', surf:'#F4F4F4', ink:'#0A0A0A', mute:'#5C5C5C', accent:'#D32027',
+    head:"'Bebas Neue',sans-serif", body:"'DM Sans',sans-serif",
+    card:'contour', hero:'bandeau', deco:'trame', radius:'0px', weight:800
+  },
+  graffiti: {
+    name:'Graffiti', group:'Affirmé',
+    bg:'#111114', surf:'#1D1D22', ink:'#F5F5F7', mute:'#8E8E99', accent:'#FF2E88',
+    head:"'Bebas Neue',sans-serif", body:"'DM Sans',sans-serif",
+    card:'brut', hero:'immersif', deco:'rayures', radius:'2px', weight:800
+  },
+  cirque: {
+    name:'Cirque', group:'Affirmé',
+    bg:'#FFF8F0', surf:'#FFE8D4', ink:'#26120A', mute:'#8A5C42', accent:'#E63946',
+    head:"'Bebas Neue',sans-serif", body:"'DM Sans',sans-serif",
+    card:'brut', hero:'centre', deco:'rayures', radius:'12px', weight:800
+  },
+  signal: {
+    name:'Signal', group:'Affirmé',
+    bg:'#0E0E0E', surf:'#1A1A1A', ink:'#FAFAFA', mute:'#8A8A8A', accent:'#FFD400',
+    head:"'Bebas Neue',sans-serif", body:"'DM Sans',sans-serif",
+    card:'brut', hero:'minimal', deco:'rayures', radius:'0px', weight:800
+  },
+  pop: {
+    name:'Pop', group:'Affirmé',
+    bg:'#FFFDF0', surf:'#FFFFFF', ink:'#0D0D2B', mute:'#5A5A7A', accent:'#2563EB',
+    head:"'Syne',sans-serif", body:"'DM Sans',sans-serif",
+    card:'brut', hero:'scinde', deco:'trame', radius:'14px', weight:800
+  },
+  beton: {
+    name:'Béton', group:'Affirmé',
+    bg:'#E8E8E6', surf:'#D6D6D2', ink:'#161614', mute:'#6B6B66', accent:'#3D3D38',
+    head:"'Syne',sans-serif", body:"'DM Sans',sans-serif",
+    card:'plat', hero:'minimal', deco:'trame', radius:'0px', weight:800
+  },
+
+  /* ── Sombres — suite ─────────────────────────────── */
+  onyx: {
+    name:'Onyx', group:'Sombre',
+    bg:'#050505', surf:'#101010', ink:'#FFFFFF', mute:'#7E7E7E', accent:'#E5E5E5',
+    head:"'Cormorant Garamond',serif", body:"'DM Sans',sans-serif",
+    card:'contour', hero:'minimal', deco:'aucun', radius:'0px', weight:600
+  },
+  velours: {
+    name:'Velours', group:'Sombre',
+    bg:'#140A10', surf:'#22101A', ink:'#FBEDF3', mute:'#A98394', accent:'#C2185B',
+    head:"'Playfair Display',serif", body:"'DM Sans',sans-serif",
+    card:'doux', hero:'immersif', deco:'lueur', radius:'20px', weight:700
+  },
+  cosmos: {
+    name:'Cosmos', group:'Sombre',
+    bg:'#05061A', surf:'#0D1030', ink:'#E7EAFF', mute:'#8189BC', accent:'#7B61FF',
+    head:"'Space Grotesk',sans-serif", body:"'DM Sans',sans-serif",
+    card:'verre', hero:'immersif', deco:'lueur', radius:'18px', weight:700
+  },
+  emeraude: {
+    name:'Émeraude', group:'Sombre',
+    bg:'#04140E', surf:'#0B2419', ink:'#E6FFF2', mute:'#6D9C86', accent:'#D4AF37',
+    head:"'Cinzel',serif", body:"'DM Sans',sans-serif",
+    card:'contour', hero:'bandeau', deco:'lueur', radius:'4px', weight:700
+  },
+  cendre: {
+    name:'Cendre', group:'Sombre',
+    bg:'#141416', surf:'#1F1F23', ink:'#EDEDF0', mute:'#8B8B93', accent:'#A1A1AA',
+    head:"'Plus Jakarta Sans',sans-serif", body:"'DM Sans',sans-serif",
+    card:'surelever', hero:'scinde', deco:'trame', radius:'14px', weight:800
+  },
+  ambre: {
+    name:'Ambre', group:'Sombre',
+    bg:'#100B04', surf:'#1E1509', ink:'#FFF3DE', mute:'#A98F68', accent:'#F59E0B',
+    head:"'Syne',sans-serif", body:"'DM Sans',sans-serif",
+    card:'contour', hero:'immersif', deco:'lueur', radius:'10px', weight:800
+  },
+  indigo: {
+    name:'Indigo', group:'Sombre',
+    bg:'#080B1F', surf:'#111634', ink:'#E9ECFF', mute:'#8189B8', accent:'#4F46E5',
+    head:"'Plus Jakarta Sans',sans-serif", body:"'DM Sans',sans-serif",
+    card:'verre', hero:'scinde', deco:'trame', radius:'18px', weight:800
+  },
+
+  /* ── Signature — inspirés des palettes d'Afrique ──
+     Ces thèmes ne cherchent pas le pittoresque : ce sont des
+     accords de couleurs, traités avec la même rigueur que les
+     autres familles. */
+  sahel: {
+    name:'Sahel', group:'Signature',
+    bg:'#FDF8EE', surf:'#F5E7CE', ink:'#2A1D0C', mute:'#8A7449', accent:'#C77D0A',
+    head:"'Syne',sans-serif", body:"'DM Sans',sans-serif",
+    card:'doux', hero:'bandeau', deco:'rayures', radius:'16px', weight:800
+  },
+  kente: {
+    name:'Kente', group:'Signature',
+    bg:'#100D06', surf:'#1F1A0C', ink:'#FFF6DC', mute:'#A99668', accent:'#E8B308',
+    head:"'Bebas Neue',sans-serif", body:"'DM Sans',sans-serif",
+    card:'brut', hero:'immersif', deco:'rayures', radius:'6px', weight:800
+  },
+  lagune: {
+    name:'Lagune', group:'Signature',
+    bg:'#F5FBFB', surf:'#DFF1F0', ink:'#0D2B2C', mute:'#5B8586', accent:'#FF6B4A',
+    head:"'Josefin Sans',sans-serif", body:"'DM Sans',sans-serif",
+    card:'doux', hero:'immersif', deco:'courbe', radius:'22px', weight:700
+  },
+  savane: {
+    name:'Savane', group:'Signature',
+    bg:'#FCF9F0', surf:'#F0E4C8', ink:'#2E2410', mute:'#877856', accent:'#8B6914',
+    head:"'Cormorant Garamond',serif", body:"'DM Sans',sans-serif",
+    card:'contour', hero:'scinde', deco:'courbe', radius:'10px', weight:600
+  },
+  cuivre: {
+    name:'Cuivre', group:'Signature',
+    bg:'#0E0A08', surf:'#1D1310', ink:'#FBEDE4', mute:'#A98773', accent:'#B87333',
+    head:"'Cinzel',serif", body:"'DM Sans',sans-serif",
+    card:'contour', hero:'bandeau', deco:'lueur', radius:'3px', weight:700
+  },
+  hibiscus: {
+    name:'Hibiscus', group:'Signature',
+    bg:'#FFF7F8', surf:'#FCE4E8', ink:'#2E1219', mute:'#946974', accent:'#C2185B',
+    head:"'Playfair Display',serif", body:"'DM Sans',sans-serif",
+    card:'doux', hero:'centre', deco:'courbe', radius:'26px', weight:700
   }
 };
 
@@ -1025,7 +1327,16 @@ const THEME_BACKDROP = {
   brutal:'grille',      marche:'diagonal',  sport:'diagonal',  retro:'bruit',
   mono:'grille',        verre:'maille',     neon:'halo',       luxe:'halo',
   bijou:'maille',       aurore:'maille',    nuit:'grille',     techno:'grille',
-  minuit:'halo',        foret:'vagues'
+  minuit:'halo',        foret:'vagues',
+
+  galerie:'aucun',      atelier:'bruit',    marbre:'degrade',  lin:'bruit',
+  studio:'grille',      ceramique:'vagues', riviera:'vagues',  botanique:'points',
+  kiosque:'grille',     graffiti:'diagonal',cirque:'points',   signal:'diagonal',
+  pop:'points',         beton:'grille',
+  onyx:'aucun',         velours:'halo',     cosmos:'maille',   emeraude:'halo',
+  cendre:'grille',      ambre:'halo',       indigo:'maille',
+  sahel:'diagonal',     kente:'diagonal',   lagune:'vagues',   savane:'degrade',
+  cuivre:'halo',        hibiscus:'vagues'
 };
 
 /* ══════════════════════════════════════════════════════
@@ -1225,15 +1536,46 @@ function toggleF(key, btn){
 }
 
 /* ── Navigation entre onglets ────────────────────── */
+/* ── BARRE FLOTTANTE ─────────────────────────────── */
+let mobNavHidden = false;
+let splitMode = 'half';
+
+function toggleMobNav(){
+  mobNavHidden = !mobNavHidden;
+  const nav = $('mob-nav');
+  if(nav) nav.classList.toggle('hidden', mobNavHidden);
+}
+
+/* Trois répartitions entre le panneau et l'aperçu :
+   éditeur agrandi, moitié-moitié, ou site plein écran. */
+function setSplit(mode, btn){
+  splitMode = mode;
+  const app = $('app');
+  if(app){
+    app.classList.remove('split-edit','split-view');
+    if(mode === 'edit') app.classList.add('split-edit');
+    if(mode === 'view') app.classList.add('split-view');
+  }
+  document.querySelectorAll('.mob-sp').forEach(b => b.classList.remove('on'));
+  const target = btn || $('sp-' + (mode === 'half' ? 'half' : mode));
+  if(target) target.classList.add('on');
+}
+
 const TAB_TITLES = {
   infos:'Informations', catalogue:'Catalogue',
   style:'Apparence', contact:'Contact et commandes', avance:'Avancé'
 };
 function switchTab(tab, btn){
+  // Si la barre était rangée, on la ressort : sinon l'utilisateur
+  // change d'onglet sans voir sa barre revenir.
+  if(mobNavHidden) toggleMobNav();
+  // Un panneau replié doit se rouvrir quand on choisit un onglet.
+  if(splitMode === 'view') setSplit('half');
+
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
   const el = $('tab-' + tab);
   if(el) el.classList.add('on');
-  document.querySelectorAll('.rail-btn').forEach(b => b.classList.remove('on'));
+  document.querySelectorAll('.rail-btn, .mob-btn').forEach(b => b.classList.remove('on'));
   if(btn) btn.classList.add('on');
   // Les deux barres (bureau et mobile) restent synchronisées.
   document.querySelectorAll('[data-tab="' + tab + '"]').forEach(b => b.classList.add('on'));
@@ -1530,7 +1872,7 @@ function renderThemes(){
   });
 
   let html = '';
-  ['Clair','Affirmé','Sombre','Autres'].forEach(function(g){
+  ['Clair','Affirmé','Sombre','Signature','Autres'].forEach(function(g){
     if(!groups[g]) return;
     html += '<div class="theme-group">' + g + '</div><div class="themes">';
     html += groups[g].map(function(k){
@@ -1562,6 +1904,18 @@ function pickTheme(k){
 /* Remplit les listes construites à partir des catalogues, pour
    qu'ajouter une animation n'oblige jamais à toucher au HTML. */
 function fillFxSelects(){
+  const an = $('f-anim');
+  if(an && !an.options.length){
+    an.innerHTML = Object.keys(SCROLL_FX).map(function(k){
+      return '<option value="' + k + '">' + SCROLL_FX[k].name + '</option>';
+    }).join('');
+  }
+  const hv = $('f-hover');
+  if(hv && !hv.options.length){
+    hv.innerHTML = Object.keys(HOVER_FX).map(function(k){
+      return '<option value="' + k + '">' + HOVER_FX[k].name + '</option>';
+    }).join('');
+  }
   const bg = $('f-liveBg');
   if(bg && !bg.options.length){
     bg.innerHTML = Object.keys(LIVE_BG).map(function(k){
@@ -1806,6 +2160,126 @@ function promoCSS(){
   '.sv-old{opacity:.5;font-weight:500;margin-right:4px;font-size:.82em;}',
   '@media(prefers-reduced-motion:reduce){.sv-promo{animation:none;}}'
   ].join('\n');
+}
+
+/* ══════════════════════════════════════════════════════
+   ANIMATIONS D'APPARITION
+   Se déclenchent quand l'élément entre dans l'écran.
+   Chacune part d'un état masqué et rejoint sa position finale.
+   ══════════════════════════════════════════════════════ */
+const SCROLL_FX = {
+  none:     { name:'Aucune' },
+  fade:     { name:'Fondu' },
+  up:       { name:'Montée' },
+  down:     { name:'Descente' },
+  left:     { name:'Depuis la gauche' },
+  right:    { name:'Depuis la droite' },
+  zoom:     { name:'Zoom avant' },
+  zoomOut:  { name:'Zoom arrière' },
+  flip:     { name:'Retournement' },
+  flipY:    { name:'Bascule latérale' },
+  rotate:   { name:'Rotation' },
+  blur:     { name:'Netteté' },
+  skew:     { name:'Inclinaison' },
+  bounce:   { name:'Rebond' },
+  swing:    { name:'Balancement' },
+  unfold:   { name:'Dépliage' }
+};
+
+function scrollFxCSS(){
+  return [
+  '.sv-anim{opacity:0;transition:opacity .65s ease, transform .65s cubic-bezier(.2,.9,.25,1), filter .65s ease;}',
+  '.sv-anim.sv-in{opacity:1;transform:none!important;filter:none!important;}',
+  '.sv-anim-fade{transform:none;}',
+  '.sv-anim-up{transform:translateY(30px);}',
+  '.sv-anim-down{transform:translateY(-30px);}',
+  '.sv-anim-left{transform:translateX(-38px);}',
+  '.sv-anim-right{transform:translateX(38px);}',
+  '.sv-anim-zoom{transform:scale(.88);}',
+  '.sv-anim-zoomOut{transform:scale(1.14);}',
+  '.sv-anim-flip{transform:perspective(800px) rotateX(-16deg);}',
+  '.sv-anim-flipY{transform:perspective(800px) rotateY(18deg);}',
+  '.sv-anim-rotate{transform:rotate(-5deg) scale(.94);}',
+  '.sv-anim-blur{filter:blur(9px);transform:scale(1.02);}',
+  '.sv-anim-skew{transform:skewY(4deg) translateY(22px);}',
+  /* Le rebond et le balancement demandent une courbe propre :
+     une transition linéaire les rendrait plats. */
+  '.sv-anim-bounce{transform:translateY(34px);',
+  '  transition:opacity .5s ease, transform .75s cubic-bezier(.34,1.7,.5,1);}',
+  '.sv-anim-swing{transform:rotate(6deg) translateY(20px);transform-origin:top center;',
+  '  transition:opacity .5s ease, transform .8s cubic-bezier(.36,1.6,.42,1);}',
+  '.sv-anim-unfold{transform:perspective(900px) rotateX(-70deg);transform-origin:top center;',
+  '  transition:opacity .6s ease, transform .8s cubic-bezier(.2,.9,.25,1);}',
+  '@media(prefers-reduced-motion:reduce){',
+  '  .sv-anim{opacity:1!important;transform:none!important;filter:none!important;transition:none!important;}',
+  '}'
+  ].join('\n');
+}
+
+/* ══════════════════════════════════════════════════════
+   EFFETS AU SURVOL DES PRODUITS
+   ══════════════════════════════════════════════════════ */
+const HOVER_FX = {
+  none:     { name:'Aucun' },
+  lift:     { name:'Élévation' },
+  zoom:     { name:'Zoom de l\'image' },
+  glow:     { name:'Halo lumineux' },
+  tilt:     { name:'Inclinaison' },
+  press:    { name:'Enfoncement' },
+  border:   { name:'Cadre qui se trace' },
+  shine:    { name:'Éclat qui traverse' },
+  curtain:  { name:'Voile qui monte' },
+  shadow:   { name:'Ombre décalée' },
+  grow:     { name:'Agrandissement' },
+  desat:    { name:'Couleur révélée' },
+  rise:     { name:'Image qui monte' },
+  outline:  { name:'Contour lumineux' }
+};
+
+function hoverFxCSS(kind){
+  const rules = {
+    lift:   '.sv-card:hover{transform:translateY(-7px);box-shadow:0 24px 46px -20px rgba(0,0,0,.45);}',
+    zoom:   '.sv-card:hover .sv-card-img img{transform:scale(1.1);}',
+    glow:   '.sv-card:hover{box-shadow:0 0 0 2px var(--acc),0 20px 42px -18px var(--acc);}',
+    tilt:   '.sv-card:hover{transform:rotate(-1.6deg) scale(1.03);}',
+    press:  '.sv-card:hover{transform:translateY(3px) scale(.985);'
+          + 'box-shadow:inset 0 3px 12px color-mix(in srgb,var(--ink) 18%,transparent);}',
+    border: '.sv-card{box-shadow:inset 0 0 0 0 var(--acc);}'
+          + '.sv-card:hover{box-shadow:inset 0 0 0 2.5px var(--acc);}',
+    shine:  '.sv-card{position:relative;overflow:hidden;}'
+          + '.sv-card::after{content:"";position:absolute;top:-50%;left:0;width:32%;height:200%;'
+          + 'background:color-mix(in srgb,var(--acc) 22%,#ffffff);opacity:0;filter:blur(7px);'
+          + 'pointer-events:none;z-index:3;}'
+          + '.sv-card:hover::after{opacity:.5;animation:hvShine .8s ease-out;}'
+          + '@keyframes hvShine{from{transform:translateX(-160%) rotate(22deg);}'
+          + 'to{transform:translateX(300%) rotate(22deg);}}',
+    curtain:'.sv-card{position:relative;overflow:hidden;}'
+          + '.sv-card::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;'
+          + 'background:color-mix(in srgb,var(--acc) 16%,transparent);'
+          + 'transform:translateY(101%);transition:transform .4s cubic-bezier(.4,0,.2,1);}'
+          + '.sv-card:hover::after{transform:translateY(0);}',
+    shadow: '.sv-card:hover{transform:translate(-4px,-4px);'
+          + 'box-shadow:8px 8px 0 0 color-mix(in srgb,var(--acc) 55%,transparent);}',
+    grow:   '.sv-card:hover{transform:scale(1.05);z-index:2;}',
+    // L'image est grisée au repos et retrouve ses couleurs au
+    // survol : le regard est guidé vers le produit visé.
+    desat:  '.sv-card-img img{filter:saturate(.35);transition:filter .45s ease,transform .5s ease;}'
+          + '.sv-card:hover .sv-card-img img{filter:saturate(1);}',
+    rise:   '.sv-card-img{overflow:hidden;}'
+          + '.sv-card:hover .sv-card-img img{transform:translateY(-8px) scale(1.06);}',
+    outline:'.sv-card{position:relative;}'
+          + '.sv-card::before{content:"";position:absolute;inset:-2px;border-radius:inherit;padding:2px;'
+          + 'background:linear-gradient(120deg,transparent,var(--acc),transparent);'
+          + 'background-size:220% 100%;opacity:0;transition:opacity .25s;pointer-events:none;z-index:3;'
+          + '-webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);'
+          + '-webkit-mask-composite:xor;'
+          + 'mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);'
+          + 'mask-composite:exclude;}'
+          + '.sv-card:hover::before{opacity:1;animation:hvOutline 1.5s linear infinite;}'
+          + '@keyframes hvOutline{to{background-position:220% 50%;}}'
+  };
+  const base = '.sv-card{transition:transform .35s cubic-bezier(.34,1.4,.64,1),box-shadow .35s ease;}';
+  return base + '\n' + (rules[kind] || '');
 }
 
 function themeCSS(T){
@@ -2126,10 +2600,6 @@ function buildSiteHTML(forExport){
     }
     .sv-add:hover{background:var(--acc);color:var(--bg);}
 
-    /* Effets au survol */
-    ${state.hover === 'lift' ? '.sv-card:hover{transform:translateY(-6px);box-shadow:0 22px 44px -20px rgba(0,0,0,.45);}' : ''}
-    ${state.hover === 'zoom' ? '.sv-card:hover .sv-card-img img{transform:scale(1.09);}' : ''}
-    ${state.hover === 'glow' ? '.sv-card:hover{box-shadow:0 0 0 2px var(--acc),0 18px 40px -18px var(--acc);}' : ''}
 
     .sv-about{
       background:var(--surf);border-radius:22px;
@@ -2195,18 +2665,69 @@ function buildSiteHTML(forExport){
     }
     .sv-wa:hover{transform:scale(1.1);}
 
-    /* Animations d'apparition */
-    .sv-anim{opacity:0;transition:opacity .6s ease,transform .6s cubic-bezier(.2,.9,.25,1);}
-    .sv-anim.sv-in{opacity:1;transform:none!important;}
-    .sv-anim-up{transform:translateY(26px);}
-    .sv-anim-zoom{transform:scale(.92);}
-    .sv-anim-flip{transform:perspective(700px) rotateX(-12deg);}
-    .sv-anim-fade{transform:none;}
+    /* Animations d'apparition et effets de survol */
+    ${scrollFxCSS()}
+    ${hoverFxCSS(state.hover)}
 
-    @media(max-width:640px){
+    /* ── Adaptation aux écrans ──
+       Le site doit être aussi soigné sur un téléphone d'entrée
+       de gamme que sur un grand écran. Trois paliers plutôt
+       qu'un seul : la zone tablette était laissée de côté. */
+
+    /* Tablette et petit portable */
+    @media(max-width:1024px){
+      .sv-wrap{padding:0 22px;}
+      .sv-grid{grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:15px;}
+      .sv-hero-in{gap:28px;}
+      .sv-info{grid-template-columns:repeat(auto-fit,minmax(190px,1fr));}
+    }
+
+    /* Grand téléphone et petite tablette */
+    @media(max-width:760px){
       .sv-nav-links{display:none;}
+      .sv-hero-in{grid-template-columns:1fr!important;}
+      .sv-hero-side{height:180px;}
       .sv-grid.lay-list .sv-card{grid-template-columns:1fr;}
-      .sv-wrap{padding:0 16px;}
+      .sv-grid.lay-list .sv-card-img{aspect-ratio:16/10;height:auto;}
+      .sv-sec{padding:clamp(30px,6vw,48px) 0;}
+      .sv-about{padding:22px;}
+      .sv-tabs{
+        /* Les onglets défilent horizontalement plutôt que de
+           s'empiler sur cinq lignes. */
+        flex-wrap:nowrap;overflow-x:auto;padding-bottom:6px;
+        scrollbar-width:none;-webkit-overflow-scrolling:touch;
+      }
+      .sv-tabs::-webkit-scrollbar{display:none;}
+      .sv-tab{flex-shrink:0;}
+    }
+
+    /* Téléphone */
+    @media(max-width:520px){
+      .sv-wrap{padding:0 15px;}
+      .sv-grid{grid-template-columns:repeat(2,1fr);gap:11px;}
+      .sv-card-body{padding:11px;}
+      .sv-card-t{font-size:14px;}
+      .sv-card-d{font-size:11.5px;}
+      .sv-card-foot{flex-direction:column;align-items:flex-start;gap:7px;}
+      .sv-add{width:100%;justify-content:center;padding:9px;}
+      .sv-price{font-size:14px;}
+      .sv-nav-in{padding:11px 0;}
+      .sv-bname{font-size:16px;}
+      .sv-logo,.sv-logo-txt{width:34px;height:34px;}
+      .sv-cart-btn{padding:8px 13px;font-size:12px;}
+      .sv-h1{font-size:clamp(25px,7vw,34px);}
+      .sv-tag{font-size:14.5px;}
+      .sv-cta{padding:12px 24px;font-size:13.5px;}
+      .sv-info-c{padding:15px;}
+      .sv-wa{width:48px;height:48px;font-size:23px;right:14px;bottom:14px;}
+      .sv-promo{font-size:10px;padding:4px 9px;top:8px;right:8px;}
+      .sv-foot-in{flex-direction:column;text-align:center;gap:14px;}
+    }
+
+    /* Très petit écran : une seule colonne, sinon les cartes
+       deviennent illisibles. */
+    @media(max-width:360px){
+      .sv-grid{grid-template-columns:1fr;}
     }
     @media(prefers-reduced-motion:reduce){
       .sv-anim{opacity:1;transform:none;transition:none;}
@@ -2349,20 +2870,42 @@ function activatePreviewCart(){
 }
 
 /* Les éléments apparaissent quand ils entrent dans l'écran. */
+/* Deux observateurs plutôt qu'un seul.
+   Avec un seul seuil, un élément posé pile sur la limite
+   entrait et sortait en boucle : l'animation tremblait à
+   l'écran, ce qui est très désagréable au défilement.
+
+   On sépare donc les deux décisions :
+   • l'élément APPARAÎT dès qu'il est franchement visible ;
+   • il ne se REMET à zéro qu'une fois nettement sorti.
+   Entre les deux, il existe une zone tampon où rien ne
+   change — l'animation reste donc stable, tout en se
+   rejouant à chaque nouveau passage. */
 function observeAnims(root){
   const els = root.querySelectorAll('.sv-anim');
   if(!els.length) return;
+
   if(!('IntersectionObserver' in window)){
     els.forEach(e => e.classList.add('sv-in'));
     return;
   }
-  const io = new IntersectionObserver(entries => {
+
+  // Apparition : l'élément doit être bien engagé dans l'écran.
+  const appear = new IntersectionObserver(entries => {
     entries.forEach(en => {
       if(en.isIntersecting) en.target.classList.add('sv-in');
-      else en.target.classList.remove('sv-in');
     });
-  }, { threshold:0.12, rootMargin:'0px 0px -8% 0px' });
-  els.forEach(e => io.observe(e));
+  }, { threshold:0.18, rootMargin:'0px 0px -12% 0px' });
+
+  // Remise à zéro : seulement quand l'élément est nettement
+  // sorti du cadre, bien au-delà du seuil d'apparition.
+  const reset = new IntersectionObserver(entries => {
+    entries.forEach(en => {
+      if(!en.isIntersecting) en.target.classList.remove('sv-in');
+    });
+  }, { threshold:0, rootMargin:'25% 0px 25% 0px' });
+
+  els.forEach(e => { appear.observe(e); reset.observe(e); });
 }
 
 /* ══════════════════════════════════════════════════════
@@ -2633,6 +3176,9 @@ function cartScript(ownerId){
   '}',
   '',
   '// Apparition au defilement dans le site publie.',
+  '// Deux observateurs : un pour faire apparaitre, un pour',
+  '// remettre a zero, avec une zone tampon entre les deux.',
+  '// Sans cela l animation tremble en bordure d ecran.',
   '(function(){',
   '  function go(){',
   '    var els = document.querySelectorAll(".sv-anim");',
@@ -2641,10 +3187,13 @@ function cartScript(ownerId){
   '      for(var i=0;i<els.length;i++) els[i].classList.add("sv-in");',
   '      return;',
   '    }',
-  '    var io = new IntersectionObserver(function(en){',
+  '    var appear = new IntersectionObserver(function(en){',
   '      for(var k=0;k<en.length;k++){ if(en[k].isIntersecting) en[k].target.classList.add("sv-in"); }',
-  '    }, { threshold:0.12, rootMargin:"0px 0px -8% 0px" });',
-  '    for(var j=0;j<els.length;j++) io.observe(els[j]);',
+  '    }, { threshold:0.18, rootMargin:"0px 0px -12% 0px" });',
+  '    var reset = new IntersectionObserver(function(en){',
+  '      for(var k=0;k<en.length;k++){ if(!en[k].isIntersecting) en[k].target.classList.remove("sv-in"); }',
+  '    }, { threshold:0, rootMargin:"25% 0px 25% 0px" });',
+  '    for(var j=0;j<els.length;j++){ appear.observe(els[j]); reset.observe(els[j]); }',
   '  }',
   '  if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", go);',
   '  else go();',
