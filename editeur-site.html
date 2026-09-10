@@ -213,6 +213,50 @@ body{
 }
 .upload:hover{border-color:var(--ui-accent);color:var(--ui-accent);}
 
+/* ── Chiffres clés ── */
+.stat-row{
+  display:flex;align-items:center;gap:5px;margin-bottom:6px;
+}
+.stat-row input{
+  padding:9px 10px;border-radius:9px;
+  background:var(--ui-surface);border:1px solid var(--ui-border);
+  color:var(--ui-text);font-family:inherit;font-size:12.5px;min-width:0;
+}
+.stat-row input:focus{outline:none;border-color:var(--ui-accent);}
+.stat-row .st-v{width:60px;flex-shrink:0;font-weight:700;}
+.stat-row .st-s{width:44px;flex-shrink:0;text-align:center;color:var(--ui-accent);}
+.stat-row .st-l{flex:1;}
+
+/* ── Caractéristiques produit ── */
+.spec-row{display:flex;align-items:center;gap:5px;margin-bottom:6px;}
+.spec-row select{
+  width:108px;flex-shrink:0;padding:8px 9px;border-radius:9px;
+  background:var(--ui-surface);border:1px solid var(--ui-border);
+  color:var(--ui-text);font-family:inherit;font-size:11.5px;
+}
+.spec-row input{
+  flex:1;min-width:0;padding:8px 10px;border-radius:9px;
+  background:var(--ui-surface);border:1px solid var(--ui-border);
+  color:var(--ui-text);font-family:inherit;font-size:12.5px;
+}
+.spec-row input:focus,.spec-row select:focus{outline:none;border-color:var(--ui-accent);}
+
+/* ── Galerie de photos produit ── */
+.pimg-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;}
+.pimg{position:relative;width:56px;height:56px;border-radius:9px;overflow:hidden;}
+.pimg img{width:100%;height:100%;object-fit:cover;display:block;}
+.pimg button{
+  position:absolute;top:2px;right:2px;
+  width:18px;height:18px;border-radius:50%;cursor:pointer;
+  background:rgba(0,0,0,.7);border:none;color:#fff;font-size:11px;
+  display:grid;place-items:center;
+}
+.pimg-main{
+  position:absolute;bottom:0;left:0;right:0;
+  background:var(--ui-accent);color:#fff;
+  font-size:7.5px;font-weight:700;text-align:center;padding:1px;
+}
+
 /* ── Promotions ── */
 .promo-box{
   margin:10px 0;padding:10px;border-radius:11px;
@@ -683,6 +727,23 @@ body{
         <div id="prod-list"></div>
         <button class="btn btn-add" onclick="addProduct()"><i class="ri-add-line"></i> Ajouter un produit</button>
 
+        <div class="sec-label"><i class="ri-bar-chart-2-line"></i> Chiffres clés<div class="sec-line"></div></div>
+        <p class="hint" style="margin-bottom:9px;">Un bandeau court sous la bannière : ancienneté, volume, note.</p>
+        <div class="tog">
+          <div><div class="tog-t">Afficher les chiffres</div><div class="tog-d">Rassure dès le premier écran</div></div>
+          <button class="sw on" id="sw-showStats" onclick="toggleF('showStats',this)"></button>
+        </div>
+        <div id="stat-list"></div>
+        <button class="btn btn-add" onclick="addStat()"><i class="ri-add-line"></i> Ajouter un chiffre</button>
+
+        <div class="sec-label"><i class="ri-chat-quote-line"></i> Avis clients<div class="sec-line"></div></div>
+        <div class="tog">
+          <div><div class="tog-t">Afficher les avis</div><div class="tog-d">Rien ne convainc mieux qu'un vrai client</div></div>
+          <button class="sw on" id="sw-showReviews" onclick="toggleF('showReviews',this)"></button>
+        </div>
+        <div id="review-list"></div>
+        <button class="btn btn-add" onclick="addReview()"><i class="ri-add-line"></i> Ajouter un avis</button>
+
         <div class="sec-label"><i class="ri-tools-line"></i> Vos services<div class="sec-line"></div></div>
         <div id="serv-list"></div>
         <button class="btn btn-add" onclick="addService()"><i class="ri-add-line"></i> Ajouter un service</button>
@@ -721,6 +782,64 @@ body{
         </div>
 
         <div class="sec-label"><i class="ri-sparkling-2-line"></i> Animations<div class="sec-line"></div></div>
+        <div class="fld">
+          <label>Animation du nom</label>
+          <select id="f-nameFx" onchange="setF('nameFx',this.value)"></select>
+        </div>
+        <div class="fld">
+          <label>Animation du slogan</label>
+          <select id="f-taglineFx" onchange="setF('taglineFx',this.value)"></select>
+        </div>
+        <div class="sec-label" style="margin-top:18px;"><i class="ri-image-line"></i> Image de fond<div class="sec-line"></div></div>
+        <label class="upload" for="up-sitebg"><i class="ri-image-add-line"></i> <span id="sitebg-lbl">Importer depuis mon appareil</span></label>
+        <input type="file" id="up-sitebg" accept="image/*" style="display:none" onchange="uploadSiteBg(event)">
+        <div class="fld" style="margin-top:6px;">
+          <input type="text" id="f-bgImage" placeholder="…ou coller un lien https://…" oninput="setF('bgImage',this.value)">
+        </div>
+        <div class="fld-row">
+          <div class="fld">
+            <label>Cadrage</label>
+            <select id="f-bgFit" onchange="setF('bgFit',this.value)">
+              <option value="cover">Remplir</option>
+              <option value="contain">Entière</option>
+              <option value="repeat">Motif répété</option>
+            </select>
+          </div>
+          <div class="fld">
+            <label>Position</label>
+            <select id="f-bgPos" onchange="setF('bgPos',this.value)">
+              <option value="center">Centre</option>
+              <option value="top">Haut</option>
+              <option value="bottom">Bas</option>
+              <option value="left">Gauche</option>
+              <option value="right">Droite</option>
+            </select>
+          </div>
+        </div>
+        <div class="fld">
+          <label>Voile sombre <span id="bgdim-out" style="opacity:.6;">55 %</span></label>
+          <input type="range" min="0" max="90" step="5" id="f-bgDim" style="width:100%;"
+                 oninput="setBgDim(this.value)">
+          <p class="hint">Assombrit l'image pour que le texte reste lisible par-dessus.</p>
+        </div>
+        <div class="fld">
+          <label>Flou <span id="bgblur-out" style="opacity:.6;">0 px</span></label>
+          <input type="range" min="0" max="14" step="1" id="f-bgBlur" style="width:100%;"
+                 oninput="setBgBlur(this.value)">
+        </div>
+        <button class="btn" onclick="clearSiteBg()"><i class="ri-close-line"></i> Retirer l'image</button>
+
+        <div class="sec-label" style="margin-top:18px;"><i class="ri-play-circle-line"></i> Vidéo de présentation<div class="sec-line"></div></div>
+        <div class="fld">
+          <label>Lien YouTube</label>
+          <input type="url" id="f-videoUrl" placeholder="https://youtu.be/..." oninput="setF('videoUrl',this.value)">
+          <p class="hint">Une courte vidéo de votre boutique ou d'un produit. Elle s'ouvre dans une fenêtre, sans quitter le site.</p>
+        </div>
+        <div class="fld">
+          <label>Texte du bouton</label>
+          <input type="text" id="f-videoTitle" oninput="setF('videoTitle',this.value)" placeholder="Découvrir en vidéo">
+        </div>
+
         <div class="fld">
           <label>Fond animé</label>
           <select id="f-liveBg" onchange="setF('liveBg',this.value)"></select>
@@ -1465,7 +1584,32 @@ let state = {
   theme     : 'editorial',
   custom    : {},
   liveBg    : 'souffle',
+  bgImage   : '',
+  bgFit     : 'cover',
+  bgPos     : 'center',
+  bgBlur    : 0,
+  bgDim     : 55,
+  videoUrl  : '',
+  videoTitle: 'Découvrir en vidéo',
+
+  // Chiffres clés affichés en bandeau sous la bannière
+  stats     : [
+    { id:1, value:'500', suffix:'+', label:'Clients satisfaits' },
+    { id:2, value:'12',  suffix:'+', label:'Années d\'expérience' },
+    { id:3, value:'24',  suffix:'h', label:'Livraison rapide' },
+    { id:4, value:'4.8', suffix:'/5', label:'Note moyenne' }
+  ],
+  showStats : true,
+
+  // Avis clients — vides par défaut : mieux vaut aucune preuve
+  // sociale qu'une preuve inventée.
+  reviews   : [],
+  showReviews: true,
+
+  footerNote: '',
   descFx    : 'monte',
+  nameFx    : 'none',
+  taglineFx : 'reflet',
   layout    : 'grid',
   currency  : 'FCFA',
   anim      : 'up',
@@ -1504,8 +1648,8 @@ let state = {
   showGroups: true,
 
   products  : [
-    { id:1, name:'Robe longue fleurie', price:15000, desc:'Coupe fluide, tissu léger. Tailles S à XL.', img:'', stock:true, group:'' },
-    { id:2, name:'Ensemble deux pièces', price:32000, desc:'Coton premium, finitions soignées.', img:'', stock:true, group:'' },
+    { id:1, name:'Robe longue fleurie', price:15000, desc:'Coupe fluide, tissu léger. Tailles S à XL.', img:'', stock:true, group:'', specs:[] },
+    { id:2, name:'Ensemble deux pièces', price:32000, desc:'Coton premium, finitions soignées.', img:'', stock:true, group:'', specs:[] },
     { id:3, name:'Foulard en soie',      price:8500,  desc:'Motifs exclusifs, fabriqué à la main.', img:'', stock:true, group:'' }
   ],
   services  : [],
@@ -1593,48 +1737,161 @@ function setDevice(cls, btn){
 }
 
 /* ── Images ──────────────────────────────────────── */
+/* ══════════════════════════════════════════════════════
+   IMAGES
+   Les photos sont converties en texte et enregistrées avec le
+   site. Sans compression, quelques photos suffisaient à
+   dépasser la capacité du navigateur : la sauvegarde échouait
+   en silence et tout le travail était perdu au rafraîchissement.
+
+   On redimensionne donc chaque image à l'envoi. La qualité
+   reste largement suffisante pour un site, et le poids devient
+   raisonnable.
+   ══════════════════════════════════════════════════════ */
+function compressImage(file, maxSide, quality){
+  return new Promise(function(resolve, reject){
+    const reader = new FileReader();
+    reader.onerror = function(){ reject(new Error('Lecture impossible.')); };
+    reader.onload = function(ev){
+      const img = new Image();
+      img.onerror = function(){ reject(new Error('Image illisible.')); };
+      img.onload = function(){
+        let w = img.width, h = img.height;
+        if(w > maxSide || h > maxSide){
+          if(w >= h){ h = Math.round(h * maxSide / w); w = maxSide; }
+          else { w = Math.round(w * maxSide / h); h = maxSide; }
+        }
+        try{
+          const cv = document.createElement('canvas');
+          cv.width = w; cv.height = h;
+          const ctx = cv.getContext('2d');
+          ctx.drawImage(img, 0, 0, w, h);
+          resolve(cv.toDataURL('image/jpeg', quality));
+        } catch(err){
+          // Sans canvas, on garde l'original plutôt que d'échouer.
+          resolve(ev.target.result);
+        }
+      };
+      img.src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
 function uploadImg(e, key){
   const file = e.target.files && e.target.files[0];
   if(!file) return;
-  if(file.size > 3 * 1024 * 1024){
-    alert('Image trop lourde (3 Mo maximum). Réduisez-la avant de l\'envoyer.');
+  if(file.size > 8 * 1024 * 1024){
+    alert('Image trop lourde (8 Mo maximum).');
     return;
   }
-  const r = new FileReader();
-  r.onload = ev => {
-    state[key] = ev.target.result;
-    const lbl = $(key + '-lbl');
+  const lbl = $(key + '-lbl');
+  if(lbl) lbl.textContent = 'Traitement…';
+  // La bannière est affichée en grand, le logo reste petit.
+  const maxSide = (key === 'hero') ? 1600 : 640;
+  compressImage(file, maxSide, 0.82).then(function(data){
+    state[key] = data;
     if(lbl) lbl.textContent = 'Image chargée ✓';
     render();
     scheduleSave();
-  };
-  r.readAsDataURL(file);
+  }).catch(function(err){
+    if(lbl) lbl.textContent = 'Choisir une image';
+    alert(err.message || 'Cette image n\'a pas pu être traitée.');
+  });
+}
+
+/* ── IMAGE DE FOND DU SITE ───────────────────────── */
+function uploadSiteBg(e){
+  const file = e.target.files && e.target.files[0];
+  if(!file) return;
+  if(file.size > 12 * 1024 * 1024){ alert('Image trop lourde (12 Mo maximum).'); return; }
+  const lbl = $('sitebg-lbl');
+  if(lbl) lbl.textContent = 'Traitement…';
+  // 1920 px : la définition d'un écran courant. Au-delà, le
+  // poids augmente sans gain visible.
+  compressImage(file, 1920, 0.82).then(function(data){
+    state.bgImage = data;
+    const inp = $('f-bgImage');
+    if(inp) inp.value = '';
+    if(lbl) lbl.textContent = 'Image importée ✓';
+    render(); scheduleSave();
+  }).catch(function(err){
+    if(lbl) lbl.textContent = 'Importer depuis mon appareil';
+    alert(err.message || 'Cette image n\'a pas pu être traitée.');
+  });
+}
+
+function clearSiteBg(){
+  state.bgImage = '';
+  const inp = $('f-bgImage'); if(inp) inp.value = '';
+  const lbl = $('sitebg-lbl'); if(lbl) lbl.textContent = 'Importer depuis mon appareil';
+  const f = $('up-sitebg'); if(f) f.value = '';
+  render(); scheduleSave();
+}
+
+function setBgDim(v){
+  state.bgDim = parseInt(v) || 0;
+  const o = $('bgdim-out'); if(o) o.textContent = state.bgDim + ' %';
+  render(); scheduleSave();
+}
+function setBgBlur(v){
+  state.bgBlur = parseInt(v) || 0;
+  const o = $('bgblur-out'); if(o) o.textContent = state.bgBlur + ' px';
+  render(); scheduleSave();
+}
+
+/* ── VIDÉO ───────────────────────────────────────────
+   On accepte les trois formes de lien YouTube et on en
+   extrait l'identifiant. Coller n'importe lequel doit
+   fonctionner : l'utilisateur ne doit pas avoir à réfléchir. */
+function youtubeId(url){
+  const s = String(url || '').trim();
+  if(!s) return '';
+  let m = s.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/shorts\/)([A-Za-z0-9_-]{11})/);
+  if(m) return m[1];
+  // L'utilisateur a peut-être collé l'identifiant seul.
+  if(/^[A-Za-z0-9_-]{11}$/.test(s)) return s;
+  return '';
 }
 
 function uploadProdImg(e, id, kind){
   const file = e.target.files && e.target.files[0];
   if(!file) return;
-  if(file.size > 3 * 1024 * 1024){
-    alert('Image trop lourde (3 Mo maximum).');
+  if(file.size > 8 * 1024 * 1024){
+    alert('Image trop lourde (8 Mo maximum).');
     return;
   }
   const list = kind === 'service' ? state.services : state.products;
   const item = list.find(p => p.id === id);
   if(!item) return;
-  const r = new FileReader();
-  r.onload = ev => {
-    item.img = ev.target.result;
-    renderLists();
-    render();
-    scheduleSave();
-  };
-  r.readAsDataURL(file);
+  compressImage(file, 900, 0.8).then(function(data){
+    // Chaque produit peut porter plusieurs photos : la première
+    // sert de vignette, les suivantes s'affichent en grand.
+    if(!Array.isArray(item.imgs)) item.imgs = item.img ? [item.img] : [];
+    if(item.imgs.length >= 5){
+      alert('Cinq photos maximum par produit.');
+      return;
+    }
+    item.imgs.push(data);
+    item.img = item.imgs[0];
+    renderLists(); render(); scheduleSave();
+  }).catch(function(err){
+    alert(err.message || 'Cette image n\'a pas pu être traitée.');
+  });
+}
+
+function delProdImg(kind, id, idx){
+  const item = findItem(kind, id);
+  if(!item || !Array.isArray(item.imgs)) return;
+  item.imgs.splice(idx, 1);
+  item.img = item.imgs[0] || '';
+  renderLists(); render(); scheduleSave();
 }
 
 /* ── Produits et services ────────────────────────── */
 function addProduct(){
   const id = Date.now();
-  state.products.push({ id, name:'Nouveau produit', price:0, desc:'', img:'', stock:true, group:'' });
+  state.products.push({ id, name:'Nouveau produit', price:0, desc:'', img:'', stock:true, group:'', specs:[] });
   renderLists(); render(); scheduleSave();
   setTimeout(() => {
     const el = document.querySelector('[data-item="' + id + '"]');
@@ -1644,7 +1901,7 @@ function addProduct(){
 
 function addService(){
   const id = Date.now();
-  state.services.push({ id, name:'Nouvelle prestation', price:0, desc:'', img:'', stock:true, group:'' });
+  state.services.push({ id, name:'Nouvelle prestation', price:0, desc:'', img:'', stock:true, group:'', specs:[] });
   renderLists(); render(); scheduleSave();
 }
 
@@ -1738,6 +1995,221 @@ function delItem(kind, id){
 
 function toggleItem(el){ el.closest('.item').classList.toggle('open'); }
 
+/* ══════════════════════════════════════════════════════
+   CHIFFRES CLÉS
+   Un bandeau court sous la bannière. C'est ce qui rassure en
+   premier : ancienneté, volume, note. Quatre au maximum —
+   au-delà, plus personne ne les lit.
+   ══════════════════════════════════════════════════════ */
+function renderStats(){
+  const el = $('stat-list');
+  if(!el) return;
+  if(!Array.isArray(state.stats)) state.stats = [];
+  if(!state.stats.length){
+    el.innerHTML = '<p class="hint" style="text-align:center;padding:10px 0;">Aucun chiffre pour l\'instant.</p>';
+    return;
+  }
+  el.innerHTML = state.stats.map(function(s){
+    return '<div class="stat-row">'
+      + '<input type="text" class="st-v" value="' + esc(s.value) + '" placeholder="500"'
+      +   ' oninput="updStat(' + s.id + ',\'value\',this.value)">'
+      + '<input type="text" class="st-s" value="' + esc(s.suffix) + '" placeholder="+"'
+      +   ' oninput="updStat(' + s.id + ',\'suffix\',this.value)">'
+      + '<input type="text" class="st-l" value="' + esc(s.label) + '" placeholder="Clients satisfaits"'
+      +   ' oninput="updStat(' + s.id + ',\'label\',this.value)">'
+      + '<button class="item-del" onclick="delStat(' + s.id + ')"><i class="ri-close-line"></i></button>'
+      + '</div>';
+  }).join('');
+}
+
+function addStat(){
+  if(!Array.isArray(state.stats)) state.stats = [];
+  if(state.stats.length >= 4){
+    alert('Quatre chiffres au maximum : au-delà, le bandeau devient illisible.');
+    return;
+  }
+  state.stats.push({ id: Date.now(), value:'', suffix:'', label:'' });
+  renderStats(); render(); scheduleSave();
+}
+
+function updStat(id, field, val){
+  const s = state.stats.find(function(x){ return x.id === id; });
+  if(!s) return;
+  s[field] = val;
+  // On ne reconstruit pas la liste : le curseur de saisie serait
+  // perdu à chaque frappe.
+  render(); scheduleSave();
+}
+
+function delStat(id){
+  state.stats = state.stats.filter(function(x){ return x.id !== id; });
+  renderStats(); render(); scheduleSave();
+}
+
+/* ══════════════════════════════════════════════════════
+   AVIS CLIENTS
+   Vides par défaut, et c'est volontaire : une preuve sociale
+   inventée se retourne contre le commerçant le jour où un
+   client s'en aperçoit.
+   ══════════════════════════════════════════════════════ */
+function renderReviews(){
+  const el = $('review-list');
+  if(!el) return;
+  if(!Array.isArray(state.reviews)) state.reviews = [];
+  if(!state.reviews.length){
+    el.innerHTML = '<p class="hint" style="text-align:center;padding:10px 0;">'
+      + 'Aucun avis. Ajoutez ceux de vos vrais clients — un avis inventé '
+      + 'se retourne contre vous le jour où quelqu\'un s\'en aperçoit.</p>';
+    return;
+  }
+  el.innerHTML = state.reviews.map(function(r){
+    return '<div class="item" data-rev="' + r.id + '">'
+      + '<div class="item-head" onclick="toggleItem(this)">'
+      +   '<div class="item-thumb">' + (r.avatar ? '<img src="' + r.avatar + '" alt="">' : '<i class="ri-user-line"></i>') + '</div>'
+      +   '<div class="item-info"><div class="item-name">' + esc(r.name || 'Sans nom') + '</div>'
+      +   '<div class="item-price">' + '★'.repeat(r.rating || 5) + '</div></div>'
+      +   '<button class="item-del" onclick="event.stopPropagation();delReview(' + r.id + ')"><i class="ri-delete-bin-line"></i></button>'
+      + '</div>'
+      + '<div class="item-body">'
+      +   '<div class="fld"><label>Nom du client</label><input type="text" value="' + esc(r.name) + '" oninput="updReview(' + r.id + ',\'name\',this.value)"></div>'
+      +   '<div class="fld"><label>Qualité ou ville</label><input type="text" value="' + esc(r.role) + '" placeholder="Cliente · Douala" oninput="updReview(' + r.id + ',\'role\',this.value)"></div>'
+      +   '<div class="fld"><label>Son avis</label><textarea oninput="updReview(' + r.id + ',\'text\',this.value)">' + esc(r.text) + '</textarea></div>'
+      +   '<div class="fld"><label>Note</label><select onchange="updReview(' + r.id + ',\'rating\',parseInt(this.value))">'
+      +     [5,4,3,2,1].map(function(n){
+              return '<option value="' + n + '"' + ((r.rating||5) === n ? ' selected' : '') + '>' + '★'.repeat(n) + ' (' + n + '/5)</option>';
+            }).join('')
+      +   '</select></div>'
+      +   '<div class="fld" style="margin-bottom:0;"><label>Photo (facultatif)</label>'
+      +     '<label class="upload" for="up-rev-' + r.id + '"><i class="ri-image-add-line"></i> ' + (r.avatar ? 'Remplacer' : 'Ajouter') + '</label>'
+      +     '<input type="file" id="up-rev-' + r.id + '" accept="image/*" style="display:none" onchange="uploadReviewImg(event,' + r.id + ')">'
+      +   '</div>'
+      + '</div></div>';
+  }).join('');
+}
+
+function addReview(){
+  if(!Array.isArray(state.reviews)) state.reviews = [];
+  const id = Date.now();
+  state.reviews.push({ id, name:'', role:'', text:'', rating:5, avatar:'' });
+  renderReviews(); render(); scheduleSave();
+  setTimeout(function(){
+    const el = document.querySelector('[data-rev="' + id + '"]');
+    if(el){ el.classList.add('open'); el.scrollIntoView({behavior:'smooth',block:'center'}); }
+  }, 60);
+}
+
+function updReview(id, field, val){
+  const r = state.reviews.find(function(x){ return x.id === id; });
+  if(!r) return;
+  r[field] = val;
+  if(field === 'name' || field === 'rating'){
+    const card = document.querySelector('[data-rev="' + id + '"]');
+    if(card){
+      const n = card.querySelector('.item-name');
+      const s = card.querySelector('.item-price');
+      if(n && field === 'name') n.textContent = val || 'Sans nom';
+      if(s && field === 'rating') s.textContent = '★'.repeat(val);
+    }
+  }
+  render(); scheduleSave();
+}
+
+function delReview(id){
+  if(!confirm('Supprimer cet avis ?')) return;
+  state.reviews = state.reviews.filter(function(x){ return x.id !== id; });
+  renderReviews(); render(); scheduleSave();
+}
+
+function uploadReviewImg(e, id){
+  const file = e.target.files && e.target.files[0];
+  if(!file) return;
+  const r = state.reviews.find(function(x){ return x.id === id; });
+  if(!r) return;
+  // Une photo d'avis s'affiche en petit rond : 200 px suffisent.
+  compressImage(file, 200, 0.82).then(function(data){
+    r.avatar = data;
+    renderReviews(); render(); scheduleSave();
+  }).catch(function(err){ alert(err.message || 'Image illisible.'); });
+}
+
+/* ══════════════════════════════════════════════════════
+   CARACTÉRISTIQUES DES PRODUITS
+   Trois repères sous le nom : capacité, garantie, état…
+   Ce sont eux qui font la différence entre une liste de prix
+   et une vraie fiche produit.
+   ══════════════════════════════════════════════════════ */
+const SPEC_ICONS = [
+  { v:'ri-checkbox-circle-line', n:'Coche' },
+  { v:'ri-database-2-line',      n:'Capacité' },
+  { v:'ri-cpu-line',             n:'Puissance' },
+  { v:'ri-battery-2-charge-line',n:'Batterie' },
+  { v:'ri-ruler-line',           n:'Dimensions' },
+  { v:'ri-scales-line',          n:'Poids' },
+  { v:'ri-shield-check-line',    n:'Garantie' },
+  { v:'ri-palette-line',         n:'Couleur' },
+  { v:'ri-t-shirt-line',         n:'Taille' },
+  { v:'ri-truck-line',           n:'Livraison' },
+  { v:'ri-map-pin-line',         n:'Lieu' },
+  { v:'ri-time-line',            n:'Durée' },
+  { v:'ri-star-line',            n:'Qualité' },
+  { v:'ri-hotel-bed-line',       n:'Chambres' },
+  { v:'ri-home-4-line',          n:'Surface' }
+];
+
+function specRows(kind, p){
+  const list = Array.isArray(p.specs) ? p.specs : [];
+  let h = '<div class="fld"><label>Caractéristiques (3 maximum)</label>';
+  list.forEach(function(sp, i){
+    h += '<div class="spec-row">'
+      + '<select onchange="updSpec(\'' + kind + '\',' + p.id + ',' + i + ',\'icon\',this.value)">'
+      +   SPEC_ICONS.map(function(o){
+            return '<option value="' + o.v + '"' + (sp.icon === o.v ? ' selected' : '') + '>' + o.n + '</option>';
+          }).join('')
+      + '</select>'
+      + '<input type="text" value="' + esc(sp.text) + '" placeholder="128 Go"'
+      +   ' oninput="updSpec(\'' + kind + '\',' + p.id + ',' + i + ',\'text\',this.value)">'
+      + '<button class="item-del" onclick="delSpec(\'' + kind + '\',' + p.id + ',' + i + ')"><i class="ri-close-line"></i></button>'
+      + '</div>';
+  });
+  if(list.length < 3){
+    h += '<button class="btn btn-add" style="padding:8px;font-size:11.5px;" onclick="addSpec(\'' + kind + '\',' + p.id + ')">'
+      +  '<i class="ri-add-line"></i> Ajouter une caractéristique</button>';
+  }
+  h += '</div>';
+  return h;
+}
+
+function addSpec(kind, id){
+  const p = findItem(kind, id);
+  if(!p) return;
+  if(!Array.isArray(p.specs)) p.specs = [];
+  if(p.specs.length >= 3) return;
+  p.specs.push({ icon:'ri-checkbox-circle-line', text:'' });
+  renderLists(); render(); scheduleSave();
+  setTimeout(function(){
+    const card = document.querySelector('[data-item="' + id + '"]');
+    if(card) card.classList.add('open');
+  }, 40);
+}
+
+function updSpec(kind, id, i, field, val){
+  const p = findItem(kind, id);
+  if(!p || !Array.isArray(p.specs) || !p.specs[i]) return;
+  p.specs[i][field] = val;
+  render(); scheduleSave();
+}
+
+function delSpec(kind, id, i){
+  const p = findItem(kind, id);
+  if(!p || !Array.isArray(p.specs)) return;
+  p.specs.splice(i, 1);
+  renderLists(); render(); scheduleSave();
+  setTimeout(function(){
+    const card = document.querySelector('[data-item="' + id + '"]');
+    if(card) card.classList.add('open');
+  }, 40);
+}
+
 /* ── RAYONS ──────────────────────────────────────── */
 function renderGroups(){
   const el = $('group-list');
@@ -1828,9 +2300,19 @@ function renderLists(){
             }).join('')
       +   '</select></div>'
       +   '<div class="fld"><label>Description</label><textarea oninput="updItem(\'' + kind + '\',' + p.id + ',\'desc\',this.value)">' + esc(p.desc) + '</textarea></div>'
-      +   '<div class="fld"><label>Photo</label>'
-      +     '<label class="upload" for="up-' + kind + '-' + p.id + '"><i class="ri-image-add-line"></i> ' + (p.img ? 'Remplacer' : 'Ajouter une photo') + '</label>'
+      +   specRows(kind, p)
+      +   '<div class="fld"><label>Photos (5 maximum)</label>'
+      +     (Array.isArray(p.imgs) && p.imgs.length
+              ? '<div class="pimg-row">' + p.imgs.map(function(src, i){
+                  return '<div class="pimg">' + (i===0 ? '<span class="pimg-main">Vignette</span>' : '')
+                       + '<img src="' + src + '" alt="">'
+                       + '<button onclick="delProdImg(\'' + kind + '\',' + p.id + ',' + i + ')"><i class="ri-close-line"></i></button></div>';
+                }).join('') + '</div>'
+              : '')
+      +     '<label class="upload" for="up-' + kind + '-' + p.id + '"><i class="ri-image-add-line"></i> '
+      +       ((Array.isArray(p.imgs) && p.imgs.length) ? 'Ajouter une vue' : 'Ajouter une photo') + '</label>'
       +     '<input type="file" id="up-' + kind + '-' + p.id + '" accept="image/*" style="display:none" onchange="uploadProdImg(event,' + p.id + ',\'' + kind + '\')">'
+      +     '<p class="hint">Plusieurs angles rassurent l\'acheteur : face, dos, détail.</p>'
       +   '</div>'
       +   '<div class="tog" style="margin-bottom:0;">'
       +     '<div><div class="tog-t">Disponible</div></div>'
@@ -1904,6 +2386,17 @@ function pickTheme(k){
 /* Remplit les listes construites à partir des catalogues, pour
    qu'ajouter une animation n'oblige jamais à toucher au HTML. */
 function fillFxSelects(){
+  ['nameFx','taglineFx'].forEach(function(id){
+    const el = $('f-' + id);
+    if(el && !el.options.length){
+      el.innerHTML = Object.keys(TEXT_FX).map(function(k){
+        // Le défilement n'a de sens que pour le slogan : sur un
+        // nom court, il n'apporte rien.
+        if(k === 'defile' && id === 'nameFx') return '';
+        return '<option value="' + k + '">' + TEXT_FX[k].name + '</option>';
+      }).join('');
+    }
+  });
   const an = $('f-anim');
   if(an && !an.options.length){
     an.innerHTML = Object.keys(SCROLL_FX).map(function(k){
@@ -1933,13 +2426,15 @@ function fillFxSelects(){
 function syncPanel(){
   fillFxSelects();
   const map = ['name','tagline','about','prodTitle','phone','whatsapp','email',
-               'address','hours','facebook','instagram','tiktok','zones','mapsUrl'];
+               'address','hours','facebook','instagram','tiktok','zones','mapsUrl',
+               'bgImage','videoUrl','videoTitle'];
   map.forEach(k => { const el = $('f-' + k); if(el) el.value = state[k] || ''; });
-  ['layout','currency','anim','hover','liveBg','descFx'].forEach(k => {
+  ['layout','currency','anim','hover','liveBg','descFx','nameFx','taglineFx',
+   'bgFit','bgPos'].forEach(k => {
     const el = $('f-' + k); if(el) el.value = state[k];
   });
   const d = $('f-delivery'); if(d) d.value = state.delivery || 0;
-  ['orders','waOrder','showHero','showAbout','showSearch','showWa','showGroups','showMap'].forEach(k => {
+  ['orders','waOrder','showHero','showAbout','showSearch','showWa','showGroups','showMap','showStats','showReviews'].forEach(k => {
     const el = $('sw-' + k); if(el) el.classList.toggle('on', !!state[k]);
   });
   if(state.logo){ const l = $('logo-lbl'); if(l) l.textContent = 'Image chargée ✓'; }
@@ -1949,13 +2444,42 @@ function syncPanel(){
 }
 
 /* ── Sauvegarde locale ───────────────────────────── */
+let storageWarned = false;
+
 function scheduleSave(){
   clearTimeout(saveTimer);
   saveTimer = setTimeout(() => {
-    try{ localStorage.setItem(DRAFT_KEY, JSON.stringify(state)); }catch(e){}
+    try{
+      localStorage.setItem(DRAFT_KEY, JSON.stringify(state));
+      setSync(currentUser ? 'busy' : 'ok');
+      storageWarned = false;
+    } catch(err){
+      // L'échec était avalé en silence : l'utilisateur perdait
+      // tout au rafraîchissement sans jamais comprendre pourquoi.
+      // On l'avertit maintenant, une seule fois, et on lui dit
+      // quoi faire.
+      console.warn('[Site] Sauvegarde locale impossible :', err);
+      setSync('err');
+      if(!storageWarned){
+        storageWarned = true;
+        alert('Votre navigateur ne peut plus enregistrer ce site : les photos '
+            + 'prennent trop de place.\n\n'
+            + 'Connectez-vous pour sauvegarder en ligne, ou retirez quelques '
+            + 'photos.\n\nSans cela, votre travail sera perdu si vous '
+            + 'rafraîchissez la page.');
+      }
+    }
     saveToCloud();
   }, 900);
 }
+
+/* Dernier filet : si l'utilisateur ferme ou rafraîchit avant la
+   fin du délai, on enregistre immédiatement. Sans cela, les
+   900 dernières millisecondes de travail étaient perdues. */
+window.addEventListener('beforeunload', function(){
+  clearTimeout(saveTimer);
+  try{ localStorage.setItem(DRAFT_KEY, JSON.stringify(state)); }catch(e){}
+});
 
 // L'état par défaut est figé au démarrage : il sert de référence
 // pour compléter les brouillons anciens.
@@ -2282,6 +2806,241 @@ function hoverFxCSS(kind){
   return base + '\n' + (rules[kind] || '');
 }
 
+/* ══════════════════════════════════════════════════════
+   ANIMATIONS DE TEXTE
+   Portent sur le nom de la boutique et le slogan. Elles
+   dérivent des couleurs du thème, comme le reste.
+   ══════════════════════════════════════════════════════ */
+const TEXT_FX = {
+  none:      { name:'Aucune' },
+  reflet:    { name:'Reflet' },
+  degrade:   { name:'Dégradé mouvant' },
+  machine:   { name:'Machine à écrire' },
+  defile:    { name:'Défilement continu' },
+  lueur:     { name:'Lueur' },
+  respire:   { name:'Respiration' },
+  neon:      { name:'Néon' },
+  ecarte:    { name:'Lettres écartées' },
+  souligne:  { name:'Soulignement' },
+  ondule:    { name:'Ondulation' },
+  releve:    { name:'Relief' }
+};
+
+function textFxCSS(){
+  return [
+  '@keyframes txReflet{0%,100%{background-position:190% 0;}50%{background-position:-90% 0;}}',
+  '@keyframes txDegrade{0%,100%{background-position:0% 50%;}50%{background-position:100% 50%;}}',
+  '@keyframes txLueur{0%,100%{text-shadow:0 0 0 transparent;}50%{text-shadow:0 0 20px currentColor;}}',
+  '@keyframes txRespire{0%,100%{opacity:1;letter-spacing:normal;}50%{opacity:.8;letter-spacing:.7px;}}',
+  '@keyframes txNeon{0%,100%{opacity:1;}47%,53%{opacity:1;}49%{opacity:.4;}51%{opacity:.75;}}',
+  '@keyframes txEcarte{0%,100%{letter-spacing:normal;}50%{letter-spacing:4px;}}',
+  '@keyframes txSouligne{0%,100%{background-size:0% 2px;}50%{background-size:100% 2px;}}',
+  '@keyframes txOndule{0%,100%{transform:skewY(0);}25%{transform:skewY(-1.4deg);}75%{transform:skewY(1.4deg);}}',
+  '@keyframes txReleve{0%,100%{text-shadow:0 1px 0 color-mix(in srgb,currentColor 30%,transparent);}',
+  '50%{text-shadow:0 6px 12px color-mix(in srgb,currentColor 45%,transparent);}}',
+  '@keyframes txCaret{0%,49%{border-right-color:currentColor;}50%,100%{border-right-color:transparent;}}',
+  '@keyframes txMachine{0%{width:0;}45%{width:100%;}55%{width:100%;}100%{width:0;}}',
+  '@keyframes txDefile{0%{transform:translateX(0);}100%{transform:translateX(-50%);}}',
+
+  '.tx-reflet{background-image:linear-gradient(100deg,currentColor 0%,currentColor 38%,',
+  '  color-mix(in srgb,currentColor 25%,#ffffff) 50%,currentColor 62%,currentColor 100%);',
+  '  background-size:250% 100%;-webkit-background-clip:text;background-clip:text;',
+  '  -webkit-text-fill-color:transparent;animation:txReflet 5s ease-in-out infinite;}',
+
+  '.tx-degrade{background-image:linear-gradient(90deg,currentColor,',
+  '  color-mix(in srgb,var(--acc) 70%,#ffffff),currentColor);',
+  '  background-size:220% 100%;-webkit-background-clip:text;background-clip:text;',
+  '  -webkit-text-fill-color:transparent;animation:txDegrade 6s ease-in-out infinite;}',
+
+  '.tx-machine{display:inline-block;overflow:hidden;white-space:nowrap;',
+  '  border-right:2px solid currentColor;animation:txMachine 6s steps(40) infinite,',
+  '  txCaret 1s step-end infinite;}',
+
+  /* Défilement continu : le texte est dupliqué pour que la
+     boucle se referme sans saut visible. */
+  '.tx-defile-wrap{overflow:hidden;width:100%;}',
+  '.tx-defile{display:inline-flex;white-space:nowrap;animation:txDefile 18s linear infinite;}',
+  '.tx-defile span{padding-right:3rem;}',
+
+  '.tx-lueur{animation:txLueur 3.6s ease-in-out infinite;}',
+  '.tx-respire{animation:txRespire 4.2s ease-in-out infinite;}',
+  '.tx-neon{animation:txNeon 6s linear infinite;}',
+  '.tx-ecarte{animation:txEcarte 5.4s ease-in-out infinite;}',
+  '.tx-souligne{background-image:linear-gradient(currentColor,currentColor);',
+  '  background-repeat:no-repeat;background-position:0 100%;background-size:0% 2px;',
+  '  animation:txSouligne 4.6s ease-in-out infinite;padding-bottom:4px;}',
+  '.tx-ondule{display:inline-block;animation:txOndule 5.2s ease-in-out infinite;}',
+  '.tx-releve{animation:txReleve 4.4s ease-in-out infinite;}',
+
+  '@media(prefers-reduced-motion:reduce){',
+  '  [class*="tx-"]{animation:none!important;}',
+  '  .tx-machine{width:auto!important;border-right:none;}',
+  '}'
+  ].join('\n');
+}
+
+/* ══════════════════════════════════════════════════════
+   FICHE PRODUIT
+   Le client clique sur un produit et voit une grande fiche :
+   plusieurs photos, description complète, quantité, ajout au
+   panier. C'est là que se décide l'achat.
+   ══════════════════════════════════════════════════════ */
+function detailCSS(){
+  return [
+  '.sv-modal{',
+  '  display:none;position:fixed;inset:0;z-index:220;',
+  '  background:rgba(0,0,0,.72);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);',
+  '  align-items:center;justify-content:center;padding:16px;',
+  '}',
+  '.sv-modal.open{display:flex;}',
+  '.sv-modal-box{',
+  '  background:var(--bg);color:var(--ink);width:100%;max-width:880px;',
+  '  max-height:90dvh;border-radius:22px;overflow:hidden;',
+  '  display:grid;grid-template-columns:1.05fr .95fr;',
+  '  box-shadow:0 40px 90px -30px rgba(0,0,0,.85);',
+  '  animation:svModalIn .34s cubic-bezier(.2,.9,.25,1);',
+  '}',
+  '@keyframes svModalIn{from{opacity:0;transform:translateY(24px) scale(.97);}to{opacity:1;transform:none;}}',
+
+  /* Galerie : la photo principale et les vignettes en dessous */
+  '.sv-gal{background:var(--surf);display:flex;flex-direction:column;min-width:0;}',
+  '.sv-gal-main{',
+  '  flex:1;min-height:280px;position:relative;overflow:hidden;',
+  '  display:grid;place-items:center;',
+  '}',
+  '.sv-gal-main img{width:100%;height:100%;object-fit:cover;display:block;',
+  '  animation:svFadeImg .3s ease;}',
+  '@keyframes svFadeImg{from{opacity:0;}to{opacity:1;}}',
+  '.sv-gal-empty{color:var(--mute);font-size:34px;opacity:.35;}',
+  /* Flèches de navigation entre les photos */
+  '.sv-gal-nav{',
+  '  position:absolute;top:50%;transform:translateY(-50%);',
+  '  width:38px;height:38px;border-radius:50%;cursor:pointer;border:none;',
+  '  background:rgba(0,0,0,.45);color:#fff;font-size:20px;',
+  '  display:grid;place-items:center;transition:background .2s;',
+  '}',
+  '.sv-gal-nav:hover{background:rgba(0,0,0,.7);}',
+  '.sv-gal-prev{left:10px;} .sv-gal-next{right:10px;}',
+  '.sv-gal-count{',
+  '  position:absolute;bottom:10px;right:12px;',
+  '  padding:4px 11px;border-radius:100px;',
+  '  background:rgba(0,0,0,.5);color:#fff;font-size:11.5px;font-weight:700;',
+  '}',
+  '.sv-thumbs{display:flex;gap:7px;padding:10px;overflow-x:auto;flex-shrink:0;',
+  '  scrollbar-width:none;}',
+  '.sv-thumbs::-webkit-scrollbar{display:none;}',
+  '.sv-thumb{',
+  '  width:58px;height:58px;border-radius:10px;flex-shrink:0;cursor:pointer;',
+  '  object-fit:cover;border:2px solid transparent;opacity:.6;transition:.2s;',
+  '}',
+  '.sv-thumb:hover{opacity:1;}',
+  '.sv-thumb.on{border-color:var(--acc);opacity:1;}',
+
+  /* Détails à droite */
+  '.sv-det{padding:26px;display:flex;flex-direction:column;overflow-y:auto;min-width:0;}',
+  '.sv-det-close{',
+  '  align-self:flex-end;width:34px;height:34px;border-radius:11px;cursor:pointer;',
+  '  background:var(--surf);border:none;color:var(--mute);font-size:20px;',
+  '  display:grid;place-items:center;transition:.2s;margin-bottom:6px;',
+  '}',
+  '.sv-det-close:hover{color:var(--ink);}',
+  '.sv-det-group{font-size:11px;letter-spacing:.14em;text-transform:uppercase;',
+  '  color:var(--acc);font-weight:700;margin-bottom:8px;}',
+  '.sv-det-t{font-size:clamp(21px,3vw,29px);font-weight:800;line-height:1.12;',
+  '  letter-spacing:-.02em;margin:0 0 12px;}',
+  '.sv-det-d{font-size:14.5px;line-height:1.75;color:var(--mute);margin:0 0 20px;font-weight:300;}',
+  '.sv-det-price{display:flex;align-items:baseline;gap:10px;margin-bottom:8px;}',
+  '.sv-det-price b{font-size:26px;font-weight:800;color:var(--acc);}',
+  '.sv-det-price s{font-size:16px;opacity:.45;font-weight:500;}',
+  '.sv-det-save{font-size:12px;color:#059669;font-weight:700;margin-bottom:18px;}',
+  '.sv-det-out{padding:11px 14px;border-radius:11px;background:color-mix(in srgb,var(--ink) 8%,transparent);',
+  '  color:var(--mute);font-size:13.5px;font-weight:600;text-align:center;margin-top:auto;}',
+
+  /* Quantité */
+  '.sv-qty-row{display:flex;align-items:center;gap:14px;margin:auto 0 14px;padding-top:14px;}',
+  '.sv-qty-lbl{font-size:12.5px;color:var(--mute);font-weight:600;}',
+  '.sv-qty-box{display:flex;align-items:center;gap:0;border-radius:100px;overflow:hidden;',
+  '  border:1.5px solid color-mix(in srgb,var(--ink) 16%,transparent);}',
+  '.sv-qty-box button{width:40px;height:40px;border:none;background:transparent;',
+  '  color:var(--ink);font-size:19px;font-weight:700;cursor:pointer;transition:background .18s;}',
+  '.sv-qty-box button:hover{background:color-mix(in srgb,var(--ink) 8%,transparent);}',
+  '.sv-qty-box span{min-width:38px;text-align:center;font-weight:800;font-size:15px;}',
+
+  '.sv-det-add{',
+  '  width:100%;padding:15px;border-radius:100px;border:none;cursor:pointer;',
+  '  background:var(--acc);color:var(--bg);font-family:inherit;',
+  '  font-size:15px;font-weight:800;',
+  '  display:flex;align-items:center;justify-content:center;gap:9px;',
+  '  transition:transform .22s cubic-bezier(.34,1.5,.64,1),box-shadow .22s;',
+  '}',
+  '.sv-det-add:hover{transform:translateY(-3px);box-shadow:0 16px 32px -12px var(--acc);}',
+  '.sv-det-add:active{transform:translateY(0);}',
+
+  /* Une carte cliquable doit le montrer */
+  '.sv-card{cursor:pointer;}',
+
+  '@media(max-width:760px){',
+  '  .sv-modal-box{grid-template-columns:1fr;max-height:92dvh;}',
+  '  .sv-gal-main{min-height:210px;max-height:38dvh;}',
+  '  .sv-det{padding:18px;}',
+  '  .sv-qty-row{margin-top:14px;}',
+  '}'
+  ].join('\n');
+}
+
+/* ══════════════════════════════════════════════════════
+   NOTIFICATION D'AJOUT AU PANIER
+   L'ajout doit être impossible à manquer : une bulle
+   apparaît, des étincelles jaillissent, le panier tressaute.
+   ══════════════════════════════════════════════════════ */
+function toastCSS(){
+  return [
+  '.sv-pop{',
+  '  position:fixed;left:50%;bottom:26px;transform:translate(-50%,26px);',
+  '  display:flex;align-items:center;gap:12px;',
+  '  padding:13px 20px 13px 14px;border-radius:100px;',
+  '  background:var(--ink);color:var(--bg);',
+  '  box-shadow:0 20px 44px -14px rgba(0,0,0,.7);',
+  '  z-index:320;opacity:0;pointer-events:none;',
+  '  transition:opacity .3s ease, transform .42s cubic-bezier(.34,1.6,.5,1);',
+  '}',
+  '.sv-pop.in{opacity:1;transform:translate(-50%,0);}',
+  '.sv-pop-ico{',
+  '  width:34px;height:34px;border-radius:50%;flex-shrink:0;',
+  '  background:var(--acc);color:var(--bg);',
+  '  display:grid;place-items:center;font-size:18px;',
+  '  animation:popCheck .5s cubic-bezier(.34,1.7,.5,1);',
+  '}',
+  '@keyframes popCheck{0%{transform:scale(0) rotate(-40deg);}100%{transform:none;}}',
+  '.sv-pop-txt{display:flex;flex-direction:column;line-height:1.3;}',
+  '.sv-pop-txt b{font-size:13.5px;font-weight:800;}',
+  '.sv-pop-txt em{font-style:normal;font-size:11.5px;opacity:.7;}',
+
+  /* Étincelles : de petites étoiles jaillissent du bouton */
+  '.sv-spark{',
+  '  position:fixed;width:9px;height:9px;z-index:330;pointer-events:none;',
+  '  color:var(--acc);font-size:9px;line-height:1;',
+  '  animation:sparkFly .85s cubic-bezier(.2,.7,.3,1) forwards;',
+  '}',
+  '@keyframes sparkFly{',
+  '  0%{opacity:1;transform:translate(0,0) scale(.4) rotate(0deg);}',
+  '  70%{opacity:1;}',
+  '  100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(1.3) rotate(180deg);}',
+  '}',
+
+  /* Le panier tressaute pour confirmer visuellement */
+  '@keyframes cartBump{0%,100%{transform:scale(1);}35%{transform:scale(1.18);}}',
+  '.sv-cart-btn.bump{animation:cartBump .45s cubic-bezier(.34,1.6,.5,1);}',
+  '@keyframes badgePop{0%{transform:scale(0);}100%{transform:scale(1);}}',
+  '.sv-cart-n.pop{animation:badgePop .35s cubic-bezier(.34,1.8,.5,1);}',
+
+  '@media(prefers-reduced-motion:reduce){',
+  '  .sv-spark{display:none;}',
+  '  .sv-pop,.sv-pop-ico,.sv-cart-btn.bump{animation:none;transition:opacity .2s;}',
+  '}'
+  ].join('\n');
+}
+
 function themeCSS(T){
   var R = T.radius || '14px';
   var out = [];
@@ -2418,7 +3177,8 @@ function buildSiteHTML(forExport){
       ? ' dfx-' + state.descFx : '';
     return '<article class="sv-card' + animCls + (soldOut ? ' sv-out' : '') + '"'
       + ' data-name="' + esc(p.name).toLowerCase() + '"'
-      + ' data-group="' + esc(p.group || '') + '">'
+      + ' data-group="' + esc(p.group || '') + '"'
+      + ' onclick="svOpenDetail(' + p.id + ')">'
       + '<div class="sv-card-img">'
       +   (p.img ? '<img src="' + p.img + '" alt="' + esc(p.name) + '" loading="lazy">'
                  : '<div class="sv-noimg"><i class="ri-image-line"></i></div>')
@@ -2431,14 +3191,19 @@ function buildSiteHTML(forExport){
             ? '<div class="sv-card-dwrap' + descCls + '"><p class="sv-card-d" data-full="' + esc(p.desc) + '">'
               + esc(p.desc) + '</p></div>'
             : '')
+      +   ((Array.isArray(p.specs) && p.specs.length)
+            ? '<div class="sv-specs">' + p.specs.filter(function(s){ return s.text; }).map(function(s){
+                return '<span class="sv-spec"><i class="' + esc(s.icon) + '"></i>' + esc(s.text) + '</span>';
+              }).join('') + '</div>'
+            : '')
       +   '<div class="sv-card-foot">'
       +     '<span class="sv-price">'
       +       (onPromo ? '<s class="sv-old">' + money(p.price) + '</s> ' : '')
       +       money(shownPrice) + ' ' + cur + '</span>'
       +     (!soldOut && state.orders
-                ? '<button class="sv-add" onclick="svAdd(' + p.id + ',\'' + kind + '\')"><i class="ri-add-line"></i> Ajouter</button>'
+                ? '<button class="sv-add" onclick="event.stopPropagation();svAdd(' + p.id + ',1,this)"><i class="ri-add-line"></i> Ajouter</button>'
                 : (!soldOut && wa
-                    ? '<a class="sv-add" href="https://wa.me/' + wa + '?text=' + encodeURIComponent('Bonjour, je suis intéressé(e) par : ' + p.name) + '" target="_blank" rel="noopener"><i class="ri-whatsapp-line"></i> Commander</a>'
+                    ? '<a class="sv-add" onclick="event.stopPropagation();" href="https://wa.me/' + wa + '?text=' + encodeURIComponent('Bonjour, je suis intéressé(e) par : ' + p.name) + '" target="_blank" rel="noopener"><i class="ri-whatsapp-line"></i> Commander</a>'
                     : ''))
       +   '</div>'
       + '</div></article>';
@@ -2446,6 +3211,8 @@ function buildSiteHTML(forExport){
 
   // On n'affiche que les rayons contenant au moins un article :
   // un onglet vide déçoit le visiteur.
+  const vid = youtubeId(state.videoUrl);
+
   const usedGroups = (state.groups || []).filter(function(g){
     return state.products.some(function(p){ return p.group === g; });
   });
@@ -2473,6 +3240,69 @@ function buildSiteHTML(forExport){
       ${(BACKDROPS[T.backdrop] || BACKDROPS.aucun).css}
       background-attachment:fixed;
     }
+
+    ${state.bgImage ? `
+    /* Image de fond. Elle est posée en couche fixe derrière le
+       contenu, avec un voile sombre pour que le texte reste
+       lisible quelle que soit la photo choisie. */
+    .sv-bgimg{
+      position:fixed;inset:0;z-index:0;pointer-events:none;
+      background-image:url(${state.bgImage});
+      ${state.bgFit === 'repeat'
+        ? 'background-size:auto;background-repeat:repeat;'
+        : 'background-size:' + (state.bgFit || 'cover') + ';background-repeat:no-repeat;'}
+      background-position:${state.bgPos || 'center'};
+      ${state.bgBlur ? 'filter:blur(' + state.bgBlur + 'px);transform:scale(1.04);' : ''}
+    }
+    .sv-bgdim{
+      position:fixed;inset:0;z-index:0;pointer-events:none;
+      background:rgba(0,0,0,${(Number(state.bgDim) || 0) / 100});
+    }` : ''}
+
+    /* ── Vidéo ── */
+    .sv-vbtn{
+      display:inline-flex;align-items:center;gap:11px;
+      padding:11px 22px 11px 11px;border-radius:100px;cursor:pointer;
+      background:color-mix(in srgb,var(--ink) 8%,transparent);
+      border:1px solid color-mix(in srgb,var(--ink) 16%,transparent);
+      color:var(--ink);font-family:inherit;font-size:14px;font-weight:700;
+      transition:transform .25s cubic-bezier(.34,1.5,.64,1),background .25s;
+      margin-top:14px;
+    }
+    .sv-vbtn:hover{transform:translateY(-3px);background:color-mix(in srgb,var(--acc) 14%,transparent);}
+    .sv-vbtn i{
+      width:38px;height:38px;border-radius:50%;flex-shrink:0;
+      background:var(--acc);color:var(--bg);
+      display:grid;place-items:center;font-size:19px;
+    }
+    /* Un halo pulse autour du bouton : l'œil y revient. */
+    .sv-vbtn i::after{
+      content:'';position:absolute;width:38px;height:38px;border-radius:50%;
+      border:2px solid var(--acc);animation:vPulse 2.4s ease-out infinite;
+    }
+    @keyframes vPulse{0%{transform:scale(1);opacity:.7;}100%{transform:scale(1.7);opacity:0;}}
+
+    .sv-vmodal{
+      display:none;position:fixed;inset:0;z-index:240;
+      background:rgba(0,0,0,.86);backdrop-filter:blur(8px);
+      align-items:center;justify-content:center;padding:18px;
+    }
+    .sv-vmodal.open{display:flex;}
+    .sv-vbox{
+      width:100%;max-width:900px;border-radius:18px;overflow:hidden;
+      background:#000;box-shadow:0 40px 90px -30px rgba(0,0,0,.9);
+      animation:svModalIn .32s cubic-bezier(.2,.9,.25,1);
+    }
+    .sv-vframe{position:relative;padding-top:56.25%;}
+    .sv-vframe iframe{position:absolute;inset:0;width:100%;height:100%;border:0;}
+    .sv-vclose{
+      position:absolute;top:-46px;right:0;
+      width:36px;height:36px;border-radius:50%;cursor:pointer;
+      background:rgba(255,255,255,.14);border:none;color:#fff;font-size:20px;
+      display:grid;place-items:center;
+    }
+    .sv-vwrap{position:relative;width:100%;max-width:900px;}
+    @media(prefers-reduced-motion:reduce){.sv-vbtn i::after{animation:none;}}
     .sv *{box-sizing:border-box;}
     .sv-wrap{max-width:1080px;margin:0 auto;padding:0 24px;}
 
@@ -2640,11 +3470,96 @@ function buildSiteHTML(forExport){
       .sv-mapcard{max-height:96px;opacity:1;margin-top:10px;}
     }
 
+    /* ── Chiffres clés ── */
+    .sv-stats{
+      border-top:1px solid color-mix(in srgb,var(--ink) 10%,transparent);
+      border-bottom:1px solid color-mix(in srgb,var(--ink) 10%,transparent);
+      background:color-mix(in srgb,var(--surf) 60%,transparent);
+      padding:clamp(22px,3vw,34px) 0;position:relative;z-index:2;
+    }
+    .sv-stats-in{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;text-align:center;}
+    .sv-stat-n{
+      font-family:inherit;font-weight:800;line-height:1;
+      font-size:clamp(24px,3.4vw,38px);letter-spacing:-.03em;color:var(--acc);
+    }
+    .sv-stat-n em{font-style:normal;font-size:.62em;opacity:.8;}
+    .sv-stat-l{font-size:12.5px;color:var(--mute);margin-top:7px;font-weight:400;}
+
+    /* ── Caractéristiques produit ── */
+    .sv-specs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;}
+    .sv-spec{
+      display:inline-flex;align-items:center;gap:5px;
+      padding:4px 10px;border-radius:100px;
+      background:color-mix(in srgb,var(--ink) 6%,transparent);
+      font-size:11px;font-weight:600;color:var(--mute);
+    }
+    .sv-spec i{font-size:12.5px;color:var(--acc);}
+
+    /* ── Avis clients ── */
+    .sv-revs{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;}
+    .sv-rev{
+      margin:0;padding:24px;border-radius:18px;
+      background:var(--surf);
+      border:1px solid color-mix(in srgb,var(--ink) 8%,transparent);
+      display:flex;flex-direction:column;gap:14px;
+    }
+    .sv-rev-stars{color:var(--acc);font-size:15px;letter-spacing:2px;}
+    .sv-rev-stars span{opacity:.22;}
+    .sv-rev blockquote{
+      margin:0;font-size:14.5px;line-height:1.75;color:var(--ink);
+      font-weight:300;font-style:italic;
+    }
+    .sv-rev figcaption{
+      display:flex;align-items:center;gap:11px;margin-top:auto;
+      padding-top:14px;border-top:1px solid color-mix(in srgb,var(--ink) 8%,transparent);
+    }
+    .sv-rev figcaption img,.sv-rev-ini{
+      width:42px;height:42px;border-radius:50%;flex-shrink:0;object-fit:cover;
+      display:grid;place-items:center;
+      background:var(--acc);color:var(--bg);font-weight:800;font-size:16px;
+    }
+    .sv-rev figcaption b{display:block;font-size:13.5px;font-weight:700;}
+    .sv-rev figcaption em{display:block;font-style:normal;font-size:12px;color:var(--mute);margin-top:1px;}
+
+    /* ── Pied de page ── */
     .sv-foot{
       border-top:1px solid color-mix(in srgb,var(--ink) 9%,transparent);
-      padding:30px 0;margin-top:20px;
+      padding:44px 0 26px;margin-top:20px;
+      background:color-mix(in srgb,var(--surf) 45%,transparent);
     }
-    .sv-foot-in{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+    .sv-foot-grid{
+      display:grid;grid-template-columns:1.7fr 1fr 1.2fr 1.2fr;
+      gap:32px;margin-bottom:30px;
+    }
+    .sv-foot-ab{font-size:13px;color:var(--mute);line-height:1.65;margin:8px 0 0;font-weight:300;max-width:30ch;}
+    .sv-foot-h{
+      font-size:11px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;
+      color:var(--mute);margin-bottom:14px;
+    }
+    .sv-foot-l{display:grid;gap:10px;}
+    .sv-foot-l a,.sv-foot-l span{
+      color:var(--mute);text-decoration:none;font-size:13.5px;font-weight:300;
+      display:flex;align-items:flex-start;gap:8px;transition:color .2s;
+    }
+    .sv-foot-l a:hover{color:var(--acc);}
+    .sv-foot-l i{font-size:15px;flex-shrink:0;margin-top:1px;}
+    /* Le lien vers la carte est mis en avant : c'est souvent ce
+       que cherche un client au moment de se déplacer. */
+    .sv-foot-map{
+      flex-direction:column!important;gap:2px!important;
+      padding:11px 13px;border-radius:11px;margin-top:2px;
+      background:color-mix(in srgb,var(--acc) 11%,transparent);
+      border:1px solid color-mix(in srgb,var(--acc) 24%,transparent);
+      color:var(--ink)!important;font-weight:600!important;font-size:13px!important;
+    }
+    .sv-foot-map i{color:var(--acc);}
+    .sv-foot-map em{font-style:normal;font-size:11px;color:var(--mute);font-weight:300;}
+    .sv-foot-map:hover{background:color-mix(in srgb,var(--acc) 18%,transparent);}
+
+    .sv-foot-in{
+      display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
+      padding-top:20px;border-top:1px solid color-mix(in srgb,var(--ink) 8%,transparent);
+    }
     .sv-foot-c{font-size:12.5px;color:var(--mute);font-weight:300;}
     .sv-socials{display:flex;gap:9px;}
     .sv-socials a{
@@ -2701,8 +3616,17 @@ function buildSiteHTML(forExport){
       .sv-tab{flex-shrink:0;}
     }
 
+    @media(max-width:900px){
+      .sv-foot-grid{grid-template-columns:1fr 1fr;gap:26px;}
+    }
+
     /* Téléphone */
     @media(max-width:520px){
+      .sv-stats-in{grid-template-columns:1fr 1fr;gap:16px;}
+      .sv-foot-grid{grid-template-columns:1fr;gap:22px;}
+      .sv-rev{padding:19px;}
+      .sv-specs{gap:5px;}
+      .sv-spec{font-size:10px;padding:3px 8px;}
       .sv-wrap{padding:0 15px;}
       .sv-grid{grid-template-columns:repeat(2,1fr);gap:11px;}
       .sv-card-body{padding:11px;}
@@ -2738,6 +3662,11 @@ function buildSiteHTML(forExport){
        simplement au précédent recoloré. */
     ${themeCSS(T)}
 
+    /* Fiche produit, notification, animations de texte */
+    ${detailCSS()}
+    ${toastCSS()}
+    ${textFxCSS()}
+
     /* Fond animé, animations de description, promotions */
     ${(LIVE_BG[state.liveBg] || LIVE_BG.aucun).css}
     ${descFxCSS()}
@@ -2750,11 +3679,12 @@ function buildSiteHTML(forExport){
   const initial = (state.name || 'M').trim().charAt(0).toUpperCase();
   const html = `
   <div class="sv">
+    ${state.bgImage ? '<div class="sv-bgimg"></div><div class="sv-bgdim"></div>' : ''}
     ${state.liveBg && state.liveBg !== 'aucun' ? '<div class="sv-live"></div>' : ''}
     <nav class="sv-nav"><div class="sv-wrap sv-nav-in">
       <div class="sv-brand">
         ${state.logo ? '<img class="sv-logo" src="' + state.logo + '" alt="">' : '<div class="sv-logo-txt">' + esc(initial) + '</div>'}
-        <span class="sv-bname">${esc(state.name)}</span>
+        <span class="sv-bname${state.nameFx && state.nameFx !== 'none' ? ' tx-' + state.nameFx : ''}">${esc(state.name)}</span>
       </div>
       <div class="sv-nav-links">
         ${state.products.length ? '<a href="#sv-prod">' + esc(state.prodTitle) + '</a>' : ''}
@@ -2770,16 +3700,29 @@ function buildSiteHTML(forExport){
       ${state.hero ? '<div class="sv-hero-img" style="background-image:url(' + state.hero + ')"></div>' : ''}
       <div class="sv-wrap sv-hero-in">
         <div>
-          <h1 class="sv-h1">${esc(state.name)}</h1>
-          <p class="sv-tag">${esc(state.tagline)}</p>
+            <h1 class="sv-h1${state.nameFx && state.nameFx !== 'none' ? ' tx-' + state.nameFx : ''}">${esc(state.name)}</h1>
+          ${state.taglineFx === 'defile'
+            ? '<div class="sv-tag tx-defile-wrap"><span class="tx-defile"><span>' + esc(state.tagline) + '</span><span>' + esc(state.tagline) + '</span></span></div>'
+            : '<p class="sv-tag' + (state.taglineFx && state.taglineFx !== 'none' ? ' tx-' + state.taglineFx : '') + '">' + esc(state.tagline) + '</p>'}
           ${state.products.length || state.services.length
             ? '<a class="sv-cta" href="#sv-prod">Découvrir <i class="ri-arrow-down-line"></i></a>' : ''}
+          ${vid ? '<div><button class="sv-vbtn" onclick="svOpenVideo()"><i class="ri-play-fill"></i> '
+                  + esc(state.videoTitle || 'Découvrir en vidéo') + '</button></div>' : ''}
         </div>
         ${T.hero === 'scinde'
           ? '<div class="sv-hero-side"' + (state.hero ? ' style="background-image:url(' + state.hero + ')"' : '') + '></div>'
           : ''}
       </div>
     </header>` : ''}
+
+    ${(state.showStats && (state.stats||[]).filter(function(s){return s.value||s.label;}).length) ? `
+    <div class="sv-stats"><div class="sv-wrap sv-stats-in">
+      ${state.stats.filter(function(s){ return s.value || s.label; }).map(function(s){
+        return '<div class="sv-stat' + animCls + '">'
+          + '<div class="sv-stat-n">' + esc(s.value) + '<em>' + esc(s.suffix) + '</em></div>'
+          + '<div class="sv-stat-l">' + esc(s.label) + '</div></div>';
+      }).join('')}
+    </div></div>` : ''}
 
     ${state.products.length ? `
     <section class="sv-sec" id="sv-prod"><div class="sv-wrap">
@@ -2810,6 +3753,25 @@ function buildSiteHTML(forExport){
       </div>
     </div></section>` : ''}
 
+    ${(state.showReviews && (state.reviews||[]).filter(function(r){return r.text;}).length) ? `
+    <section class="sv-sec" id="sv-avis"><div class="sv-wrap">
+      <h2 class="sv-sec-t${animCls}">Ce qu'en disent nos clients</h2>
+      <p class="sv-sec-s">Des retours de personnes qui ont acheté chez nous</p>
+      <div class="sv-revs">
+        ${state.reviews.filter(function(r){ return r.text; }).map(function(r){
+          return '<figure class="sv-rev' + animCls + '">'
+            + '<div class="sv-rev-stars">' + '★'.repeat(r.rating || 5)
+            +   '<span>' + '★'.repeat(5 - (r.rating || 5)) + '</span></div>'
+            + '<blockquote>' + esc(r.text) + '</blockquote>'
+            + '<figcaption>'
+            +   (r.avatar ? '<img src="' + r.avatar + '" alt="">' : '<span class="sv-rev-ini">' + esc((r.name||'?').charAt(0).toUpperCase()) + '</span>')
+            +   '<span><b>' + esc(r.name || 'Client') + '</b>'
+            +   (r.role ? '<em>' + esc(r.role) + '</em>' : '') + '</span>'
+            + '</figcaption></figure>';
+        }).join('')}
+      </div>
+    </div></section>` : ''}
+
     <section class="sv-sec" id="sv-contact"><div class="sv-wrap">
       <h2 class="sv-sec-t${animCls}">Nous contacter</h2>
       <p class="sv-sec-s">Nous répondons rapidement</p>
@@ -2837,12 +3799,84 @@ function buildSiteHTML(forExport){
       </div>
     </div></section>
 
-    <footer class="sv-foot"><div class="sv-wrap sv-foot-in">
-      <span class="sv-foot-c">© ${new Date().getFullYear()} ${esc(state.name)} — Tous droits réservés</span>
-      ${socials ? '<div class="sv-socials">' + socials + '</div>' : ''}
-    </div></footer>
+    <footer class="sv-foot">
+      <div class="sv-wrap">
+        <div class="sv-foot-grid">
+          <div class="sv-foot-brand">
+            ${state.logo ? '<img class="sv-logo" src="' + state.logo + '" alt="">' : '<div class="sv-logo-txt">' + esc(initial) + '</div>'}
+            <div class="sv-bname" style="margin-top:10px;">${esc(state.name)}</div>
+            <p class="sv-foot-ab">${esc(state.tagline)}</p>
+            ${socials ? '<div class="sv-socials" style="margin-top:14px;">' + socials + '</div>' : ''}
+          </div>
+
+          <div>
+            <div class="sv-foot-h">Naviguer</div>
+            <div class="sv-foot-l">
+              ${state.products.length ? '<a href="#sv-prod">' + esc(state.prodTitle) + '</a>' : ''}
+              ${state.services.length ? '<a href="#sv-serv">Services</a>' : ''}
+              ${state.showAbout ? '<a href="#sv-about">À propos</a>' : ''}
+              <a href="#sv-contact">Contact</a>
+            </div>
+          </div>
+
+          <div>
+            <div class="sv-foot-h">Nous joindre</div>
+            <div class="sv-foot-l">
+              ${state.phone ? '<a href="tel:' + esc(state.phone) + '"><i class="ri-phone-line"></i> ' + esc(state.phone) + '</a>' : ''}
+              ${wa ? '<a href="https://wa.me/' + wa + '" target="_blank" rel="noopener"><i class="ri-whatsapp-line"></i> WhatsApp</a>' : ''}
+              ${state.email ? '<a href="mailto:' + esc(state.email) + '"><i class="ri-mail-line"></i> ' + esc(state.email) + '</a>' : ''}
+              ${state.hours ? '<span><i class="ri-time-line"></i> ' + esc(state.hours) + '</span>' : ''}
+            </div>
+          </div>
+
+          <div>
+            <div class="sv-foot-h">Nous trouver</div>
+            <div class="sv-foot-l">
+              ${state.address ? '<span><i class="ri-map-pin-line"></i> ' + esc(state.address) + '</span>' : ''}
+              ${state.mapsUrl
+                ? '<a class="sv-foot-map" href="' + esc(state.mapsUrl) + '" target="_blank" rel="noopener">'
+                  + '<i class="ri-road-map-line"></i> Voir sur Google Maps'
+                  + '<em>Itinéraire depuis votre position</em></a>'
+                : ''}
+              ${state.zones ? '<span><i class="ri-truck-line"></i> Livraison : ' + esc(state.zones) + '</span>' : ''}
+            </div>
+          </div>
+        </div>
+
+        <div class="sv-foot-in">
+          <span class="sv-foot-c">© ${new Date().getFullYear()} ${esc(state.name)} — Tous droits réservés</span>
+          <span class="sv-foot-c">${state.footerNote ? esc(state.footerNote) : 'Site créé avec Mental Studio'}</span>
+        </div>
+      </div>
+    </footer>
 
     ${state.showWa && wa ? '<a class="sv-wa" href="https://wa.me/' + wa + '" target="_blank" rel="noopener" aria-label="WhatsApp"><i class="ri-whatsapp-line"></i></a>' : ''}
+
+    <!-- Fiche produit -->
+    <div class="sv-modal" id="sv-detail" onclick="if(event.target===this)svCloseDetail()">
+      <div class="sv-modal-box">
+        <div class="sv-gal">
+          <div class="sv-gal-main" id="sv-gal-main"></div>
+          <div class="sv-thumbs" id="sv-thumbs"></div>
+        </div>
+        <div class="sv-det" id="sv-det"></div>
+      </div>
+    </div>
+
+    ${vid ? `
+    <!-- Lecteur vidéo -->
+    <div class="sv-vmodal" id="sv-video" onclick="if(event.target===this)svCloseVideo()">
+      <div class="sv-vwrap">
+        <button class="sv-vclose" onclick="svCloseVideo()">&times;</button>
+        <div class="sv-vbox"><div class="sv-vframe" id="sv-vframe"></div></div>
+      </div>
+    </div>` : ''}
+
+    <!-- Confirmation d'ajout -->
+    <div class="sv-pop" id="sv-pop">
+      <span class="sv-pop-ico"><i class="ri-check-line"></i></span>
+      <span class="sv-pop-txt"><b id="sv-pop-t">Ajouté au panier</b><em id="sv-pop-s"></em></span>
+    </div>
   </div>`;
 
   return { css, html };
@@ -2992,7 +4026,19 @@ function cartScript(ownerId){
   // promotion est active, c'est celui-là. Sans cela le client
   // verrait un prix barré et paierait le prix fort.
   var catalogue = state.products.concat(state.services).map(function(p){
-    return { id:p.id, name:p.name, price: promoActive(p) ? p.promoPrice : p.price };
+    const imgs = Array.isArray(p.imgs) && p.imgs.length ? p.imgs : (p.img ? [p.img] : []);
+    const on = promoActive(p);
+    return {
+      id:p.id, name:p.name,
+      price: on ? p.promoPrice : p.price,
+      full: p.price,
+      promo: on,
+      pct: on ? (p.promoPct||0) : 0,
+      desc: p.desc || '',
+      group: p.group || '',
+      stock: p.stock !== false,
+      imgs: imgs
+    };
   });
   var waNum = String(state.whatsapp || state.phone || '').replace(/[^0-9]/g,'');
 
@@ -3007,26 +4053,194 @@ function cartScript(ownerId){
   'var SV_API = ' + JSON.stringify(API_BASE) + ';',
   'var SV_KEY = ' + JSON.stringify(ANON_KEY) + ';',
   'var SV_SHOP = ' + JSON.stringify(state.name) + ';',
+  'var SV_HAS_CART = ' + (state.orders ? 'true' : 'false') + ';',
   '',
   'function svMoney(n){ return (Number(n)||0).toLocaleString("fr-FR"); }',
   '',
-  'function svAdd(id){',
-  '  var p = null;',
-  '  for(var i=0;i<SV_PRODUCTS.length;i++){ if(SV_PRODUCTS[i].id === id) p = SV_PRODUCTS[i]; }',
-  '  if(!p) return;',
-  '  var line = null;',
-  '  for(var j=0;j<SV_CART.length;j++){ if(SV_CART[j].id === id) line = SV_CART[j]; }',
-  '  if(line) line.qty++;',
-  '  else SV_CART.push({ id:p.id, name:p.name, price:p.price, qty:1 });',
-  '  svUpdateCount();',
-  '  svToast(p.name + " ajouté au panier");',
+  'function svFind(id){',
+  '  for(var i=0;i<SV_PRODUCTS.length;i++){ if(SV_PRODUCTS[i].id === id) return SV_PRODUCTS[i]; }',
+  '  return null;',
   '}',
   '',
-  'function svUpdateCount(){',
+  'function svAdd(id, qty, btn){',
+  '  var p = svFind(id);',
+  '  if(!p || !p.stock) return;',
+  '  qty = Math.max(1, parseInt(qty) || 1);',
+  '  var line = null;',
+  '  for(var j=0;j<SV_CART.length;j++){ if(SV_CART[j].id === id) line = SV_CART[j]; }',
+  '  if(line) line.qty += qty;',
+  '  else SV_CART.push({ id:p.id, name:p.name, price:p.price, qty:qty });',
+  '  svUpdateCount(true);',
+  '  svPop(p.name, qty);',
+  '  if(btn) svSparks(btn);',
+  '}',
+  '',
+  '// Confirmation impossible a manquer : bulle, etincelles et',
+  '// panier qui tressaute.',
+  'function svPop(name, qty){',
+  '  var pop = document.getElementById("sv-pop");',
+  '  if(!pop) return;',
+  '  var t = document.getElementById("sv-pop-t");',
+  '  var s = document.getElementById("sv-pop-s");',
+  '  if(t) t.textContent = qty > 1 ? (qty + " articles ajoutes") : "Ajoute au panier";',
+  '  if(s) s.textContent = name;',
+  '  pop.classList.remove("in");',
+  '  void pop.offsetWidth;',
+  '  pop.classList.add("in");',
+  '  clearTimeout(window.__popT);',
+  '  window.__popT = setTimeout(function(){ pop.classList.remove("in"); }, 2600);',
+  '}',
+  '',
+  'function svSparks(btn){',
+  '  try{',
+  '    var r = btn.getBoundingClientRect();',
+  '    var cx = r.left + r.width/2, cy = r.top + r.height/2;',
+  '    for(var i=0;i<10;i++){',
+  '      var s = document.createElement("span");',
+  '      s.className = "sv-spark";',
+  '      s.textContent = i % 2 ? "\u2726" : "\u2727";',
+  '      var a = (Math.PI * 2 * i) / 10 + Math.random() * 0.5;',
+  '      var d = 46 + Math.random() * 40;',
+  '      s.style.left = cx + "px";',
+  '      s.style.top = cy + "px";',
+  '      s.style.setProperty("--dx", (Math.cos(a) * d).toFixed(1) + "px");',
+  '      s.style.setProperty("--dy", (Math.sin(a) * d).toFixed(1) + "px");',
+  '      document.body.appendChild(s);',
+  '      (function(el){ setTimeout(function(){ el.remove(); }, 900); })(s);',
+  '    }',
+  '  } catch(e){}',
+  '}',
+  '',
+  '// ── VIDEO ──',
+  'var SV_VID = ' + JSON.stringify(youtubeId(state.videoUrl)) + ';',
+  '',
+  'function svOpenVideo(){',
+  '  var m = document.getElementById("sv-video");',
+  '  var f = document.getElementById("sv-vframe");',
+  '  if(!m || !f || !SV_VID) return;',
+  '  // On ne cree le lecteur qu au moment de l ouverture : sans',
+  '  // cela YouTube se chargerait sur chaque visite, meme si',
+  '  // personne ne regarde la video.',
+  '  f.innerHTML = "<iframe src=\\"https://www.youtube-nocookie.com/embed/" + SV_VID',
+  '    + "?autoplay=1&rel=0&modestbranding=1\\" title=\\"Video\\" allow=\\"accelerometer; autoplay; encrypted-media; picture-in-picture\\" allowfullscreen></iframe>";',
+  '  m.classList.add("open");',
+  '  document.body.style.overflow = "hidden";',
+  '}',
+  '',
+  'function svCloseVideo(){',
+  '  var m = document.getElementById("sv-video");',
+  '  var f = document.getElementById("sv-vframe");',
+  '  if(m) m.classList.remove("open");',
+  '  // On vide le lecteur : sinon la video continue de jouer en',
+  '  // fond apres la fermeture.',
+  '  if(f) f.innerHTML = "";',
+  '  document.body.style.overflow = "";',
+  '}',
+  '',
+  '// ── FICHE PRODUIT ──',
+  'var SV_DET = null, SV_IMG = 0, SV_QTY = 1;',
+  '',
+  'function svOpenDetail(id){',
+  '  var p = svFind(id);',
+  '  if(!p) return;',
+  '  SV_DET = p; SV_IMG = 0; SV_QTY = 1;',
+  '  svRenderDetail();',
+  '  var m = document.getElementById("sv-detail");',
+  '  if(m) m.classList.add("open");',
+  '  document.body.style.overflow = "hidden";',
+  '}',
+  'function svCloseDetail(){',
+  '  var m = document.getElementById("sv-detail");',
+  '  if(m) m.classList.remove("open");',
+  '  document.body.style.overflow = "";',
+  '}',
+  'document.addEventListener("keydown", function(e){',
+  '  if(e.key === "Escape"){ svCloseDetail(); svCloseVideo(); }',
+  '  if(!SV_DET) return;',
+  '  if(e.key === "ArrowLeft") svGal(-1);',
+  '  if(e.key === "ArrowRight") svGal(1);',
+  '});',
+  '',
+  'function svGal(step){',
+  '  if(!SV_DET || !SV_DET.imgs.length) return;',
+  '  var n = SV_DET.imgs.length;',
+  '  SV_IMG = (SV_IMG + step + n) % n;',
+  '  svRenderGal();',
+  '}',
+  'function svPickImg(i){ SV_IMG = i; svRenderGal(); }',
+  '',
+  'function svRenderGal(){',
+  '  var main = document.getElementById("sv-gal-main");',
+  '  var th = document.getElementById("sv-thumbs");',
+  '  if(!main || !SV_DET) return;',
+  '  var imgs = SV_DET.imgs;',
+  '  if(!imgs.length){',
+  '    main.innerHTML = "<span class=\\"sv-gal-empty\\"><i class=\\"ri-image-line\\"></i></span>";',
+  '    if(th) th.innerHTML = "";',
+  '    return;',
+  '  }',
+  '  var html = "<img src=\\"" + imgs[SV_IMG] + "\\" alt=\\"\\">";',
+  '  if(imgs.length > 1){',
+  '    html += "<button class=\\"sv-gal-nav sv-gal-prev\\" onclick=\\"svGal(-1)\\">&#8249;</button>";',
+  '    html += "<button class=\\"sv-gal-nav sv-gal-next\\" onclick=\\"svGal(1)\\">&#8250;</button>";',
+  '    html += "<span class=\\"sv-gal-count\\">" + (SV_IMG+1) + " / " + imgs.length + "</span>";',
+  '  }',
+  '  main.innerHTML = html;',
+  '  if(th){',
+  '    th.innerHTML = imgs.length > 1 ? imgs.map(function(src, i){',
+  '      return "<img class=\\"sv-thumb" + (i===SV_IMG ? " on" : "") + "\\" src=\\"" + src + "\\" onclick=\\"svPickImg(" + i + ")\\" alt=\\"\\">";',
+  '    }).join("") : "";',
+  '  }',
+  '}',
+  '',
+  'function svQty(step){',
+  '  SV_QTY = Math.max(1, Math.min(99, SV_QTY + step));',
+  '  var el = document.getElementById("sv-qty-val");',
+  '  if(el) el.textContent = SV_QTY;',
+  '}',
+  '',
+  'function svRenderDetail(){',
+  '  var box = document.getElementById("sv-det");',
+  '  if(!box || !SV_DET) return;',
+  '  var p = SV_DET;',
+  '  svRenderGal();',
+  '  var h = "<button class=\\"sv-det-close\\" onclick=\\"svCloseDetail()\\">&times;</button>";',
+  '  if(p.group) h += "<div class=\\"sv-det-group\\">" + p.group + "</div>";',
+  '  h += "<h2 class=\\"sv-det-t\\">" + p.name + "</h2>";',
+  '  if(p.desc) h += "<p class=\\"sv-det-d\\">" + p.desc + "</p>";',
+  '  h += "<div class=\\"sv-det-price\\"><b>" + svMoney(p.price) + " " + SV_CUR + "</b>";',
+  '  if(p.promo) h += "<s>" + svMoney(p.full) + " " + SV_CUR + "</s>";',
+  '  h += "</div>";',
+  '  if(p.promo) h += "<div class=\\"sv-det-save\\">Vous economisez " + svMoney(p.full - p.price) + " " + SV_CUR + " (-" + p.pct + "%)</div>";',
+  '  if(!p.stock){',
+  '    h += "<div class=\\"sv-det-out\\">Cet article est actuellement epuise.</div>";',
+  '  } else if(SV_HAS_CART){',
+  '    h += "<div class=\\"sv-qty-row\\"><span class=\\"sv-qty-lbl\\">Quantite</span>";',
+  '    h += "<span class=\\"sv-qty-box\\"><button onclick=\\"svQty(-1)\\">-</button>";',
+  '    h += "<span id=\\"sv-qty-val\\">1</span>";',
+  '    h += "<button onclick=\\"svQty(1)\\">+</button></span></div>";',
+  '    h += "<button class=\\"sv-det-add\\" onclick=\\"svAdd(" + p.id + ", SV_QTY, this); svCloseDetail();\\">";',
+  '    h += "<i class=\\"ri-shopping-bag-3-line\\"></i> Ajouter au panier</button>";',
+  '  } else if(SV_WA){',
+  '    var msg = "Bonjour, je suis interesse(e) par : " + p.name;',
+  '    h += "<a class=\\"sv-det-add\\" style=\\"margin-top:auto;text-decoration:none;\\" target=\\"_blank\\" rel=\\"noopener\\" href=\\"https://wa.me/" + SV_WA + "?text=" + encodeURIComponent(msg) + "\\">";',
+  '    h += "<i class=\\"ri-whatsapp-line\\"></i> Commander sur WhatsApp</a>";',
+  '  }',
+  '  box.innerHTML = h;',
+  '}',
+  '',
+  'function svUpdateCount(bump){',
   '  var n = 0;',
   '  for(var i=0;i<SV_CART.length;i++) n += SV_CART[i].qty;',
   '  var el = document.getElementById("sv-cart-n");',
-  '  if(el) el.textContent = n;',
+  '  if(el){',
+  '    el.textContent = n;',
+  '    if(bump){',
+  '      el.classList.remove("pop"); void el.offsetWidth; el.classList.add("pop");',
+  '      var b = el.parentNode;',
+  '      if(b){ b.classList.remove("bump"); void b.offsetWidth; b.classList.add("bump"); }',
+  '    }',
+  '  }',
   '}',
   '',
   'function svChangeQty(id, d){',
@@ -3554,6 +4768,8 @@ renderCats();
 renderThemes();
 renderCustomPanel();
 renderGroups();
+renderStats();
+renderReviews();
 renderLists();
 syncPanel();
 </script>

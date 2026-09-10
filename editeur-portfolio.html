@@ -5828,11 +5828,44 @@ select.pf-book-in option:hover{
                     </div>
                     <!-- ── BACKGROUND IMAGE CUSTOM ── -->
                     <div class="input-group" style="margin-top:10px;">
-                        <label>Image de fond (URL)</label>
+                        <label>Image de fond</label>
+                        <label class="btn btn-ghost" for="inp-custom-bg-file"
+                               style="display:flex;align-items:center;justify-content:center;gap:6px;width:100%;margin-bottom:6px;cursor:pointer;">
+                            <i class="ri-image-add-line"></i> <span id="bgfile-lbl">Importer depuis mon appareil</span>
+                        </label>
+                        <input type="file" id="inp-custom-bg-file" accept="image/*" style="display:none"
+                               onchange="uploadCustomBg(event)">
                         <input type="text" class="input-control" id="inp-custom-bg-img"
-                            placeholder="https://images.unsplash.com/..." 
+                            placeholder="…ou coller un lien https://…"
                             oninput="updateCustomBg(this.value)">
-                        <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;">
+
+                        <div class="input-row" style="margin-top:8px;">
+                            <div class="input-group" style="margin:0;">
+                                <label>Cadrage</label>
+                                <select class="select-control" id="inp-bg-fit" onchange="updateCustomBgFit('bgFit',this.value)">
+                                    <option value="cover">Remplir le cadre</option>
+                                    <option value="contain">Image entière</option>
+                                    <option value="repeat">Motif répété</option>
+                                </select>
+                            </div>
+                            <div class="input-group" style="margin:0;">
+                                <label>Position</label>
+                                <select class="select-control" id="inp-bg-pos" onchange="updateCustomBgFit('bgPos',this.value)">
+                                    <option value="center">Centre</option>
+                                    <option value="top">Haut</option>
+                                    <option value="bottom">Bas</option>
+                                    <option value="left">Gauche</option>
+                                    <option value="right">Droite</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="input-group" style="margin-top:8px;">
+                            <label>Netteté du fond <span id="bg-blur-val" style="opacity:.6;">0 px</span></label>
+                            <input type="range" min="0" max="14" step="1" value="0" style="width:100%;"
+                                   oninput="updateCustomBgFit('bgBlur',this.value)">
+                        </div>
+
+                        <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;">
                             <button class="btn btn-ghost" style="font-size:10px;padding:4px 8px;" onclick="setCustomBgPreset('forest')">🌲 Forêt</button>
                             <button class="btn btn-ghost" style="font-size:10px;padding:4px 8px;" onclick="setCustomBgPreset('galaxy')">🌌 Galaxie</button>
                             <button class="btn btn-ghost" style="font-size:10px;padding:4px 8px;" onclick="setCustomBgPreset('office')">💼 Bureau</button>
@@ -6651,7 +6684,7 @@ const state={
     data:{name:'Brandon Mballa',role:'CEO @ Mental Trading | Stratégie Digitale',bio:"Je développe des architectures de trading institutionnel et des stratégies d'acquisition ciblées. Spécialisé en analyse on-chain.",profileImg:'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=800&q=80',cta:'Démarrer le projet',ctaLink:'#',linkedin:'',twitter:'',github:'',instagram:'',sectionTitle:'Travaux & Projets'},
     skills:[],
     projects:[],
-    custom:{font:"'DM Sans',sans-serif",radius:'16px',heroDir:'row',bg:'#ffffff',text:'#111111',accent:'#6366f1',card:'#f3f4f6',bgImage:'',bgAnim:'none',overlayOpacity:60,frameColor:'#6366f1',frameSize:'4px',frameStyle:'solid'},
+    custom:{font:"'DM Sans',sans-serif",radius:'16px',heroDir:'row',bg:'#ffffff',text:'#111111',accent:'#6366f1',card:'#f3f4f6',bgImage:'',bgAnim:'none',bgFit:'cover',bgPos:'center',bgBlur:0,overlayOpacity:60,frameColor:'#6366f1',frameSize:'4px',frameStyle:'solid'},
     footer:{enabled:false,copyright:'',email:'',location:''},
     multiPage:false,
     multiPageMode:'pages',
@@ -7021,7 +7054,15 @@ function render(){
         var ov = (state.custom.overlayOpacity!=null ? state.custom.overlayOpacity : 60) / 100;
         customBgStyleTag.textContent =
             '#portfolio-viewport.has-custom-bg::before{content:"";position:fixed;top:-4%;left:-4%;width:108%;height:108%;z-index:0;pointer-events:none;'
-            + 'background-image:url(' + state.custom.bgImage + ');background-size:cover;background-position:center;background-repeat:no-repeat;}'
+            + 'background-image:url(' + state.custom.bgImage + ');'
+            + (state.custom.bgFit === 'repeat'
+                ? 'background-size:auto;background-repeat:repeat;'
+                : 'background-size:' + (state.custom.bgFit || 'cover') + ';background-repeat:no-repeat;')
+            + 'background-position:' + (state.custom.bgPos || 'center') + ';'
+            // Un léger flou rattrape les images de faible qualité
+            // récupérées sur internet, souvent pixelisées en grand.
+            + (state.custom.bgBlur ? 'filter:blur(' + state.custom.bgBlur + 'px);' : '')
+            + '}'
             + '#portfolio-viewport.has-custom-bg::after{content:"";position:fixed;inset:0;z-index:1;pointer-events:none;'
             + 'background:linear-gradient(160deg,rgba(0,0,0,' + ov + ') 0%,rgba(0,0,0,' + Math.min(ov+0.12,0.9) + ') 100%);}'
             + '#portfolio-viewport.has-custom-bg .pf-container{position:relative;z-index:2;}'
@@ -8240,6 +8281,71 @@ function updateCustomBg(url){
     state.custom.bgImage = url;
     render();
 }
+
+/* ══════════════════════════════════════════════════════
+   FOND IMPORTÉ DEPUIS L'APPAREIL
+   Une photo de téléphone fait couramment 4 à 12 Mo. Telle
+   quelle, elle alourdit le portfolio exporté et sature le
+   stockage du navigateur. On la redimensionne donc à une
+   taille adaptée à un fond d'écran, ce qui reste largement
+   suffisant visuellement.
+   ══════════════════════════════════════════════════════ */
+function resizeImageFile(file, maxSide, quality){
+    return new Promise(function(resolve, reject){
+        var reader = new FileReader();
+        reader.onerror = function(){ reject(new Error('Lecture impossible.')); };
+        reader.onload = function(ev){
+            var img = new Image();
+            img.onerror = function(){ reject(new Error('Image illisible.')); };
+            img.onload = function(){
+                var w = img.width, h = img.height;
+                if(w > maxSide || h > maxSide){
+                    if(w >= h){ h = Math.round(h * maxSide / w); w = maxSide; }
+                    else { w = Math.round(w * maxSide / h); h = maxSide; }
+                }
+                try{
+                    var cv = document.createElement('canvas');
+                    cv.width = w; cv.height = h;
+                    cv.getContext('2d').drawImage(img, 0, 0, w, h);
+                    resolve(cv.toDataURL('image/jpeg', quality));
+                } catch(e){ resolve(ev.target.result); }
+            };
+            img.src = ev.target.result;
+        };
+        reader.readAsDataURL(file);
+    });
+}
+
+function uploadCustomBg(e){
+    var file = e.target.files && e.target.files[0];
+    if(!file) return;
+    if(file.size > 12 * 1024 * 1024){
+        showToast('Image trop lourde (12 Mo maximum).');
+        return;
+    }
+    var lbl = document.getElementById('bgfile-lbl');
+    if(lbl) lbl.textContent = 'Traitement…';
+    // 1920 px de large : la définition d'un écran courant.
+    resizeImageFile(file, 1920, 0.82).then(function(data){
+        state.custom.bgImage = data;
+        var inp = document.getElementById('inp-custom-bg-img');
+        if(inp) inp.value = '';
+        if(lbl) lbl.textContent = 'Image importée ✓';
+        render();
+    }).catch(function(err){
+        if(lbl) lbl.textContent = 'Importer depuis mon appareil';
+        showToast(err.message || 'Cette image n\'a pas pu être traitée.');
+    });
+}
+
+function updateCustomBgFit(key, val){
+    state.custom[key] = (key === 'bgBlur') ? parseInt(val) || 0 : val;
+    if(key === 'bgBlur'){
+        var out = document.getElementById('bg-blur-val');
+        if(out) out.textContent = state.custom.bgBlur + ' px';
+    }
+    render();
+}
 function setCustomBgPreset(key){
     var url = BG_PRESETS[key] || '';
     state.custom.bgImage = url;
@@ -8251,6 +8357,10 @@ function clearCustomBg(){
     state.custom.bgImage = '';
     var inp = document.getElementById('inp-custom-bg-img');
     if(inp) inp.value = '';
+    var lbl = document.getElementById('bgfile-lbl');
+    if(lbl) lbl.textContent = 'Importer depuis mon appareil';
+    var f = document.getElementById('inp-custom-bg-file');
+    if(f) f.value = '';
     render();
 }
 function updateCustomBgAnim(val){
