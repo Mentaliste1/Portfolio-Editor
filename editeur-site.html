@@ -213,6 +213,43 @@ body{
 }
 .upload:hover{border-color:var(--ui-accent);color:var(--ui-accent);}
 
+/* ── Panneau des avis ── */
+#reviews-modal{
+  display:none;position:fixed;inset:0;z-index:9999;
+  background:rgba(0,0,0,.78);backdrop-filter:blur(6px);
+  align-items:center;justify-content:center;padding:20px;
+}
+#reviews-modal.on{display:flex;}
+.rev-card{
+  background:var(--ui-surface);border:1px solid var(--ui-border);
+  border-radius:14px;padding:15px 16px;margin-bottom:10px;
+}
+.rev-card.is-hidden{opacity:.5;}
+.rev-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:9px;}
+.rev-who{font-size:14px;font-weight:700;}
+.rev-meta{font-size:11px;color:var(--ui-muted);margin-top:2px;}
+.rev-stars{color:var(--ui-accent-2);font-size:14px;letter-spacing:1px;flex-shrink:0;}
+.rev-stars span{opacity:.25;}
+.rev-body{font-size:13px;line-height:1.65;color:var(--ui-text);margin:0 0 10px;font-weight:300;}
+.rev-reply{
+  padding:10px 12px;border-radius:10px;margin-bottom:10px;
+  background:var(--ui-glow);border-left:3px solid var(--ui-accent);
+  font-size:12.5px;line-height:1.6;color:var(--ui-muted);
+}
+.rev-reply b{display:block;color:var(--ui-text);font-size:11px;font-weight:700;margin-bottom:3px;}
+.rev-acts{display:flex;gap:7px;flex-wrap:wrap;}
+
+/* ── Bandeau d'information ── */
+.notice{
+  display:flex;gap:11px;align-items:flex-start;
+  padding:13px 14px;border-radius:12px;margin-bottom:10px;
+  background:var(--ui-glow);
+  border:1px solid rgba(129,140,248,.28);
+}
+.notice > i{font-size:17px;color:var(--ui-accent);flex-shrink:0;margin-top:1px;}
+.notice b{display:block;font-size:12.5px;font-weight:700;margin-bottom:4px;}
+.notice > div{font-size:11.5px;color:var(--ui-muted);line-height:1.6;}
+
 /* ── Chiffres clés ── */
 .stat-row{
   display:flex;align-items:center;gap:5px;margin-bottom:6px;
@@ -364,6 +401,20 @@ body{
   box-shadow:0 30px 70px -28px rgba(0,0,0,.8);
   transition:max-width .35s ease;
   align-self:flex-start;
+
+  /* ── Confinement de l'aperçu ──
+     Les fonds animés, images de fond et fenêtres du site
+     utilisent position:fixed, qui les rattache normalement à la
+     fenêtre du navigateur : ils débordaient donc de l'aperçu et
+     recouvraient l'éditeur lui-même.
+
+     Un ancêtre porteur d'une transformation devient le repère
+     des éléments fixes qu'il contient. Cette seule ligne les
+     confine donc tous à l'aperçu — y compris ceux qui seront
+     ajoutés plus tard, sans avoir à corriger chaque règle. */
+  transform:translateZ(0);
+  position:relative;
+  isolation:isolate;
 }
 #site-view.dev-tablet{max-width:760px;}
 #site-view.dev-mobile{max-width:390px;}
@@ -736,13 +787,35 @@ body{
         <div id="stat-list"></div>
         <button class="btn btn-add" onclick="addStat()"><i class="ri-add-line"></i> Ajouter un chiffre</button>
 
+        <div class="sec-label"><i class="ri-award-line"></i> Vos atouts<div class="sec-line"></div></div>
+        <p class="hint" style="margin-bottom:9px;">Pourquoi acheter chez vous plutôt qu'ailleurs. C'est souvent ce qui décide un visiteur hésitant.</p>
+        <div class="tog">
+          <div><div class="tog-t">Afficher vos atouts</div><div class="tog-d">Un bandeau mis en valeur</div></div>
+          <button class="sw on" id="sw-showPerks" onclick="toggleF('showPerks',this)"></button>
+        </div>
+        <div class="fld">
+          <label>Titre de la section</label>
+          <input type="text" id="f-perksTitle" oninput="setF('perksTitle',this.value)" placeholder="Pourquoi acheter chez nous">
+        </div>
+        <div id="perk-list"></div>
+        <button class="btn btn-add" onclick="addPerk()"><i class="ri-add-line"></i> Ajouter un atout</button>
+
         <div class="sec-label"><i class="ri-chat-quote-line"></i> Avis clients<div class="sec-line"></div></div>
         <div class="tog">
           <div><div class="tog-t">Afficher les avis</div><div class="tog-d">Rien ne convainc mieux qu'un vrai client</div></div>
           <button class="sw on" id="sw-showReviews" onclick="toggleF('showReviews',this)"></button>
         </div>
+        <div class="notice">
+          <i class="ri-shield-check-line"></i>
+          <div>
+            <b>Les avis viennent de vos clients</b>
+            Vous ne pouvez pas les écrire ni les modifier — c'est ce qui leur
+            donne de la valeur. Vos visiteurs les déposent depuis votre site.
+            Vous pouvez y répondre, et masquer un avis injurieux ou hors sujet.
+          </div>
+        </div>
+        <button class="btn" onclick="openReviews()"><i class="ri-chat-quote-line"></i> Voir et répondre aux avis</button>
         <div id="review-list"></div>
-        <button class="btn btn-add" onclick="addReview()"><i class="ri-add-line"></i> Ajouter un avis</button>
 
         <div class="sec-label"><i class="ri-tools-line"></i> Vos services<div class="sec-line"></div></div>
         <div id="serv-list"></div>
@@ -949,6 +1022,25 @@ body{
           <button class="sw on" id="sw-showWa" onclick="toggleF('showWa',this)"></button>
         </div>
 
+        <div class="sec-label"><i class="ri-megaphone-line"></i> Bandeau final<div class="sec-line"></div></div>
+        <div class="tog">
+          <div><div class="tog-t">Afficher le bandeau</div><div class="tog-d">Juste avant le pied de page</div></div>
+          <button class="sw on" id="sw-showCta" onclick="toggleF('showCta',this)"></button>
+        </div>
+        <div class="fld">
+          <label>Titre</label>
+          <input type="text" id="f-ctaTitle" oninput="setF('ctaTitle',this.value)" placeholder="Une question sur un produit ?">
+        </div>
+        <div class="fld">
+          <label>Texte</label>
+          <input type="text" id="f-ctaText" oninput="setF('ctaText',this.value)" placeholder="Écrivez-nous, nous répondons rapidement.">
+        </div>
+        <div class="fld">
+          <label>Image de fond</label>
+          <label class="upload" for="up-ctaimg"><i class="ri-image-add-line"></i> <span id="ctaimg-lbl">Choisir une image</span></label>
+          <input type="file" id="up-ctaimg" accept="image/*" style="display:none" onchange="uploadCtaImg(event)">
+        </div>
+
         <div class="sec-label"><i class="ri-download-2-line"></i> Publication<div class="sec-line"></div></div>
         <button class="btn btn-primary" onclick="exportSite()"><i class="ri-download-2-line"></i> Télécharger mon site</button>
         <p class="hint">Un fichier unique, hébergeable partout : GitHub Pages, Netlify, ou votre hébergeur.</p>
@@ -980,6 +1072,17 @@ body{
     </div>
   </main>
 
+</div>
+
+<!-- Avis clients -->
+<div id="reviews-modal" onclick="if(event.target===this)closeReviews()">
+  <div class="od-card">
+    <div class="od-head">
+      <span><i class="ri-chat-quote-line"></i> Avis de vos clients</span>
+      <button onclick="closeReviews()">&times;</button>
+    </div>
+    <div class="od-body" id="reviews-body"></div>
+  </div>
 </div>
 
 <!-- ═══════════════════════════════════════════════════
@@ -1607,6 +1710,23 @@ let state = {
   showReviews: true,
 
   footerNote: '',
+
+  // Vos atouts — la section en bandeau sombre qui explique
+  // pourquoi acheter ici plutôt qu'ailleurs.
+  perks     : [
+    { id:1, icon:'ri-truck-line',        title:'Livraison rapide',   desc:'Partout en ville sous 24 h.' },
+    { id:2, icon:'ri-shield-check-line', title:'Produits garantis',  desc:'Échange possible sous 7 jours.' },
+    { id:3, icon:'ri-customer-service-2-line', title:'Conseil personnalisé', desc:'Nous répondons à vos questions.' },
+    { id:4, icon:'ri-secure-payment-line', title:'Paiement à la livraison', desc:'Vous payez en recevant.' }
+  ],
+  showPerks : true,
+  perksTitle: 'Pourquoi acheter chez nous',
+
+  // Bannière d'appel final, juste avant le pied de page
+  ctaTitle  : 'Une question sur un produit ?',
+  ctaText   : 'Écrivez-nous, nous répondons rapidement.',
+  ctaImg    : '',
+  showCta   : true,
   descFx    : 'monte',
   nameFx    : 'none',
   taglineFx : 'reflet',
@@ -2047,89 +2167,223 @@ function delStat(id){
 }
 
 /* ══════════════════════════════════════════════════════
-   AVIS CLIENTS
-   Vides par défaut, et c'est volontaire : une preuve sociale
-   inventée se retourne contre le commerçant le jour où un
-   client s'en aperçoit.
+   VOS ATOUTS
+   La section qui répond à « pourquoi acheter ici plutôt
+   qu'ailleurs ». Sur les sites soignés, c'est elle qui fait
+   basculer un visiteur hésitant.
    ══════════════════════════════════════════════════════ */
-function renderReviews(){
-  const el = $('review-list');
+const PERK_ICONS = [
+  { v:'ri-truck-line',              n:'Livraison' },
+  { v:'ri-shield-check-line',       n:'Garantie' },
+  { v:'ri-customer-service-2-line', n:'Conseil' },
+  { v:'ri-secure-payment-line',     n:'Paiement' },
+  { v:'ri-price-tag-3-line',        n:'Prix' },
+  { v:'ri-award-line',              n:'Qualité' },
+  { v:'ri-refresh-line',            n:'Échange' },
+  { v:'ri-time-line',               n:'Rapidité' },
+  { v:'ri-map-pin-line',            n:'Proximité' },
+  { v:'ri-team-line',               n:'Équipe' },
+  { v:'ri-hand-heart-line',         n:'Service' },
+  { v:'ri-verified-badge-line',     n:'Confiance' }
+];
+
+function renderPerks(){
+  const el = $('perk-list');
   if(!el) return;
-  if(!Array.isArray(state.reviews)) state.reviews = [];
-  if(!state.reviews.length){
-    el.innerHTML = '<p class="hint" style="text-align:center;padding:10px 0;">'
-      + 'Aucun avis. Ajoutez ceux de vos vrais clients — un avis inventé '
-      + 'se retourne contre vous le jour où quelqu\'un s\'en aperçoit.</p>';
+  if(!Array.isArray(state.perks)) state.perks = [];
+  if(!state.perks.length){
+    el.innerHTML = '<p class="hint" style="text-align:center;padding:10px 0;">Aucun atout pour l\'instant.</p>';
     return;
   }
-  el.innerHTML = state.reviews.map(function(r){
-    return '<div class="item" data-rev="' + r.id + '">'
+  el.innerHTML = state.perks.map(function(p){
+    return '<div class="item" data-perk="' + p.id + '">'
       + '<div class="item-head" onclick="toggleItem(this)">'
-      +   '<div class="item-thumb">' + (r.avatar ? '<img src="' + r.avatar + '" alt="">' : '<i class="ri-user-line"></i>') + '</div>'
-      +   '<div class="item-info"><div class="item-name">' + esc(r.name || 'Sans nom') + '</div>'
-      +   '<div class="item-price">' + '★'.repeat(r.rating || 5) + '</div></div>'
-      +   '<button class="item-del" onclick="event.stopPropagation();delReview(' + r.id + ')"><i class="ri-delete-bin-line"></i></button>'
+      +   '<div class="item-thumb"><i class="' + esc(p.icon) + '"></i></div>'
+      +   '<div class="item-info"><div class="item-name">' + esc(p.title || 'Sans titre') + '</div></div>'
+      +   '<button class="item-del" onclick="event.stopPropagation();delPerk(' + p.id + ')"><i class="ri-delete-bin-line"></i></button>'
       + '</div>'
       + '<div class="item-body">'
-      +   '<div class="fld"><label>Nom du client</label><input type="text" value="' + esc(r.name) + '" oninput="updReview(' + r.id + ',\'name\',this.value)"></div>'
-      +   '<div class="fld"><label>Qualité ou ville</label><input type="text" value="' + esc(r.role) + '" placeholder="Cliente · Douala" oninput="updReview(' + r.id + ',\'role\',this.value)"></div>'
-      +   '<div class="fld"><label>Son avis</label><textarea oninput="updReview(' + r.id + ',\'text\',this.value)">' + esc(r.text) + '</textarea></div>'
-      +   '<div class="fld"><label>Note</label><select onchange="updReview(' + r.id + ',\'rating\',parseInt(this.value))">'
-      +     [5,4,3,2,1].map(function(n){
-              return '<option value="' + n + '"' + ((r.rating||5) === n ? ' selected' : '') + '>' + '★'.repeat(n) + ' (' + n + '/5)</option>';
+      +   '<div class="fld"><label>Icône</label><select onchange="updPerk(' + p.id + ',\'icon\',this.value)">'
+      +     PERK_ICONS.map(function(o){
+              return '<option value="' + o.v + '"' + (p.icon === o.v ? ' selected' : '') + '>' + o.n + '</option>';
             }).join('')
       +   '</select></div>'
-      +   '<div class="fld" style="margin-bottom:0;"><label>Photo (facultatif)</label>'
-      +     '<label class="upload" for="up-rev-' + r.id + '"><i class="ri-image-add-line"></i> ' + (r.avatar ? 'Remplacer' : 'Ajouter') + '</label>'
-      +     '<input type="file" id="up-rev-' + r.id + '" accept="image/*" style="display:none" onchange="uploadReviewImg(event,' + r.id + ')">'
-      +   '</div>'
+      +   '<div class="fld"><label>Titre</label><input type="text" value="' + esc(p.title) + '" oninput="updPerk(' + p.id + ',\'title\',this.value)"></div>'
+      +   '<div class="fld" style="margin-bottom:0;"><label>Précision</label><input type="text" value="' + esc(p.desc) + '" oninput="updPerk(' + p.id + ',\'desc\',this.value)"></div>'
       + '</div></div>';
   }).join('');
 }
 
-function addReview(){
-  if(!Array.isArray(state.reviews)) state.reviews = [];
+function addPerk(){
+  if(!Array.isArray(state.perks)) state.perks = [];
+  if(state.perks.length >= 6){
+    alert('Six atouts au maximum : au-delà, aucun ne ressort.');
+    return;
+  }
   const id = Date.now();
-  state.reviews.push({ id, name:'', role:'', text:'', rating:5, avatar:'' });
-  renderReviews(); render(); scheduleSave();
+  state.perks.push({ id, icon:'ri-award-line', title:'', desc:'' });
+  renderPerks(); render(); scheduleSave();
   setTimeout(function(){
-    const el = document.querySelector('[data-rev="' + id + '"]');
-    if(el){ el.classList.add('open'); el.scrollIntoView({behavior:'smooth',block:'center'}); }
-  }, 60);
+    const el = document.querySelector('[data-perk="' + id + '"]');
+    if(el) el.classList.add('open');
+  }, 50);
 }
 
-function updReview(id, field, val){
-  const r = state.reviews.find(function(x){ return x.id === id; });
-  if(!r) return;
-  r[field] = val;
-  if(field === 'name' || field === 'rating'){
-    const card = document.querySelector('[data-rev="' + id + '"]');
+function updPerk(id, field, val){
+  const p = state.perks.find(function(x){ return x.id === id; });
+  if(!p) return;
+  p[field] = val;
+  if(field === 'title' || field === 'icon'){
+    const card = document.querySelector('[data-perk="' + id + '"]');
     if(card){
-      const n = card.querySelector('.item-name');
-      const s = card.querySelector('.item-price');
-      if(n && field === 'name') n.textContent = val || 'Sans nom';
-      if(s && field === 'rating') s.textContent = '★'.repeat(val);
+      if(field === 'title'){
+        const n = card.querySelector('.item-name');
+        if(n) n.textContent = val || 'Sans titre';
+      } else {
+        const ic = card.querySelector('.item-thumb i');
+        if(ic) ic.className = val;
+      }
     }
   }
   render(); scheduleSave();
 }
 
-function delReview(id){
-  if(!confirm('Supprimer cet avis ?')) return;
-  state.reviews = state.reviews.filter(function(x){ return x.id !== id; });
-  renderReviews(); render(); scheduleSave();
+function delPerk(id){
+  state.perks = state.perks.filter(function(x){ return x.id !== id; });
+  renderPerks(); render(); scheduleSave();
 }
 
-function uploadReviewImg(e, id){
+function uploadCtaImg(e){
   const file = e.target.files && e.target.files[0];
   if(!file) return;
-  const r = state.reviews.find(function(x){ return x.id === id; });
-  if(!r) return;
-  // Une photo d'avis s'affiche en petit rond : 200 px suffisent.
-  compressImage(file, 200, 0.82).then(function(data){
-    r.avatar = data;
-    renderReviews(); render(); scheduleSave();
-  }).catch(function(err){ alert(err.message || 'Image illisible.'); });
+  const lbl = $('ctaimg-lbl');
+  if(lbl) lbl.textContent = 'Traitement…';
+  compressImage(file, 1600, 0.82).then(function(data){
+    state.ctaImg = data;
+    if(lbl) lbl.textContent = 'Image chargée ✓';
+    render(); scheduleSave();
+  }).catch(function(err){
+    if(lbl) lbl.textContent = 'Choisir une image';
+    alert(err.message || 'Image illisible.');
+  });
+}
+
+/* ══════════════════════════════════════════════════════
+   AVIS CLIENTS — consultation et réponse
+   Le commerçant lit, répond, masque. Il n'écrit jamais un
+   avis et n'en modifie jamais le texte : la base elle-même
+   rejette toute tentative.
+   ══════════════════════════════════════════════════════ */
+function openReviews(){
+  const m = $('reviews-modal');
+  if(!m) return;
+  m.classList.add('on');
+  loadReviews();
+}
+function closeReviews(){
+  const m = $('reviews-modal');
+  if(m) m.classList.remove('on');
+}
+
+async function loadReviews(){
+  const box = $('reviews-body');
+  if(!box) return;
+  box.innerHTML = '<p class="od-empty">Chargement…</p>';
+
+  if(!sb || !currentUser){
+    box.innerHTML = '<p class="od-empty">Connectez-vous pour voir les avis de vos clients.</p>';
+    return;
+  }
+  try{
+    const { data:{ session } } = await sb.auth.getSession();
+    if(!session) throw new Error('Session introuvable.');
+
+    const res = await fetch(API_BASE + '/site-reviews', {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json', 'apikey': ANON_KEY },
+      body: JSON.stringify({ action:'manage', accessToken: session.access_token })
+    });
+    const data = await res.json();
+    if(!res.ok) throw new Error(data.error || 'Chargement impossible.');
+    renderReviewsPanel(data);
+  } catch(err){
+    box.innerHTML = '<p class="od-empty">' + esc(err.message || 'Erreur de chargement.') + '</p>';
+  }
+}
+
+function renderReviewsPanel(d){
+  const box = $('reviews-body');
+  if(!box) return;
+  const list = d.reviews || [];
+
+  if(!list.length){
+    box.innerHTML = '<p class="od-empty">Aucun avis pour le moment.<br><br>'
+      + 'Activez les avis dans l\'onglet Catalogue, puis publiez votre site : '
+      + 'vos clients pourront y déposer leur retour.</p>';
+    return;
+  }
+
+  let h = '<div class="od-stats">'
+    + '<div class="od-stat"><div class="od-stat-n">' + (d.average || 0) + '</div><div class="od-stat-l">Note moyenne</div></div>'
+    + '<div class="od-stat"><div class="od-stat-n">' + (d.total || 0) + '</div><div class="od-stat-l">Avis visibles</div></div>'
+    + '<div class="od-stat"><div class="od-stat-n" style="color:#fbbf24;">' + (d.unanswered || 0) + '</div><div class="od-stat-l">Sans réponse</div></div>'
+    + '</div>';
+
+  list.forEach(function(r){
+    const date = new Date(r.created_at).toLocaleDateString('fr-FR',
+      { day:'2-digit', month:'short', year:'numeric' });
+    const hidden = r.status === 'hidden';
+
+    h += '<div class="rev-card' + (hidden ? ' is-hidden' : '') + '">'
+      +   '<div class="rev-top">'
+      +     '<div><div class="rev-who">' + esc(r.author_name) + '</div>'
+      +     '<div class="rev-meta">' + (r.author_city ? esc(r.author_city) + ' · ' : '') + date + '</div></div>'
+      +     '<div class="rev-stars">' + '★'.repeat(r.rating) + '<span>' + '★'.repeat(5 - r.rating) + '</span></div>'
+      +   '</div>'
+      +   '<p class="rev-body">' + esc(r.body) + '</p>'
+      +   (r.reply
+            ? '<div class="rev-reply"><b>Votre réponse</b>' + esc(r.reply) + '</div>'
+            : '')
+      +   '<div class="rev-acts">'
+      +     '<button class="od-btn" onclick="promptReply(\'' + r.id + '\',' + JSON.stringify(esc(r.reply || '')) + ')">'
+      +       '<i class="ri-reply-line"></i> ' + (r.reply ? 'Modifier ma réponse' : 'Répondre') + '</button>'
+      +     '<button class="od-btn' + (hidden ? ' ok' : ' no') + '" onclick="toggleHide(\'' + r.id + '\',' + (!hidden) + ')">'
+      +       '<i class="ri-eye-' + (hidden ? '' : 'off-') + 'line"></i> ' + (hidden ? 'Réafficher' : 'Masquer') + '</button>'
+      +   '</div>'
+      + '</div>';
+  });
+
+  box.innerHTML = h;
+}
+
+async function promptReply(id, current){
+  const txt = prompt('Votre réponse à cet avis :', current || '');
+  if(txt === null) return;
+  await reviewAction({ action:'reply', reviewId:id, reply:txt });
+}
+
+async function toggleHide(id, hide){
+  if(hide && !confirm('Masquer cet avis ?\n\nIl ne s\'affichera plus sur votre site, mais restera enregistré.')) return;
+  await reviewAction({ action:'hide', reviewId:id, hidden:hide });
+}
+
+async function reviewAction(payload){
+  if(!sb || !currentUser) return;
+  try{
+    const { data:{ session } } = await sb.auth.getSession();
+    if(!session) return;
+    payload.accessToken = session.access_token;
+    const res = await fetch(API_BASE + '/site-reviews', {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json', 'apikey': ANON_KEY },
+      body: JSON.stringify(payload)
+    });
+    const d = await res.json();
+    if(!res.ok) throw new Error(d.error || 'Action refusée.');
+    loadReviews();
+  } catch(err){
+    alert(err.message || 'Action impossible.');
+  }
 }
 
 /* ══════════════════════════════════════════════════════
@@ -2427,14 +2681,14 @@ function syncPanel(){
   fillFxSelects();
   const map = ['name','tagline','about','prodTitle','phone','whatsapp','email',
                'address','hours','facebook','instagram','tiktok','zones','mapsUrl',
-               'bgImage','videoUrl','videoTitle'];
+               'bgImage','videoUrl','videoTitle','perksTitle','ctaTitle','ctaText'];
   map.forEach(k => { const el = $('f-' + k); if(el) el.value = state[k] || ''; });
   ['layout','currency','anim','hover','liveBg','descFx','nameFx','taglineFx',
    'bgFit','bgPos'].forEach(k => {
     const el = $('f-' + k); if(el) el.value = state[k];
   });
   const d = $('f-delivery'); if(d) d.value = state.delivery || 0;
-  ['orders','waOrder','showHero','showAbout','showSearch','showWa','showGroups','showMap','showStats','showReviews'].forEach(k => {
+  ['orders','waOrder','showHero','showAbout','showSearch','showWa','showGroups','showMap','showStats','showReviews','showPerks','showCta'].forEach(k => {
     const el = $('sw-' + k); if(el) el.classList.toggle('on', !!state[k]);
   });
   if(state.logo){ const l = $('logo-lbl'); if(l) l.textContent = 'Image chargée ✓'; }
@@ -3521,6 +3775,121 @@ function buildSiteHTML(forExport){
     .sv-rev figcaption b{display:block;font-size:13.5px;font-weight:700;}
     .sv-rev figcaption em{display:block;font-style:normal;font-size:12px;color:var(--mute);margin-top:1px;}
 
+    /* ── Vos atouts ──
+       Bandeau sombre qui tranche avec le reste : la section
+       doit se remarquer sans crier. */
+    .sv-perks{
+      position:relative;z-index:2;
+      padding:clamp(38px,5.5vw,62px) 0;
+      background:color-mix(in srgb,var(--ink) 92%,var(--acc));
+      color:color-mix(in srgb,var(--bg) 92%,#ffffff);
+    }
+    .sv-perks-t{
+      font-family:inherit;font-weight:800;
+      font-size:clamp(21px,3vw,32px);letter-spacing:-.025em;
+      margin:0 0 26px;color:inherit;
+    }
+    .sv-perks-grid{
+      display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));
+      gap:clamp(14px,2vw,22px);
+    }
+    .sv-perk{display:flex;gap:13px;align-items:flex-start;}
+    .sv-perk-i{
+      width:44px;height:44px;border-radius:13px;flex-shrink:0;
+      background:color-mix(in srgb,var(--acc) 88%,transparent);
+      color:var(--ink);
+      display:grid;place-items:center;font-size:20px;
+    }
+    .sv-perk b{display:block;font-size:15px;font-weight:700;margin-bottom:3px;}
+    .sv-perk em{
+      display:block;font-style:normal;font-size:12.5px;line-height:1.55;
+      opacity:.72;font-weight:300;
+    }
+
+    /* ── Bandeau final ── */
+    .sv-ctaband{
+      position:relative;z-index:2;overflow:hidden;
+      padding:clamp(44px,6.5vw,84px) 0;
+      background:color-mix(in srgb,var(--acc) 12%,var(--surf));
+      text-align:center;
+    }
+    .sv-ctaband.has-img{background:var(--ink);}
+    .sv-ctaband-img{
+      position:absolute;inset:0;background-size:cover;background-position:center;
+      opacity:.34;
+    }
+    /* Un voile assure la lisibilité quelle que soit la photo. */
+    .sv-ctaband.has-img::after{
+      content:'';position:absolute;inset:0;
+      background:linear-gradient(180deg,
+        color-mix(in srgb,var(--ink) 55%,transparent),
+        color-mix(in srgb,var(--ink) 78%,transparent));
+    }
+    .sv-ctaband.has-img .sv-ctaband-in{color:color-mix(in srgb,var(--bg) 95%,#ffffff);}
+    .sv-ctaband-in{position:relative;z-index:3;}
+    .sv-ctaband-in h2{
+      font-family:inherit;font-weight:800;
+      font-size:clamp(23px,3.6vw,40px);letter-spacing:-.03em;
+      margin:0 0 12px;max-width:20ch;margin-inline:auto;
+    }
+    .sv-ctaband-in p{
+      font-size:clamp(14px,1.7vw,17px);opacity:.78;font-weight:300;
+      margin:0 auto 24px;max-width:44ch;
+    }
+    .sv-ctaband-btns{display:flex;gap:11px;justify-content:center;flex-wrap:wrap;}
+    .sv-cta-ghost{
+      background:transparent!important;
+      color:inherit!important;
+      border:1.5px solid currentColor;
+    }
+    .sv-cta-ghost:hover{background:color-mix(in srgb,currentColor 12%,transparent)!important;}
+
+    /* ── Formulaire d'avis ── */
+    .sv-rev-reply{
+      padding:11px 13px;border-radius:11px;
+      background:color-mix(in srgb,var(--acc) 10%,transparent);
+      border-left:3px solid var(--acc);
+      font-size:13px;line-height:1.6;color:var(--mute);font-weight:300;
+    }
+    .sv-rev-reply b{display:block;color:var(--ink);font-weight:700;font-size:12px;margin-bottom:4px;}
+    .sv-revform{
+      margin-top:22px;padding:clamp(20px,3vw,30px);
+      border-radius:18px;background:var(--surf);
+      border:1px dashed color-mix(in srgb,var(--ink) 16%,transparent);
+    }
+    .sv-revform h3{font-family:inherit;font-weight:700;font-size:17px;margin:0 0 5px;}
+    .sv-revform > p{font-size:13.5px;color:var(--mute);margin:0 0 16px;font-weight:300;}
+    .sv-rf-stars{display:flex;gap:4px;margin-bottom:14px;}
+    .sv-rf-stars button{
+      background:none;border:none;cursor:pointer;padding:0;
+      font-size:27px;line-height:1;color:color-mix(in srgb,var(--ink) 18%,transparent);
+      transition:color .16s,transform .16s;
+    }
+    .sv-rf-stars button:hover{transform:scale(1.15);}
+    .sv-rf-stars button.on{color:var(--acc);}
+    .sv-rf-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:9px;}
+    .sv-revform input,.sv-revform textarea{
+      width:100%;padding:12px 14px;border-radius:11px;
+      background:var(--bg);color:var(--ink);font-family:inherit;font-size:14px;
+      border:1.5px solid color-mix(in srgb,var(--ink) 12%,transparent);
+    }
+    .sv-revform input:focus,.sv-revform textarea:focus{outline:none;border-color:var(--acc);}
+    .sv-revform textarea{resize:vertical;margin-bottom:10px;}
+    .sv-rf-msg{display:none;font-size:13px;padding:9px 12px;border-radius:9px;margin-bottom:10px;}
+    .sv-rf-msg.ok{display:block;background:rgba(16,185,129,.12);color:#059669;}
+    .sv-rf-msg.err{display:block;background:rgba(239,68,68,.12);color:#DC2626;}
+    .sv-rf-send{
+      padding:13px 28px;border-radius:100px;border:none;cursor:pointer;
+      background:var(--acc);color:var(--bg);font-family:inherit;
+      font-size:14px;font-weight:700;transition:transform .2s;
+    }
+    .sv-rf-send:hover{transform:translateY(-2px);}
+    .sv-rf-send:disabled{opacity:.6;cursor:not-allowed;transform:none;}
+    @media(max-width:520px){
+      .sv-rf-grid{grid-template-columns:1fr;}
+      .sv-rf-send{width:100%;}
+    }
+
     /* ── Pied de page ── */
     .sv-foot{
       border-top:1px solid color-mix(in srgb,var(--ink) 9%,transparent);
@@ -3623,6 +3992,9 @@ function buildSiteHTML(forExport){
     /* Téléphone */
     @media(max-width:520px){
       .sv-stats-in{grid-template-columns:1fr 1fr;gap:16px;}
+      .sv-perks-grid{grid-template-columns:1fr;gap:16px;}
+      .sv-ctaband-btns{flex-direction:column;}
+      .sv-ctaband-btns .sv-cta{width:100%;justify-content:center;}
       .sv-foot-grid{grid-template-columns:1fr;gap:22px;}
       .sv-rev{padding:19px;}
       .sv-specs{gap:5px;}
@@ -3753,22 +4125,40 @@ function buildSiteHTML(forExport){
       </div>
     </div></section>` : ''}
 
-    ${(state.showReviews && (state.reviews||[]).filter(function(r){return r.text;}).length) ? `
+    ${(state.showPerks && (state.perks||[]).filter(function(p){return p.title;}).length) ? `
+    <section class="sv-perks"><div class="sv-wrap">
+      <h2 class="sv-perks-t${animCls}">${esc(state.perksTitle || 'Pourquoi acheter chez nous')}</h2>
+      <div class="sv-perks-grid">
+        ${state.perks.filter(function(p){ return p.title; }).map(function(p){
+          return '<div class="sv-perk' + animCls + '">'
+            + '<span class="sv-perk-i"><i class="' + esc(p.icon) + '"></i></span>'
+            + '<div><b>' + esc(p.title) + '</b>'
+            + (p.desc ? '<em>' + esc(p.desc) + '</em>' : '') + '</div></div>';
+        }).join('')}
+      </div>
+    </div></section>` : ''}
+
+    ${state.showReviews ? `
     <section class="sv-sec" id="sv-avis"><div class="sv-wrap">
       <h2 class="sv-sec-t${animCls}">Ce qu'en disent nos clients</h2>
-      <p class="sv-sec-s">Des retours de personnes qui ont acheté chez nous</p>
-      <div class="sv-revs">
-        ${state.reviews.filter(function(r){ return r.text; }).map(function(r){
-          return '<figure class="sv-rev' + animCls + '">'
-            + '<div class="sv-rev-stars">' + '★'.repeat(r.rating || 5)
-            +   '<span>' + '★'.repeat(5 - (r.rating || 5)) + '</span></div>'
-            + '<blockquote>' + esc(r.text) + '</blockquote>'
-            + '<figcaption>'
-            +   (r.avatar ? '<img src="' + r.avatar + '" alt="">' : '<span class="sv-rev-ini">' + esc((r.name||'?').charAt(0).toUpperCase()) + '</span>')
-            +   '<span><b>' + esc(r.name || 'Client') + '</b>'
-            +   (r.role ? '<em>' + esc(r.role) + '</em>' : '') + '</span>'
-            + '</figcaption></figure>';
-        }).join('')}
+      <p class="sv-sec-s" id="sv-rev-sum">Chargement des avis…</p>
+      <div class="sv-revs" id="sv-revs"></div>
+
+      <div class="sv-revform${animCls}">
+        <h3>Vous avez acheté chez nous ?</h3>
+        <p>Votre avis aide les prochains clients à se décider.</p>
+        <div class="sv-rf-stars" id="sv-rf-stars">
+          ${[1,2,3,4,5].map(function(n){
+            return '<button type="button" data-n="' + n + '" onclick="svPickStar(' + n + ')">★</button>';
+          }).join('')}
+        </div>
+        <div class="sv-rf-grid">
+          <input type="text" id="sv-rf-name" placeholder="Votre nom *" maxlength="80">
+          <input type="text" id="sv-rf-city" placeholder="Votre ville (facultatif)" maxlength="80">
+        </div>
+        <textarea id="sv-rf-text" rows="3" placeholder="Votre expérience en quelques mots…" maxlength="1200"></textarea>
+        <div class="sv-rf-msg" id="sv-rf-msg"></div>
+        <button class="sv-rf-send" id="sv-rf-send" onclick="svSendReview()">Publier mon avis</button>
       </div>
     </div></section>` : ''}
 
@@ -3798,6 +4188,19 @@ function buildSiteHTML(forExport){
         ${state.zones ? '<div class="sv-info-c' + animCls + '"><i class="ri-truck-line"></i><div><div class="sv-info-l">Livraison</div><div class="sv-info-v">' + esc(state.zones) + (state.delivery > 0 ? ' · ' + money(state.delivery) + ' ' + cur : ' · offerte') + '</div></div></div>' : ''}
       </div>
     </div></section>
+
+    ${state.showCta && (state.ctaTitle || state.ctaText) ? `
+    <section class="sv-ctaband${state.ctaImg ? ' has-img' : ''}">
+      ${state.ctaImg ? '<div class="sv-ctaband-img" style="background-image:url(' + state.ctaImg + ')"></div>' : ''}
+      <div class="sv-wrap sv-ctaband-in${animCls}">
+        <h2>${esc(state.ctaTitle)}</h2>
+        ${state.ctaText ? '<p>' + esc(state.ctaText) + '</p>' : ''}
+        <div class="sv-ctaband-btns">
+          ${wa ? '<a class="sv-cta" href="https://wa.me/' + wa + '" target="_blank" rel="noopener"><i class="ri-whatsapp-line"></i> Nous écrire</a>' : ''}
+          ${state.phone ? '<a class="sv-cta sv-cta-ghost" href="tel:' + esc(state.phone) + '"><i class="ri-phone-line"></i> Appeler</a>' : ''}
+        </div>
+      </div>
+    </section>` : ''}
 
     <footer class="sv-foot">
       <div class="sv-wrap">
@@ -4111,6 +4514,127 @@ function cartScript(ownerId){
   '  } catch(e){}',
   '}',
   '',
+  '// ── AVIS CLIENTS ──',
+  '// Les avis viennent du serveur : le proprietaire du site ne',
+  '// peut ni les ecrire ni les modifier.',
+  'var SV_STAR = 5;',
+  '',
+  'function svPickStar(n){',
+  '  SV_STAR = n;',
+  '  var b = document.querySelectorAll("#sv-rf-stars button");',
+  '  for(var i=0;i<b.length;i++){',
+  '    if(i < n) b[i].classList.add("on"); else b[i].classList.remove("on");',
+  '  }',
+  '}',
+  '',
+  '// Empreinte technique simple, sans donnee personnelle : elle',
+  '// sert seulement a eviter vingt avis de la meme personne.',
+  'function svFingerprint(){',
+  '  try{',
+  '    var s = navigator.userAgent + "|" + screen.width + "x" + screen.height',
+  '          + "|" + new Date().getTimezoneOffset() + "|" + (navigator.language||"");',
+  '    var h = 0;',
+  '    for(var i=0;i<s.length;i++){ h = ((h<<5)-h) + s.charCodeAt(i); h |= 0; }',
+  '    return "fp" + Math.abs(h).toString(36);',
+  '  } catch(e){ return ""; }',
+  '}',
+  '',
+  'function svRevSay(msg, ok){',
+  '  var f = document.getElementById("sv-rf-msg");',
+  '  if(!f) return;',
+  '  f.textContent = msg;',
+  '  f.className = "sv-rf-msg " + (ok ? "ok" : "err");',
+  '}',
+  '',
+  'function svLoadReviews(){',
+  '  var box = document.getElementById("sv-revs");',
+  '  var sum = document.getElementById("sv-rev-sum");',
+  '  if(!box || !SV_OWNER || typeof fetch !== "function"){',
+  '    if(sum) sum.textContent = "Soyez le premier a donner votre avis.";',
+  '    return;',
+  '  }',
+  '  fetch(SV_API + "/site-reviews", {',
+  '    method:"POST",',
+  '    headers:{ "Content-Type":"application/json", "apikey": SV_KEY },',
+  '    body: JSON.stringify({ action:"list", ownerId:SV_OWNER })',
+  '  })',
+  '  .then(function(r){ return r.json(); })',
+  '  .then(function(d){',
+  '    var list = d.reviews || [];',
+  '    if(sum){',
+  '      sum.textContent = list.length',
+  '        ? (d.average + " sur 5 - " + d.total + " avis")',
+  '        : "Soyez le premier a donner votre avis.";',
+  '    }',
+  '    var out = "";',
+  '    for(var i=0;i<list.length;i++){',
+  '      var r = list[i];',
+  '      var ini = (r.author_name || "?").charAt(0).toUpperCase();',
+  '      out += "<figure class=\\"sv-rev\\">"',
+  '           + "<div class=\\"sv-rev-stars\\">" + svStars(r.rating) + "</div>"',
+  '           + "<blockquote>" + svEsc(r.body) + "</blockquote>";',
+  '      if(r.reply){',
+  '        out += "<div class=\\"sv-rev-reply\\"><b>Reponse du vendeur</b>" + svEsc(r.reply) + "</div>";',
+  '      }',
+  '      out += "<figcaption><span class=\\"sv-rev-ini\\">" + ini + "</span>"',
+  '           + "<span><b>" + svEsc(r.author_name) + "</b>"',
+  '           + (r.author_city ? "<em>" + svEsc(r.author_city) + "</em>" : "")',
+  '           + "</span></figcaption></figure>";',
+  '    }',
+  '    box.innerHTML = out;',
+  '  })',
+  '  .catch(function(){',
+  '    if(sum) sum.textContent = "Les avis ne sont pas disponibles pour le moment.";',
+  '  });',
+  '}',
+  '',
+  'function svStars(n){',
+  '  var full = "", empty = "";',
+  '  for(var i=0;i<n;i++) full += "\\u2605";',
+  '  for(var j=n;j<5;j++) empty += "\\u2605";',
+  '  return full + "<span>" + empty + "</span>";',
+  '}',
+  '',
+  '// Un avis est saisi par un inconnu : on echappe tout avant',
+  '// de l afficher, sinon un avis piege s executerait chez tous',
+  '// les visiteurs du site.',
+  'function svEsc(s){',
+  '  return String(s == null ? "" : s)',
+  '    .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")',
+  '    .replace(/"/g,"&quot;").replace(/\'/g,"&#39;");',
+  '}',
+  '',
+  'function svSendReview(){',
+  '  function val(id){ var e = document.getElementById(id); return e ? e.value : ""; }',
+  '  var name = val("sv-rf-name").trim();',
+  '  var city = val("sv-rf-city").trim();',
+  '  var text = val("sv-rf-text").trim();',
+  '  if(name.length < 2) return svRevSay("Indiquez votre nom.", false);',
+  '  if(text.length < 10) return svRevSay("Votre avis est trop court.", false);',
+  '  if(!SV_OWNER) return svRevSay("Les avis ne sont pas disponibles ici.", false);',
+  '',
+  '  var btn = document.getElementById("sv-rf-send");',
+  '  if(btn){ btn.disabled = true; btn.textContent = "Envoi..."; }',
+  '',
+  '  fetch(SV_API + "/site-reviews", {',
+  '    method:"POST",',
+  '    headers:{ "Content-Type":"application/json", "apikey": SV_KEY },',
+  '    body: JSON.stringify({ action:"post", ownerId:SV_OWNER, name:name,',
+  '      city:city, rating:SV_STAR, text:text, fp:svFingerprint() })',
+  '  })',
+  '  .then(function(r){ return r.json().then(function(d){ return {ok:r.ok, d:d}; }); })',
+  '  .then(function(res){',
+  '    if(!res.ok) throw new Error(res.d.error || "Envoi impossible.");',
+  '    svRevSay("Merci, votre avis est publie.", true);',
+  '    var t = document.getElementById("sv-rf-text"); if(t) t.value = "";',
+  '    svLoadReviews();',
+  '  })',
+  '  .catch(function(e){ svRevSay(e.message || "Erreur reseau.", false); })',
+  '  .finally(function(){',
+  '    if(btn){ btn.disabled = false; btn.textContent = "Publier mon avis"; }',
+  '  });',
+  '}',
+  '',
   '// ── VIDEO ──',
   'var SV_VID = ' + JSON.stringify(youtubeId(state.videoUrl)) + ';',
   '',
@@ -4411,6 +4935,13 @@ function cartScript(ownerId){
   '  }',
   '  if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", go);',
   '  else go();',
+  '})();',
+  '',
+  '// Chargement des avis au demarrage',
+  '(function(){',
+  '  function go(){ if(document.getElementById("sv-revs")){ svPickStar(5); svLoadReviews(); } }',
+  '  if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", go);',
+  '  else go();',
   '})();'
   ].join('\n');
 }
@@ -4422,6 +4953,22 @@ function cartScript(ownerId){
    ══════════════════════════════════════════════════════ */
 function exportSite(){
   const owner = currentUser ? currentUser.id : '';
+
+  // Sans compte, le site publié n'a aucun identifiant : les avis
+  // et les commandes ne peuvent alors ni être reçus ni affichés.
+  // Mieux vaut le dire avant le téléchargement qu'après.
+  if(!owner && (state.orders || state.showReviews)){
+    const quoi = [];
+    if(state.orders) quoi.push('les commandes');
+    if(state.showReviews) quoi.push('les avis clients');
+    const ok = confirm(
+      'Vous n\'êtes pas connecté.\n\n'
+      + 'Sans compte, ' + quoi.join(' et ') + ' ne fonctionneront pas sur '
+      + 'votre site : vous ne recevrez rien.\n\n'
+      + 'Connectez-vous d\'abord, puis retéléchargez.\n\n'
+      + 'Télécharger quand même ?');
+    if(!ok) return;
+  }
   const { css, html } = buildSiteHTML(true);
   const title = state.name || 'Mon site';
   const desc  = state.tagline || '';
@@ -4769,7 +5316,7 @@ renderThemes();
 renderCustomPanel();
 renderGroups();
 renderStats();
-renderReviews();
+renderPerks();
 renderLists();
 syncPanel();
 </script>
