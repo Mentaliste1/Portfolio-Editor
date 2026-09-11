@@ -13,12 +13,7 @@
       onerror="var a=document.createElement('link');a.rel='stylesheet';a.href='https://unpkg.com/remixicon@3.5.0/fonts/remixicon.css';document.head.appendChild(a);">
 
 <style>
-/* ═══════════════════════════════════════════════════════
-   INTERFACE DE L'ÉDITEUR
-   ═══════════════════════════════════════════════════════ */
-/* Palette identique à celle de l'éditeur portfolio : les deux
-   éditeurs doivent se ressembler, l'utilisateur passe de l'un
-   à l'autre. Un noir neutre, pas un bleu nuit. */
+
 :root{
   --ui-bg:#000000;
   --ui-panel:#0a0a0a;
@@ -39,7 +34,6 @@ body{
 
 #app{display:flex;height:100vh;overflow:hidden;}
 
-/* ── Barre latérale des onglets ── */
 .rail{
   width:62px;flex-shrink:0;
   background:var(--ui-panel);
@@ -69,7 +63,6 @@ body{
 }
 .rail-spacer{flex:1;}
 
-/* ── Panneau de réglages ── */
 .panel{
   width:360px;flex-shrink:0;
   background:var(--ui-panel);
@@ -165,7 +158,6 @@ body{
 }
 .btn-add:hover{color:var(--ui-accent);border-color:var(--ui-accent);}
 
-/* ── Catégories d'activité ── */
 .cats{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
 .cat{
   padding:13px 10px;border-radius:12px;cursor:pointer;
@@ -177,7 +169,6 @@ body{
 .cat i{font-size:20px;color:var(--ui-accent);display:block;margin-bottom:6px;}
 .cat-n{font-size:11px;font-weight:600;line-height:1.3;}
 
-/* ── Produits ── */
 .item{
   background:var(--ui-surface);border:1px solid var(--ui-border);
   border-radius:13px;margin-bottom:10px;overflow:hidden;
@@ -213,7 +204,57 @@ body{
 }
 .upload:hover{border-color:var(--ui-accent);color:var(--ui-accent);}
 
-/* ── Panneau des avis ── */
+.price-pill{
+  display:flex;flex-direction:column;align-items:flex-start;gap:2px;
+  padding:5px 11px;border-radius:11px;cursor:pointer;
+  background:var(--ui-surface);border:1px solid var(--ui-border);
+  transition:border-color .2s;min-width:92px;
+}
+.price-pill:hover{border-color:var(--ui-accent);}
+#price-tag{display:flex;align-items:baseline;gap:3px;}
+.pt-n{font-family:'Syne',sans-serif;font-weight:800;font-size:14px;color:var(--ui-accent-2);letter-spacing:-.02em;}
+.pt-c{font-size:8.5px;font-weight:700;color:var(--ui-muted);}
+.price-track{display:block;width:100%;height:3px;border-radius:100px;background:var(--ui-border);overflow:hidden;}
+.price-fill{display:block;height:100%;width:0;border-radius:100px;
+  background:linear-gradient(90deg,var(--ui-accent),var(--ui-accent-2));transition:width .4s ease;}
+.price-lvl{font-size:8px;color:var(--ui-muted);font-weight:600;}
+
+#pay-modal{
+  display:none;position:fixed;inset:0;z-index:9999;
+  background:rgba(0,0,0,.8);backdrop-filter:blur(8px);
+  align-items:center;justify-content:center;padding:20px;
+}
+#pay-modal.on{display:flex;}
+.pay-card{
+  background:var(--ui-panel);border:1px solid var(--ui-border);
+  border-radius:20px;width:100%;max-width:410px;max-height:88vh;
+  display:flex;flex-direction:column;overflow:hidden;
+}
+.pay-body{padding:22px;overflow-y:auto;}
+.pay-price{
+  text-align:center;font-family:'Syne',sans-serif;font-weight:800;
+  font-size:16px;color:var(--ui-muted);margin-bottom:5px;
+}
+.pay-price span{font-size:40px;color:var(--ui-accent-2);letter-spacing:-.04em;margin-right:5px;}
+.pay-sub{text-align:center;font-size:12.5px;color:var(--ui-muted);margin-bottom:20px;font-weight:300;}
+.pay-list{display:grid;gap:7px;margin-bottom:18px;}
+.pay-li{
+  display:flex;align-items:center;gap:9px;font-size:12.5px;color:var(--ui-text);
+  padding:8px 11px;border-radius:9px;background:var(--ui-surface);
+}
+.pay-li i{color:#10b981;font-size:14px;}
+.pay-li b{margin-left:auto;color:var(--ui-accent);font-weight:700;}
+.pay-chips{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-bottom:18px;}
+.pay-chips span{
+  padding:6px 12px;border-radius:100px;font-size:10.5px;font-weight:700;
+  background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.26);color:var(--ui-accent-2);
+}
+
+@media(max-width:560px){
+  .price-pill{min-width:0;padding:4px 8px;}
+  .price-lvl{display:none;}
+}
+
 #reviews-modal{
   display:none;position:fixed;inset:0;z-index:9999;
   background:rgba(0,0,0,.78);backdrop-filter:blur(6px);
@@ -239,7 +280,6 @@ body{
 .rev-reply b{display:block;color:var(--ui-text);font-size:11px;font-weight:700;margin-bottom:3px;}
 .rev-acts{display:flex;gap:7px;flex-wrap:wrap;}
 
-/* ── Bandeau d'information ── */
 .notice{
   display:flex;gap:11px;align-items:flex-start;
   padding:13px 14px;border-radius:12px;margin-bottom:10px;
@@ -250,7 +290,6 @@ body{
 .notice b{display:block;font-size:12.5px;font-weight:700;margin-bottom:4px;}
 .notice > div{font-size:11.5px;color:var(--ui-muted);line-height:1.6;}
 
-/* ── Chiffres clés ── */
 .stat-row{
   display:flex;align-items:center;gap:5px;margin-bottom:6px;
 }
@@ -264,7 +303,6 @@ body{
 .stat-row .st-s{width:44px;flex-shrink:0;text-align:center;color:var(--ui-accent);}
 .stat-row .st-l{flex:1;}
 
-/* ── Caractéristiques produit ── */
 .spec-row{display:flex;align-items:center;gap:5px;margin-bottom:6px;}
 .spec-row select{
   width:108px;flex-shrink:0;padding:8px 9px;border-radius:9px;
@@ -278,7 +316,6 @@ body{
 }
 .spec-row input:focus,.spec-row select:focus{outline:none;border-color:var(--ui-accent);}
 
-/* ── Galerie de photos produit ── */
 .pimg-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;}
 .pimg{position:relative;width:56px;height:56px;border-radius:9px;overflow:hidden;}
 .pimg img{width:100%;height:100%;object-fit:cover;display:block;}
@@ -294,7 +331,6 @@ body{
   font-size:7.5px;font-weight:700;text-align:center;padding:1px;
 }
 
-/* ── Promotions ── */
 .promo-box{
   margin:10px 0;padding:10px;border-radius:11px;
   background:var(--ui-bg);border:1px dashed var(--ui-border);
@@ -306,7 +342,6 @@ body{
 }
 .promo-box .tog{background:transparent;border:none;padding:0;}
 
-/* ── Personnalisation ── */
 .cust-row{
   display:flex;align-items:center;justify-content:space-between;gap:10px;
   padding:9px 11px;margin-bottom:6px;border-radius:10px;
@@ -326,7 +361,6 @@ body{
 }
 .cust-x:hover{border-color:var(--ui-accent);color:var(--ui-accent);}
 
-/* ── Rayons ── */
 .grp-row{
   display:flex;align-items:center;gap:9px;
   background:var(--ui-surface);border:1px solid var(--ui-border);
@@ -339,7 +373,6 @@ body{
   background:var(--ui-glow);color:var(--ui-accent);flex-shrink:0;
 }
 
-/* ── Thèmes ── */
 .themes{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
 .theme{
   border-radius:12px;overflow:hidden;cursor:pointer;
@@ -361,7 +394,6 @@ body{
   background:var(--ui-surface);text-align:center;
 }
 
-/* ── Zone d'aperçu ── */
 .preview{
   flex:1;display:flex;flex-direction:column;
   background:
@@ -402,16 +434,6 @@ body{
   transition:max-width .35s ease;
   align-self:flex-start;
 
-  /* ── Confinement de l'aperçu ──
-     Les fonds animés, images de fond et fenêtres du site
-     utilisent position:fixed, qui les rattache normalement à la
-     fenêtre du navigateur : ils débordaient donc de l'aperçu et
-     recouvraient l'éditeur lui-même.
-
-     Un ancêtre porteur d'une transformation devient le repère
-     des éléments fixes qu'il contient. Cette seule ligne les
-     confine donc tous à l'aperçu — y compris ceux qui seront
-     ajoutés plus tard, sans avoir à corriger chaque règle. */
   transform:translateZ(0);
   position:relative;
   isolation:isolate;
@@ -419,7 +441,6 @@ body{
 #site-view.dev-tablet{max-width:760px;}
 #site-view.dev-mobile{max-width:390px;}
 
-/* ── Menu compte ── */
 .top-actions{display:flex;align-items:center;gap:8px;}
 .sync{
   display:flex;align-items:center;gap:6px;
@@ -463,7 +484,6 @@ body{
 .acct-switch i{color:var(--ui-accent-2);}
 .acct-sep{height:1px;background:var(--ui-border);margin:6px 10px;}
 
-/* ── Commandes reçues ── */
 #orders-modal{
   display:none;position:fixed;inset:0;z-index:9999;
   background:rgba(0,0,0,.78);backdrop-filter:blur(6px);
@@ -546,10 +566,6 @@ body{
 .od-btn.ok{background:rgba(16,185,129,.12);border-color:#10b981;color:#10b981;}
 .od-btn.no{background:rgba(239,68,68,.1);border-color:#7f1d1d;color:#f87171;}
 
-/* ── Mobile ── */
-/* ── Barre flottante ──
-   Elle ne barre plus tout le bas de l'écran : arrondie,
-   centrée, et rétractable d'un appui sur sa poignée. */
 #mob-nav{
   display:none;
   position:fixed;left:50%;bottom:calc(12px + env(safe-area-inset-bottom));
@@ -614,20 +630,36 @@ body{
 .mob-btn.on{background:var(--ui-glow);color:var(--ui-accent);}
 .mob-btn:active{background:var(--ui-surface);}
 
-/* Répartition entre panneau et aperçu */
-#app.split-edit .panel{max-height:76dvh;}
-#app.split-edit .preview{min-height:0;}
-#app.split-view .panel{max-height:0;border-bottom:none;overflow:hidden;}
-#app.split-view .preview{flex:1;}
+#app.split-edit .panel{
+  max-height:none;
+  flex:1 1 auto;
+  min-height:0;
+}
+#app.split-edit .preview{
+  flex:0 0 0;
+  height:0;
+  min-height:0;
+  overflow:hidden;
+  border-top:none;
+}
+#app.split-view .panel{
+  flex:0 0 0;
+  max-height:0;
+  min-height:0;
+  overflow:hidden;
+  border-bottom:none;
+}
+#app.split-view .preview{flex:1 1 auto;min-height:0;}
+#app.split-edit .panel,
+#app.split-view .panel,
+#app.split-edit .preview,
+#app.split-view .preview{transition:flex-basis .3s ease, max-height .3s ease, height .3s ease;}
 .panel{transition:max-height .32s cubic-bezier(.4,0,.2,1);}
 
 @media(max-width:1024px){
   .panel{width:300px;}
 }
-/* ── Adaptation de l'éditeur aux écrans ──
-   L'utilisateur construit souvent son site depuis un
-   téléphone : le panneau et l'aperçu doivent rester
-   utilisables ensemble. */
+
 @media(max-width:820px){
   #app{flex-direction:column;}
   .rail{display:none;}
@@ -639,8 +671,7 @@ body{
   .preview{flex:1;min-height:0;}
   .pv-stage{padding:10px;}
   #mob-nav{display:flex;}
-  /* La barre flotte : plus besoin de réserver toute la hauteur
-     du bas, seulement de quoi ne pas masquer l'aperçu. */
+
   body{padding-bottom:0;}
   .pv-stage{padding-bottom:96px;}
   .pv-devs{display:none;}
@@ -657,9 +688,7 @@ body{
   .fld-row{grid-template-columns:1fr;}
   .panel-head{padding:12px 14px;}
   .panel-title{font-size:14px;}
-  /* Les listes déroulantes doivent rester touchables au doigt :
-     en dessous de 16px, les navigateurs mobiles zooment au
-     moment de la saisie. */
+
   .fld input,.fld textarea,.fld select{font-size:16px;padding:11px 12px;}
   .pv-url{max-width:150px;font-size:10px;}
   .item-head{padding:12px;}
@@ -673,8 +702,6 @@ body{
   #mob-nav .rail-btn{height:42px;font-size:17px;}
 }
 
-/* Écran bas de plafond : on rend le panneau plus discret pour
-   laisser voir l'aperçu. */
 @media(max-height:620px) and (max-width:820px){
   .panel{max-height:44dvh;}
 }
@@ -684,7 +711,6 @@ body{
 
 <div id="app">
 
-  <!-- Barre d'onglets -->
   <nav class="rail">
     <div class="rail-logo"><img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAMCAgMCAgMDAwMEAwMEBQgFBQQEBQoHBwYIDAoMDAsKCwsNDhIQDQ4RDgsLEBYQERMUFRUVDA8XGBYUGBIUFRT/2wBDAQMEBAUEBQkFBQkUDQsNFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBT/wAARCAEAAQADASIAAhEBAxEB/8QAHQABAAICAwEBAAAAAAAAAAAAAAcIBQYBAgkEA//EADwQAAEEAgEDAwIEAgcHBQAAAAEAAgMEBREGBxIhCBMxQVEUIjJhI3EJFUJSgZGhFjNygrHB0RckJVNz/8QAGwEBAAIDAQEAAAAAAAAAAAAAAAUGAQMEBwL/xAA2EQACAQMCAwYFAgQHAAAAAAAAAQIDBBEFIRIxQQYTUWFxkRQigbHBMqEVQmLhFiMzUrLR8P/aAAwDAQACEQMRAD8A8r0REAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERASH0pwHTzkAvV+a8hyXH7ZcwUpqsDXwEH9XuEgkedfYfup/wvoUwfKKEd7D8/ddpyjcc0NRkjXf4tfpU9VivQ/y3MY3rFUwta3IMTfhldZql24yWt2HgfQg/X91UO0UNQoWlS8sLjgcE24tRaaSy+ayn7kxprtqlaNG4p5UnjOWnv8AXBqnX/063+hd7GmXIDKYq/3NZbEPtlj267mubs/Q7Hnz5+y2vqN6SRxfpl/tjgOQuz1aOCO1LE6sI+6FwBL2EOO9b3o/Tf2V0PUX0sZ1Y6W5XEsa3+sWN/E0XkfEzPLRv9/LT/xKCPRhztvJ+H5np5ndvsY4PbFBMPJru217Dv8AuuJH8nBUaz7V313o8NRhJOdGaVWOF80X18vp5k9W0ihRvXbSXyzX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" alt="Mental Studio"></div>
     <button class="rail-btn on" data-tab="infos" onclick="switchTab('infos',this)" title="Informations"><i class="ri-store-2-line"></i></button>
@@ -695,11 +721,15 @@ body{
     <div class="rail-spacer"></div>
   </nav>
 
-  <!-- Panneau de réglages -->
   <aside class="panel">
     <div class="panel-head">
       <span class="panel-title" id="panel-title">Informations</span>
       <div class="top-actions">
+        <button class="price-pill" onclick="openPay()" title="Voir le détail du prix">
+          <span id="price-tag"><span class="pt-n">25 000</span><span class="pt-c">FCFA</span></span>
+          <span class="price-track"><span class="price-fill" id="price-bar"></span></span>
+          <span class="price-lvl" id="price-lvl">Site simple</span>
+        </button>
         <div class="sync"><span class="sync-dot" id="sync-dot"></span><span id="sync-txt">Local</span></div>
         <div class="acct">
           <button class="acct-btn" id="acct-btn" onclick="toggleAcct(event)">?</button>
@@ -719,7 +749,6 @@ body{
 
     <div class="panel-body">
 
-      <!-- ═══ INFORMATIONS ═══ -->
       <div class="tab on" id="tab-infos">
         <div class="sec-label"><i class="ri-shapes-line"></i> Votre activité<div class="sec-line"></div></div>
         <div class="cats" id="cat-list"></div>
@@ -749,7 +778,6 @@ body{
         </div>
       </div>
 
-      <!-- ═══ CATALOGUE ═══ -->
       <div class="tab" id="tab-catalogue">
         <div class="sec-label"><i class="ri-price-tag-3-line"></i> Vos produits<div class="sec-line"></div></div>
         <div class="fld">
@@ -822,7 +850,6 @@ body{
         <button class="btn btn-add" onclick="addService()"><i class="ri-add-line"></i> Ajouter un service</button>
       </div>
 
-      <!-- ═══ APPARENCE ═══ -->
       <div class="tab" id="tab-style">
         <div class="sec-label"><i class="ri-palette-line"></i> Thème<div class="sec-line"></div></div>
         <div class="themes" id="theme-list"></div>
@@ -933,7 +960,6 @@ body{
         </div>
       </div>
 
-      <!-- ═══ CONTACT ET COMMANDES ═══ -->
       <div class="tab" id="tab-contact">
         <div class="sec-label"><i class="ri-phone-line"></i> Vous joindre<div class="sec-line"></div></div>
         <div class="fld">
@@ -1002,7 +1028,6 @@ body{
         <div class="fld"><label>TikTok</label><input type="url" id="f-tiktok" oninput="setF('tiktok',this.value)" placeholder="https://tiktok.com/@..."></div>
       </div>
 
-      <!-- ═══ AVANCÉ ═══ -->
       <div class="tab" id="tab-avance">
         <div class="sec-label"><i class="ri-eye-line"></i> Sections affichées<div class="sec-line"></div></div>
         <div class="tog">
@@ -1042,7 +1067,7 @@ body{
         </div>
 
         <div class="sec-label"><i class="ri-download-2-line"></i> Publication<div class="sec-line"></div></div>
-        <button class="btn btn-primary" onclick="exportSite()"><i class="ri-download-2-line"></i> Télécharger mon site</button>
+        <button class="btn btn-primary" id="dl-btn" onclick="exportSite()"><i class="ri-secure-payment-line"></i> Obtenir mon site</button>
         <p class="hint">Un fichier unique, hébergeable partout : GitHub Pages, Netlify, ou votre hébergeur.</p>
 
         <div class="sec-label"><i class="ri-refresh-line"></i> Réinitialiser<div class="sec-line"></div></div>
@@ -1052,7 +1077,6 @@ body{
     </div>
   </aside>
 
-  <!-- Aperçu -->
   <main class="preview">
     <div class="pv-bar">
       <div class="pv-dots">
@@ -1074,7 +1098,16 @@ body{
 
 </div>
 
-<!-- Avis clients -->
+<div id="pay-modal" onclick="if(event.target===this)closePay()">
+  <div class="pay-card">
+    <div class="od-head">
+      <span><i class="ri-secure-payment-line"></i> Obtenir mon site</span>
+      <button onclick="closePay()">&times;</button>
+    </div>
+    <div class="pay-body" id="pay-body"></div>
+  </div>
+</div>
+
 <div id="reviews-modal" onclick="if(event.target===this)closeReviews()">
   <div class="od-card">
     <div class="od-head">
@@ -1085,9 +1118,6 @@ body{
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════════════
-     COMMANDES REÇUES
-     ═══════════════════════════════════════════════════ -->
 <div id="orders-modal" onclick="if(event.target===this)closeOrders()">
   <div class="od-card">
     <div class="od-head">
@@ -1098,15 +1128,13 @@ body{
   </div>
 </div>
 
-<!-- Barre flottante, rétractable, comme dans l'éditeur
-     portfolio. Elle ne prend plus toute la largeur du bas. -->
 <div id="mob-nav">
   <button id="mob-handle" onclick="toggleMobNav()" aria-label="Afficher ou cacher la barre">
     <i class="ri-arrow-up-s-line" id="mob-arrow"></i>
   </button>
 
   <div class="mob-shell">
-    <!-- Répartition entre le panneau et l'aperçu -->
+
     <div class="mob-split">
       <button class="mob-sp" id="sp-edit" onclick="setSplit('edit',this)" title="Agrandir l'éditeur">
         <i class="ri-layout-top-line"></i>
@@ -1143,9 +1171,7 @@ body{
 
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-/* ══════════════════════════════════════════════════════
-   ÉDITEUR DE SITES — état et configuration
-   ══════════════════════════════════════════════════════ */
+
 const AUTH_CONFIG = {
   supabaseUrl     : "https://fhqkfzkszmknyabpcvpb.supabase.co",
   supabaseAnonKey : "sb_publishable_6p5mnb8FwWdHFiRzaqBh2w_tUsbyllU"
@@ -1154,8 +1180,6 @@ const API_BASE  = 'https://fhqkfzkszmknyabpcvpb.supabase.co/functions/v1';
 const ANON_KEY  = AUTH_CONFIG.supabaseAnonKey;
 const DRAFT_KEY = 'mental_studio_site_draft_v1';
 
-/* Les catégories d'activité. Chacune ajuste le vocabulaire du
-   site — on ne parle pas de « produits » à un coiffeur. */
 const CATEGORIES = [
   { id:'mode',      icon:'ri-t-shirt-line',        name:'Mode & Vêtements',  word:'articles',  theme:'editorial' },
   { id:'tech',      icon:'ri-smartphone-line',     name:'Téléphones & Tech', word:'produits',  theme:'techno' },
@@ -1171,19 +1195,8 @@ const CATEGORIES = [
   { id:'autre',     icon:'ri-shapes-line',         name:'Autre activité',    word:'produits',  theme:'editorial' }
 ];
 
-/* ══════════════════════════════════════════════════════
-   THÈMES
-   Chaque thème porte une palette ET une structure : forme des
-   cartes, traitement de la bannière, rythme, décor. C'est ce
-   qui distingue un thème conçu d'une simple recoloration.
-
-   card  : plat · surélevé · contour · verre · brut · doux
-   hero  : centré · scindé · bandeau · minimal · immersif
-   deco  : aucun · trame · lueur · courbe · rayures · tampon
-   ══════════════════════════════════════════════════════ */
 const THEMES = {
 
-  /* ── Clairs et éditoriaux ─────────────────────────── */
   editorial: {
     name:'Éditorial', group:'Clair',
     bg:'#FFFDF9', surf:'#F5F1E8', ink:'#14110C', mute:'#6E6558', accent:'#1A1A1A',
@@ -1233,7 +1246,6 @@ const THEMES = {
     card:'surelever', hero:'bandeau', deco:'rayures', radius:'14px', weight:800
   },
 
-  /* ── Affirmés ──────────────────────────────────────── */
   brutal: {
     name:'Néo-brutal', group:'Affirmé',
     bg:'#FFFEF2', surf:'#FFFFFF', ink:'#000000', mute:'#4A4A4A', accent:'#FF4D00',
@@ -1265,7 +1277,6 @@ const THEMES = {
     card:'contour', hero:'minimal', deco:'trame', radius:'0px', weight:800
   },
 
-  /* ── Sombres et sophistiqués ───────────────────────── */
   verre: {
     name:'Verre', group:'Sombre',
     bg:'#070B18', surf:'rgba(255,255,255,.06)', ink:'#EAF0FF', mute:'#8CA0C8', accent:'#5B8CFF',
@@ -1321,7 +1332,6 @@ const THEMES = {
     card:'surelever', hero:'immersif', deco:'courbe', radius:'20px', weight:800
   },
 
-  /* ── Clairs — suite ──────────────────────────────── */
   galerie: {
     name:'Galerie', group:'Clair',
     bg:'#FFFFFF', surf:'#FAFAF8', ink:'#111110', mute:'#7C7A74', accent:'#2E2E2C',
@@ -1371,7 +1381,6 @@ const THEMES = {
     card:'contour', hero:'centre', deco:'rayures', radius:'6px', weight:600
   },
 
-  /* ── Affirmés — suite ────────────────────────────── */
   kiosque: {
     name:'Kiosque', group:'Affirmé',
     bg:'#FFFFFF', surf:'#F4F4F4', ink:'#0A0A0A', mute:'#5C5C5C', accent:'#D32027',
@@ -1409,7 +1418,6 @@ const THEMES = {
     card:'plat', hero:'minimal', deco:'trame', radius:'0px', weight:800
   },
 
-  /* ── Sombres — suite ─────────────────────────────── */
   onyx: {
     name:'Onyx', group:'Sombre',
     bg:'#050505', surf:'#101010', ink:'#FFFFFF', mute:'#7E7E7E', accent:'#E5E5E5',
@@ -1453,10 +1461,6 @@ const THEMES = {
     card:'verre', hero:'scinde', deco:'trame', radius:'18px', weight:800
   },
 
-  /* ── Signature — inspirés des palettes d'Afrique ──
-     Ces thèmes ne cherchent pas le pittoresque : ce sont des
-     accords de couleurs, traités avec la même rigueur que les
-     autres familles. */
   sahel: {
     name:'Sahel', group:'Signature',
     bg:'#FDF8EE', surf:'#F5E7CE', ink:'#2A1D0C', mute:'#8A7449', accent:'#C77D0A',
@@ -1495,14 +1499,6 @@ const THEMES = {
   }
 };
 
-
-/* ══════════════════════════════════════════════════════
-   FONDS DE THÈME
-   Un thème ne se limite pas à des couleurs plates : le fond
-   porte une grande part de l'identité. Chaque motif est
-   construit à partir des couleurs du thème, il s'adapte donc
-   automatiquement si l'utilisateur les personnalise.
-   ══════════════════════════════════════════════════════ */
 const BACKDROPS = {
   aucun:    { name:'Aucun',       css:'' },
 
@@ -1541,8 +1537,6 @@ const BACKDROPS = {
     'background-image:url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'120\' height=\'120\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'.9\' numOctaves=\'3\'/%3E%3C/filter%3E%3Crect width=\'120\' height=\'120\' filter=\'url(%23n)\' opacity=\'.35\'/%3E%3C/svg%3E");' }
 };
 
-/* Chaque thème propose un fond par défaut, cohérent avec son
-   caractère. L'utilisateur peut en choisir un autre. */
 const THEME_BACKDROP = {
   editorial:'diagonal', suisse:'grille',    papier:'bruit',    boutique:'halo',
   pastel:'vagues',      clinique:'degrade', nature:'vagues',   terracotta:'diagonal',
@@ -1561,11 +1555,6 @@ const THEME_BACKDROP = {
   cuivre:'halo',        hibiscus:'vagues'
 };
 
-/* ══════════════════════════════════════════════════════
-   PERSONNALISATION
-   L'utilisateur ajuste les couleurs et la typographie du thème
-   choisi. Ses réglages priment, le reste suit le thème.
-   ══════════════════════════════════════════════════════ */
 const FONT_CHOICES = [
   { v:'', n:'Police du thème' },
   { v:"'Syne',sans-serif", n:'Syne' },
@@ -1579,7 +1568,6 @@ const FONT_CHOICES = [
   { v:"'Bebas Neue',sans-serif", n:'Bebas Neue' }
 ];
 
-/* Fusionne le thème choisi avec les réglages personnels. */
 function activeTheme(){
   const base = THEMES[state.theme] || THEMES.editorial;
   const c = state.custom || {};
@@ -1681,7 +1669,6 @@ function renderCustomPanel(){
 
 function syncCustomPanel(){ renderCustomPanel(); }
 
-/* L'état complet du site en construction. */
 let state = {
   category  : 'mode',
   theme     : 'editorial',
@@ -1695,7 +1682,6 @@ let state = {
   videoUrl  : '',
   videoTitle: 'Découvrir en vidéo',
 
-  // Chiffres clés affichés en bandeau sous la bannière
   stats     : [
     { id:1, value:'500', suffix:'+', label:'Clients satisfaits' },
     { id:2, value:'12',  suffix:'+', label:'Années d\'expérience' },
@@ -1704,15 +1690,11 @@ let state = {
   ],
   showStats : true,
 
-  // Avis clients — vides par défaut : mieux vaut aucune preuve
-  // sociale qu'une preuve inventée.
   reviews   : [],
   showReviews: true,
 
   footerNote: '',
 
-  // Vos atouts — la section en bandeau sombre qui explique
-  // pourquoi acheter ici plutôt qu'ailleurs.
   perks     : [
     { id:1, icon:'ri-truck-line',        title:'Livraison rapide',   desc:'Partout en ville sous 24 h.' },
     { id:2, icon:'ri-shield-check-line', title:'Produits garantis',  desc:'Échange possible sous 7 jours.' },
@@ -1722,7 +1704,6 @@ let state = {
   showPerks : true,
   perksTitle: 'Pourquoi acheter chez nous',
 
-  // Bannière d'appel final, juste avant le pied de page
   ctaTitle  : 'Une question sur un produit ?',
   ctaText   : 'Écrivez-nous, nous répondons rapidement.',
   ctaImg    : '',
@@ -1762,8 +1743,6 @@ let state = {
   showSearch: false,
   showWa    : true,
 
-  // Les rayons de la boutique. Un commerçant qui vend des
-  // téléphones ET des ordinateurs veut les séparer.
   groups    : ['Téléphones', 'Ordinateurs', 'Accessoires'],
   showGroups: true,
 
@@ -1778,7 +1757,6 @@ let state = {
 
 let sb = null, currentUser = null, saveTimer = null;
 
-/* ── Utilitaires ─────────────────────────────────── */
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s)
   .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
@@ -1799,8 +1777,6 @@ function toggleF(key, btn){
   scheduleSave();
 }
 
-/* ── Navigation entre onglets ────────────────────── */
-/* ── BARRE FLOTTANTE ─────────────────────────────── */
 let mobNavHidden = false;
 let splitMode = 'half';
 
@@ -1810,8 +1786,6 @@ function toggleMobNav(){
   if(nav) nav.classList.toggle('hidden', mobNavHidden);
 }
 
-/* Trois répartitions entre le panneau et l'aperçu :
-   éditeur agrandi, moitié-moitié, ou site plein écran. */
 function setSplit(mode, btn){
   splitMode = mode;
   const app = $('app');
@@ -1830,10 +1804,9 @@ const TAB_TITLES = {
   style:'Apparence', contact:'Contact et commandes', avance:'Avancé'
 };
 function switchTab(tab, btn){
-  // Si la barre était rangée, on la ressort : sinon l'utilisateur
-  // change d'onglet sans voir sa barre revenir.
+
   if(mobNavHidden) toggleMobNav();
-  // Un panneau replié doit se rouvrir quand on choisit un onglet.
+
   if(splitMode === 'view') setSplit('half');
 
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
@@ -1841,7 +1814,7 @@ function switchTab(tab, btn){
   if(el) el.classList.add('on');
   document.querySelectorAll('.rail-btn, .mob-btn').forEach(b => b.classList.remove('on'));
   if(btn) btn.classList.add('on');
-  // Les deux barres (bureau et mobile) restent synchronisées.
+
   document.querySelectorAll('[data-tab="' + tab + '"]').forEach(b => b.classList.add('on'));
   const t = $('panel-title');
   if(t) t.textContent = TAB_TITLES[tab] || '';
@@ -1856,18 +1829,6 @@ function setDevice(cls, btn){
   if(btn) btn.classList.add('on');
 }
 
-/* ── Images ──────────────────────────────────────── */
-/* ══════════════════════════════════════════════════════
-   IMAGES
-   Les photos sont converties en texte et enregistrées avec le
-   site. Sans compression, quelques photos suffisaient à
-   dépasser la capacité du navigateur : la sauvegarde échouait
-   en silence et tout le travail était perdu au rafraîchissement.
-
-   On redimensionne donc chaque image à l'envoi. La qualité
-   reste largement suffisante pour un site, et le poids devient
-   raisonnable.
-   ══════════════════════════════════════════════════════ */
 function compressImage(file, maxSide, quality){
   return new Promise(function(resolve, reject){
     const reader = new FileReader();
@@ -1888,7 +1849,7 @@ function compressImage(file, maxSide, quality){
           ctx.drawImage(img, 0, 0, w, h);
           resolve(cv.toDataURL('image/jpeg', quality));
         } catch(err){
-          // Sans canvas, on garde l'original plutôt que d'échouer.
+
           resolve(ev.target.result);
         }
       };
@@ -1907,7 +1868,7 @@ function uploadImg(e, key){
   }
   const lbl = $(key + '-lbl');
   if(lbl) lbl.textContent = 'Traitement…';
-  // La bannière est affichée en grand, le logo reste petit.
+
   const maxSide = (key === 'hero') ? 1600 : 640;
   compressImage(file, maxSide, 0.82).then(function(data){
     state[key] = data;
@@ -1920,15 +1881,13 @@ function uploadImg(e, key){
   });
 }
 
-/* ── IMAGE DE FOND DU SITE ───────────────────────── */
 function uploadSiteBg(e){
   const file = e.target.files && e.target.files[0];
   if(!file) return;
   if(file.size > 12 * 1024 * 1024){ alert('Image trop lourde (12 Mo maximum).'); return; }
   const lbl = $('sitebg-lbl');
   if(lbl) lbl.textContent = 'Traitement…';
-  // 1920 px : la définition d'un écran courant. Au-delà, le
-  // poids augmente sans gain visible.
+
   compressImage(file, 1920, 0.82).then(function(data){
     state.bgImage = data;
     const inp = $('f-bgImage');
@@ -1960,16 +1919,12 @@ function setBgBlur(v){
   render(); scheduleSave();
 }
 
-/* ── VIDÉO ───────────────────────────────────────────
-   On accepte les trois formes de lien YouTube et on en
-   extrait l'identifiant. Coller n'importe lequel doit
-   fonctionner : l'utilisateur ne doit pas avoir à réfléchir. */
 function youtubeId(url){
   const s = String(url || '').trim();
   if(!s) return '';
   let m = s.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/shorts\/)([A-Za-z0-9_-]{11})/);
   if(m) return m[1];
-  // L'utilisateur a peut-être collé l'identifiant seul.
+
   if(/^[A-Za-z0-9_-]{11}$/.test(s)) return s;
   return '';
 }
@@ -1985,8 +1940,7 @@ function uploadProdImg(e, id, kind){
   const item = list.find(p => p.id === id);
   if(!item) return;
   compressImage(file, 900, 0.8).then(function(data){
-    // Chaque produit peut porter plusieurs photos : la première
-    // sert de vignette, les suivantes s'affichent en grand.
+
     if(!Array.isArray(item.imgs)) item.imgs = item.img ? [item.img] : [];
     if(item.imgs.length >= 5){
       alert('Cinq photos maximum par produit.');
@@ -2008,7 +1962,6 @@ function delProdImg(kind, id, idx){
   renderLists(); render(); scheduleSave();
 }
 
-/* ── Produits et services ────────────────────────── */
 function addProduct(){
   const id = Date.now();
   state.products.push({ id, name:'Nouveau produit', price:0, desc:'', img:'', stock:true, group:'', specs:[] });
@@ -2030,8 +1983,7 @@ function updItem(kind, id, field, val){
   const item = list.find(p => p.id === id);
   if(!item) return;
   item[field] = val;
-  // On ne reconstruit pas la liste : cela détruirait le champ en
-  // cours de saisie et ferait perdre le curseur.
+
   if(field === 'name' || field === 'price'){
     const card = document.querySelector('[data-item="' + id + '"]');
     if(card){
@@ -2044,10 +1996,6 @@ function updItem(kind, id, field, val){
   render(); scheduleSave();
 }
 
-/* ── PROMOTIONS ──────────────────────────────────────
-   Le commerçant fixe soit un pourcentage, soit un prix promo.
-   Les deux restent synchronisés : changer l'un met l'autre à
-   jour, pour qu'il n'y ait jamais d'incohérence affichée. */
 function findItem(kind, id){
   const list = kind === 'service' ? state.services : state.products;
   return list.find(function(p){ return p.id === id; });
@@ -2058,8 +2006,7 @@ function togglePromo(kind, id, btn){
   if(!p) return;
   p.promo = !p.promo;
   if(p.promo){
-    // Une réduction de 10 % par défaut : le commerçant n'a
-    // qu'à ajuster plutôt que tout saisir.
+
     if(!p.promoPct) p.promoPct = 10;
     p.promoPrice = Math.round(p.price * (1 - p.promoPct/100));
   }
@@ -2073,8 +2020,7 @@ function applyPromoPct(kind, id, val){
   const pct = Math.max(1, Math.min(90, parseInt(val) || 0));
   p.promoPct = pct;
   p.promoPrice = Math.round(p.price * (1 - pct/100));
-  // On met à jour le champ jumeau sans reconstruire la liste,
-  // pour ne pas perdre le curseur de saisie.
+
   const card = document.querySelector('[data-item="' + id + '"]');
   if(card){
     const inputs = card.querySelectorAll('.promo-box input[type=number]');
@@ -2097,8 +2043,6 @@ function applyPromoPrice(kind, id, val){
   render(); scheduleSave();
 }
 
-/* Une promotion expirée ne doit plus s'appliquer : le prix
-   normal revient de lui-même, sans intervention. */
 function promoActive(p){
   if(!p || !p.promo) return false;
   if(!p.promoUntil) return true;
@@ -2115,12 +2059,6 @@ function delItem(kind, id){
 
 function toggleItem(el){ el.closest('.item').classList.toggle('open'); }
 
-/* ══════════════════════════════════════════════════════
-   CHIFFRES CLÉS
-   Un bandeau court sous la bannière. C'est ce qui rassure en
-   premier : ancienneté, volume, note. Quatre au maximum —
-   au-delà, plus personne ne les lit.
-   ══════════════════════════════════════════════════════ */
 function renderStats(){
   const el = $('stat-list');
   if(!el) return;
@@ -2156,8 +2094,7 @@ function updStat(id, field, val){
   const s = state.stats.find(function(x){ return x.id === id; });
   if(!s) return;
   s[field] = val;
-  // On ne reconstruit pas la liste : le curseur de saisie serait
-  // perdu à chaque frappe.
+
   render(); scheduleSave();
 }
 
@@ -2166,12 +2103,6 @@ function delStat(id){
   renderStats(); render(); scheduleSave();
 }
 
-/* ══════════════════════════════════════════════════════
-   VOS ATOUTS
-   La section qui répond à « pourquoi acheter ici plutôt
-   qu'ailleurs ». Sur les sites soignés, c'est elle qui fait
-   basculer un visiteur hésitant.
-   ══════════════════════════════════════════════════════ */
 const PERK_ICONS = [
   { v:'ri-truck-line',              n:'Livraison' },
   { v:'ri-shield-check-line',       n:'Garantie' },
@@ -2268,12 +2199,46 @@ function uploadCtaImg(e){
   });
 }
 
-/* ══════════════════════════════════════════════════════
-   AVIS CLIENTS — consultation et réponse
-   Le commerçant lit, répond, masque. Il n'écrit jamais un
-   avis et n'en modifie jamais le texte : la base elle-même
-   rejette toute tentative.
-   ══════════════════════════════════════════════════════ */
+let accountSuspended = false;
+
+async function logActivity(kind, extra){
+  try{
+    if(!sb || !currentUser) return;
+    const { data:{ session } } = await sb.auth.getSession();
+    if(!session) return;
+    await fetch(API_BASE + '/admin-console', {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json', 'apikey': ANON_KEY },
+      body: JSON.stringify(Object.assign({
+        action:'log', kind:kind, editor:'site',
+        accessToken: session.access_token
+      }, extra || {}))
+    });
+  } catch(e){
+
+  }
+}
+
+async function checkAccountStatus(){
+  try{
+    if(!sb || !currentUser) return;
+    const { data:{ session } } = await sb.auth.getSession();
+    if(!session) return;
+    const res = await fetch(API_BASE + '/admin-console', {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json', 'apikey': ANON_KEY },
+      body: JSON.stringify({ action:'status', accessToken: session.access_token })
+    });
+    const d = await res.json();
+    if(d && d.suspended){
+      accountSuspended = true;
+      alert('Ce compte est suspendu.\n\n'
+          + 'Le téléchargement est bloqué. Contactez-nous pour en '
+          + 'connaître la raison.');
+    }
+  } catch(e){}
+}
+
 function openReviews(){
   const m = $('reviews-modal');
   if(!m) return;
@@ -2311,10 +2276,13 @@ async function loadReviews(){
   }
 }
 
+let loadedReviews = [];
+
 function renderReviewsPanel(d){
   const box = $('reviews-body');
   if(!box) return;
   const list = d.reviews || [];
+  loadedReviews = list;
 
   if(!list.length){
     box.innerHTML = '<p class="od-empty">Aucun avis pour le moment.<br><br>'
@@ -2345,7 +2313,7 @@ function renderReviewsPanel(d){
             ? '<div class="rev-reply"><b>Votre réponse</b>' + esc(r.reply) + '</div>'
             : '')
       +   '<div class="rev-acts">'
-      +     '<button class="od-btn" onclick="promptReply(\'' + r.id + '\',' + JSON.stringify(esc(r.reply || '')) + ')">'
+      +     '<button class="od-btn" onclick="promptReply(\'' + r.id + '\')">'
       +       '<i class="ri-reply-line"></i> ' + (r.reply ? 'Modifier ma réponse' : 'Répondre') + '</button>'
       +     '<button class="od-btn' + (hidden ? ' ok' : ' no') + '" onclick="toggleHide(\'' + r.id + '\',' + (!hidden) + ')">'
       +       '<i class="ri-eye-' + (hidden ? '' : 'off-') + 'line"></i> ' + (hidden ? 'Réafficher' : 'Masquer') + '</button>'
@@ -2356,8 +2324,13 @@ function renderReviewsPanel(d){
   box.innerHTML = h;
 }
 
-async function promptReply(id, current){
-  const txt = prompt('Votre réponse à cet avis :', current || '');
+async function promptReply(id){
+  const r = loadedReviews.find(function(x){ return x.id === id; });
+  const current = r && r.reply ? r.reply : '';
+  const txt = prompt(
+    'Votre réponse à cet avis :\n\n'
+    + (r ? '« ' + String(r.body).substring(0, 120) + ' »' : ''),
+    current);
   if(txt === null) return;
   await reviewAction({ action:'reply', reviewId:id, reply:txt });
 }
@@ -2386,12 +2359,6 @@ async function reviewAction(payload){
   }
 }
 
-/* ══════════════════════════════════════════════════════
-   CARACTÉRISTIQUES DES PRODUITS
-   Trois repères sous le nom : capacité, garantie, état…
-   Ce sont eux qui font la différence entre une liste de prix
-   et une vraie fiche produit.
-   ══════════════════════════════════════════════════════ */
 const SPEC_ICONS = [
   { v:'ri-checkbox-circle-line', n:'Coche' },
   { v:'ri-database-2-line',      n:'Capacité' },
@@ -2464,7 +2431,6 @@ function delSpec(kind, id, i){
   }, 40);
 }
 
-/* ── RAYONS ──────────────────────────────────────── */
 function renderGroups(){
   const el = $('group-list');
   if(!el) return;
@@ -2490,7 +2456,7 @@ function addGroup(){
   const name = input.value.trim();
   if(!name) return;
   if(!state.groups) state.groups = [];
-  // Un rayon en double n'aurait aucun sens : on l'ignore.
+
   if(state.groups.indexOf(name) !== -1){ input.value = ''; return; }
   state.groups.push(name);
   input.value = '';
@@ -2505,8 +2471,7 @@ function delGroup(i){
     ? 'Supprimer le rayon « ' + name + ' » ?\n\n' + used + ' article(s) resteront visibles, sans rayon.'
     : 'Supprimer le rayon « ' + name + ' » ?';
   if(!confirm(msg)) return;
-  // Les articles ne sont jamais supprimés avec leur rayon : ils
-  // reviennent simplement dans la liste générale.
+
   state.products.forEach(function(p){ if(p.group === name) p.group = ''; });
   state.services.forEach(function(p){ if(p.group === name) p.group = ''; });
   state.groups.splice(i, 1);
@@ -2579,7 +2544,6 @@ function renderLists(){
   $('serv-list').innerHTML = build(state.services, 'service', 'Aucun service pour l\'instant.');
 }
 
-/* ── Catégories et thèmes ────────────────────────── */
 function renderCats(){
   $('cat-list').innerHTML = CATEGORIES.map(c =>
     '<div class="cat' + (state.category === c.id ? ' on' : '') + '" onclick="pickCategory(\'' + c.id + '\')">'
@@ -2591,16 +2555,14 @@ function pickCategory(id){
   const c = CATEGORIES.find(x => x.id === id);
   if(!c) return;
   state.category = id;
-  // Le thème suggéré ne s'applique que si l'utilisateur n'a pas
-  // encore fait son propre choix d'apparence.
+
   if(!state.themeTouched) state.theme = c.theme;
   state.prodTitle = 'Nos ' + c.word;
   syncPanel(); renderCats(); renderThemes(); render(); scheduleSave();
 }
 
 function renderThemes(){
-  // Les thèmes sont présentés par famille : vingt-deux vignettes
-  // en vrac seraient illisibles.
+
   const groups = {};
   Object.keys(THEMES).forEach(function(k){
     const g = THEMES[k].group || 'Autres';
@@ -2613,7 +2575,7 @@ function renderThemes(){
     html += '<div class="theme-group">' + g + '</div><div class="themes">';
     html += groups[g].map(function(k){
       const t = THEMES[k];
-      // L'aperçu suggère la structure : fond, surface, accent.
+
       return '<div class="theme' + (state.theme === k ? ' on' : '') + '" onclick="pickTheme(\'' + k + '\')" title="' + esc(t.name) + '">'
         + '<div class="theme-sw" style="background:' + t.bg + ';">'
         +   '<span class="tsw-a" style="background:' + t.accent + ';"></span>'
@@ -2629,23 +2591,17 @@ function renderThemes(){
 function pickTheme(k){
   state.theme = k;
   state.themeTouched = true;
-  // Changer de thème remet les réglages personnels à zéro :
-  // sinon les couleurs de l'ancien thème resteraient collées
-  // au nouveau, avec un résultat incohérent.
+
   state.custom = {};
   renderThemes(); renderCustomPanel(); render(); scheduleSave();
 }
 
-/* ── Synchronisation du panneau avec l'état ──────── */
-/* Remplit les listes construites à partir des catalogues, pour
-   qu'ajouter une animation n'oblige jamais à toucher au HTML. */
 function fillFxSelects(){
   ['nameFx','taglineFx'].forEach(function(id){
     const el = $('f-' + id);
     if(el && !el.options.length){
       el.innerHTML = Object.keys(TEXT_FX).map(function(k){
-        // Le défilement n'a de sens que pour le slogan : sur un
-        // nom court, il n'apporte rien.
+
         if(k === 'defile' && id === 'nameFx') return '';
         return '<option value="' + k + '">' + TEXT_FX[k].name + '</option>';
       }).join('');
@@ -2697,10 +2653,10 @@ function syncPanel(){
   if(u) u.textContent = (state.name || 'monsite').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'') + '.com';
 }
 
-/* ── Sauvegarde locale ───────────────────────────── */
 let storageWarned = false;
 
 function scheduleSave(){
+  updatePriceTag();
   clearTimeout(saveTimer);
   saveTimer = setTimeout(() => {
     try{
@@ -2708,10 +2664,7 @@ function scheduleSave(){
       setSync(currentUser ? 'busy' : 'ok');
       storageWarned = false;
     } catch(err){
-      // L'échec était avalé en silence : l'utilisateur perdait
-      // tout au rafraîchissement sans jamais comprendre pourquoi.
-      // On l'avertit maintenant, une seule fois, et on lui dit
-      // quoi faire.
+
       console.warn('[Site] Sauvegarde locale impossible :', err);
       setSync('err');
       if(!storageWarned){
@@ -2727,16 +2680,11 @@ function scheduleSave(){
   }, 900);
 }
 
-/* Dernier filet : si l'utilisateur ferme ou rafraîchit avant la
-   fin du délai, on enregistre immédiatement. Sans cela, les
-   900 dernières millisecondes de travail étaient perdues. */
 window.addEventListener('beforeunload', function(){
   clearTimeout(saveTimer);
   try{ localStorage.setItem(DRAFT_KEY, JSON.stringify(state)); }catch(e){}
 });
 
-// L'état par défaut est figé au démarrage : il sert de référence
-// pour compléter les brouillons anciens.
 const DEFAULT_STATE = JSON.parse(JSON.stringify(state));
 
 function restoreDraft(){
@@ -2746,17 +2694,12 @@ function restoreDraft(){
     const saved = JSON.parse(raw);
     Object.assign(state, saved);
 
-    // Un brouillon enregistré avant l'ajout d'une fonctionnalité
-    // ne contient pas ses réglages. Sans ce complément, la
-    // fonctionnalité semblait absente pour les anciens
-    // utilisateurs — c'est ce qui faisait disparaître les rayons.
     Object.keys(DEFAULT_STATE).forEach(function(k){
       if(state[k] === undefined || state[k] === null){
         state[k] = JSON.parse(JSON.stringify(DEFAULT_STATE[k]));
       }
     });
 
-    // Les articles créés avant les rayons n'ont pas ce champ.
     (state.products || []).forEach(function(p){ if(p.group === undefined) p.group = ''; });
     (state.services || []).forEach(function(p){ if(p.group === undefined) p.group = ''; });
   }catch(e){}
@@ -2768,24 +2711,6 @@ function resetSite(){
   window.location.reload();
 }
 
-/* ══════════════════════════════════════════════════════
-   RENDU DU SITE
-   Génère le HTML complet du site à partir de l'état. La même
-   fonction sert à l'aperçu et à l'export : ce que l'utilisateur
-   voit est exactement ce qu'il téléchargera.
-   ══════════════════════════════════════════════════════ */
-/* ══════════════════════════════════════════════════════
-   STRUCTURE DES THÈMES
-   Chaque famille de carte, de bannière et de décor produit un
-   rendu réellement différent — pas une simple recoloration.
-   ══════════════════════════════════════════════════════ */
-/* ══════════════════════════════════════════════════════
-   FONDS ANIMÉS
-   Des voiles qui dérivent lentement, construits sur les
-   couleurs du thème. Le mouvement est volontairement lent :
-   un fond doit donner de la vie, jamais distraire de la
-   lecture ou du produit.
-   ══════════════════════════════════════════════════════ */
 const LIVE_BG = {
   aucun: { name:'Aucun', css:'' },
 
@@ -2853,11 +2778,6 @@ const LIVE_BG = {
     + '33%{background-position:60% 40%;}66%{background-position:30% 80%;}}' }
 };
 
-/* ══════════════════════════════════════════════════════
-   ANIMATION DES DESCRIPTIONS
-   Se déclenche au survol de la carte et s'arrête quand le
-   curseur repart — exactement le comportement demandé.
-   ══════════════════════════════════════════════════════ */
 const DESC_FX = {
   none:      { name:'Aucune' },
   defile:    { name:'Défilement' },
@@ -2869,8 +2789,7 @@ const DESC_FX = {
 
 function descFxCSS(){
   return [
-  /* Défilement horizontal continu, comme un bandeau. Le texte
-     ne bouge qu'au survol : au repos il reste lisible. */
+
   '.sv-card-dwrap{overflow:hidden;}',
   '.dfx-defile .sv-card-d{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}',
   '.sv-card:hover .dfx-defile .sv-card-d,',
@@ -2881,7 +2800,6 @@ function descFxCSS(){
   '@keyframes dfxDefile{0%{transform:translateX(0);}8%{transform:translateX(0);}',
   '100%{transform:translateX(calc(-100% + 180px));}}',
 
-  /* Machine à écrire : le texte s efface puis se réécrit. */
   '.dfx-machine .sv-card-d{white-space:nowrap;overflow:hidden;}',
   '.sv-card:hover .dfx-machine .sv-card-d,',
   '.dfx-machine:hover .sv-card-d{',
@@ -2890,14 +2808,12 @@ function descFxCSS(){
   '}',
   '@keyframes dfxMachine{0%{width:0;}45%{width:100%;}55%{width:100%;}100%{width:0;}}',
 
-  /* Dévoilement : un voile glisse et découvre le texte. */
   '.dfx-devoile .sv-card-d{position:relative;}',
   '.dfx-devoile .sv-card-d::after{content:"";position:absolute;inset:0;',
   '  background:var(--surf);transform-origin:right;transition:transform .5s ease;}',
   '.sv-card:hover .dfx-devoile .sv-card-d::after,',
   '.dfx-devoile:hover .sv-card-d::after{transform:scaleX(0);}',
 
-  /* Surlignage progressif */
   '.dfx-surligne .sv-card-d{',
   '  background-image:linear-gradient(color-mix(in srgb,var(--acc) 20%,transparent),',
   '                                   color-mix(in srgb,var(--acc) 20%,transparent));',
@@ -2907,13 +2823,11 @@ function descFxCSS(){
   '.sv-card:hover .dfx-surligne .sv-card-d,',
   '.dfx-surligne:hover .sv-card-d{background-size:100% 88%;}',
 
-  /* Montée douce */
   '.dfx-monte .sv-card-d{transform:translateY(6px);opacity:.65;',
   '  transition:transform .4s cubic-bezier(.2,.9,.25,1),opacity .4s ease;}',
   '.sv-card:hover .dfx-monte .sv-card-d,',
   '.dfx-monte:hover .sv-card-d{transform:none;opacity:1;}',
 
-  /* Une personne qui préfère moins d animation ne subit rien. */
   '@media(prefers-reduced-motion:reduce){',
   '  .sv-card-d{animation:none!important;transition:none!important;}',
   '  .dfx-devoile .sv-card-d::after{transform:scaleX(0);}',
@@ -2921,9 +2835,6 @@ function descFxCSS(){
   ].join('\n');
 }
 
-/* ══════════════════════════════════════════════════════
-   PROMOTIONS — habillage
-   ══════════════════════════════════════════════════════ */
 function promoCSS(){
   return [
   '.sv-promo{',
@@ -2940,11 +2851,6 @@ function promoCSS(){
   ].join('\n');
 }
 
-/* ══════════════════════════════════════════════════════
-   ANIMATIONS D'APPARITION
-   Se déclenchent quand l'élément entre dans l'écran.
-   Chacune part d'un état masqué et rejoint sa position finale.
-   ══════════════════════════════════════════════════════ */
 const SCROLL_FX = {
   none:     { name:'Aucune' },
   fade:     { name:'Fondu' },
@@ -2980,8 +2886,7 @@ function scrollFxCSS(){
   '.sv-anim-rotate{transform:rotate(-5deg) scale(.94);}',
   '.sv-anim-blur{filter:blur(9px);transform:scale(1.02);}',
   '.sv-anim-skew{transform:skewY(4deg) translateY(22px);}',
-  /* Le rebond et le balancement demandent une courbe propre :
-     une transition linéaire les rendrait plats. */
+
   '.sv-anim-bounce{transform:translateY(34px);',
   '  transition:opacity .5s ease, transform .75s cubic-bezier(.34,1.7,.5,1);}',
   '.sv-anim-swing{transform:rotate(6deg) translateY(20px);transform-origin:top center;',
@@ -2994,9 +2899,6 @@ function scrollFxCSS(){
   ].join('\n');
 }
 
-/* ══════════════════════════════════════════════════════
-   EFFETS AU SURVOL DES PRODUITS
-   ══════════════════════════════════════════════════════ */
 const HOVER_FX = {
   none:     { name:'Aucun' },
   lift:     { name:'Élévation' },
@@ -3039,8 +2941,7 @@ function hoverFxCSS(kind){
     shadow: '.sv-card:hover{transform:translate(-4px,-4px);'
           + 'box-shadow:8px 8px 0 0 color-mix(in srgb,var(--acc) 55%,transparent);}',
     grow:   '.sv-card:hover{transform:scale(1.05);z-index:2;}',
-    // L'image est grisée au repos et retrouve ses couleurs au
-    // survol : le regard est guidé vers le produit visé.
+
     desat:  '.sv-card-img img{filter:saturate(.35);transition:filter .45s ease,transform .5s ease;}'
           + '.sv-card:hover .sv-card-img img{filter:saturate(1);}',
     rise:   '.sv-card-img{overflow:hidden;}'
@@ -3060,11 +2961,6 @@ function hoverFxCSS(kind){
   return base + '\n' + (rules[kind] || '');
 }
 
-/* ══════════════════════════════════════════════════════
-   ANIMATIONS DE TEXTE
-   Portent sur le nom de la boutique et le slogan. Elles
-   dérivent des couleurs du thème, comme le reste.
-   ══════════════════════════════════════════════════════ */
 const TEXT_FX = {
   none:      { name:'Aucune' },
   reflet:    { name:'Reflet' },
@@ -3110,8 +3006,6 @@ function textFxCSS(){
   '  border-right:2px solid currentColor;animation:txMachine 6s steps(40) infinite,',
   '  txCaret 1s step-end infinite;}',
 
-  /* Défilement continu : le texte est dupliqué pour que la
-     boucle se referme sans saut visible. */
   '.tx-defile-wrap{overflow:hidden;width:100%;}',
   '.tx-defile{display:inline-flex;white-space:nowrap;animation:txDefile 18s linear infinite;}',
   '.tx-defile span{padding-right:3rem;}',
@@ -3133,12 +3027,6 @@ function textFxCSS(){
   ].join('\n');
 }
 
-/* ══════════════════════════════════════════════════════
-   FICHE PRODUIT
-   Le client clique sur un produit et voit une grande fiche :
-   plusieurs photos, description complète, quantité, ajout au
-   panier. C'est là que se décide l'achat.
-   ══════════════════════════════════════════════════════ */
 function detailCSS(){
   return [
   '.sv-modal{',
@@ -3156,7 +3044,6 @@ function detailCSS(){
   '}',
   '@keyframes svModalIn{from{opacity:0;transform:translateY(24px) scale(.97);}to{opacity:1;transform:none;}}',
 
-  /* Galerie : la photo principale et les vignettes en dessous */
   '.sv-gal{background:var(--surf);display:flex;flex-direction:column;min-width:0;}',
   '.sv-gal-main{',
   '  flex:1;min-height:280px;position:relative;overflow:hidden;',
@@ -3166,7 +3053,7 @@ function detailCSS(){
   '  animation:svFadeImg .3s ease;}',
   '@keyframes svFadeImg{from{opacity:0;}to{opacity:1;}}',
   '.sv-gal-empty{color:var(--mute);font-size:34px;opacity:.35;}',
-  /* Flèches de navigation entre les photos */
+
   '.sv-gal-nav{',
   '  position:absolute;top:50%;transform:translateY(-50%);',
   '  width:38px;height:38px;border-radius:50%;cursor:pointer;border:none;',
@@ -3190,7 +3077,6 @@ function detailCSS(){
   '.sv-thumb:hover{opacity:1;}',
   '.sv-thumb.on{border-color:var(--acc);opacity:1;}',
 
-  /* Détails à droite */
   '.sv-det{padding:26px;display:flex;flex-direction:column;overflow-y:auto;min-width:0;}',
   '.sv-det-close{',
   '  align-self:flex-end;width:34px;height:34px;border-radius:11px;cursor:pointer;',
@@ -3210,7 +3096,6 @@ function detailCSS(){
   '.sv-det-out{padding:11px 14px;border-radius:11px;background:color-mix(in srgb,var(--ink) 8%,transparent);',
   '  color:var(--mute);font-size:13.5px;font-weight:600;text-align:center;margin-top:auto;}',
 
-  /* Quantité */
   '.sv-qty-row{display:flex;align-items:center;gap:14px;margin:auto 0 14px;padding-top:14px;}',
   '.sv-qty-lbl{font-size:12.5px;color:var(--mute);font-weight:600;}',
   '.sv-qty-box{display:flex;align-items:center;gap:0;border-radius:100px;overflow:hidden;',
@@ -3230,7 +3115,6 @@ function detailCSS(){
   '.sv-det-add:hover{transform:translateY(-3px);box-shadow:0 16px 32px -12px var(--acc);}',
   '.sv-det-add:active{transform:translateY(0);}',
 
-  /* Une carte cliquable doit le montrer */
   '.sv-card{cursor:pointer;}',
 
   '@media(max-width:760px){',
@@ -3242,11 +3126,6 @@ function detailCSS(){
   ].join('\n');
 }
 
-/* ══════════════════════════════════════════════════════
-   NOTIFICATION D'AJOUT AU PANIER
-   L'ajout doit être impossible à manquer : une bulle
-   apparaît, des étincelles jaillissent, le panier tressaute.
-   ══════════════════════════════════════════════════════ */
 function toastCSS(){
   return [
   '.sv-pop{',
@@ -3270,7 +3149,6 @@ function toastCSS(){
   '.sv-pop-txt b{font-size:13.5px;font-weight:800;}',
   '.sv-pop-txt em{font-style:normal;font-size:11.5px;opacity:.7;}',
 
-  /* Étincelles : de petites étoiles jaillissent du bouton */
   '.sv-spark{',
   '  position:fixed;width:9px;height:9px;z-index:330;pointer-events:none;',
   '  color:var(--acc);font-size:9px;line-height:1;',
@@ -3282,7 +3160,6 @@ function toastCSS(){
   '  100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(1.3) rotate(180deg);}',
   '}',
 
-  /* Le panier tressaute pour confirmer visuellement */
   '@keyframes cartBump{0%,100%{transform:scale(1);}35%{transform:scale(1.18);}}',
   '.sv-cart-btn.bump{animation:cartBump .45s cubic-bezier(.34,1.6,.5,1);}',
   '@keyframes badgePop{0%{transform:scale(0);}100%{transform:scale(1);}}',
@@ -3299,7 +3176,6 @@ function themeCSS(T){
   var R = T.radius || '14px';
   var out = [];
 
-  /* ── Forme des cartes ── */
   if(T.card === 'plat'){
     out.push('.sv-card{background:var(--surf);border:none;box-shadow:none;}');
     out.push('.sv-card-img{border-radius:0;}');
@@ -3320,22 +3196,20 @@ function themeCSS(T){
     out.push('.sv-card:hover{background:rgba(255,255,255,.09);border-color:rgba(255,255,255,.22);}');
   }
   else if(T.card === 'brut'){
-    // Bordure épaisse et ombre franche, sans flou : le trait
-    // assumé du néo-brutalisme.
+
     out.push('.sv-card{background:var(--surf);border:2.5px solid var(--ink);'
            + 'box-shadow:6px 6px 0 0 var(--ink);transition:transform .18s,box-shadow .18s;}');
     out.push('.sv-card:hover{transform:translate(-3px,-3px);box-shadow:9px 9px 0 0 var(--acc);}');
     out.push('.sv-add{border-width:2.5px;box-shadow:3px 3px 0 0 var(--ink);}');
     out.push('.sv-cta{box-shadow:5px 5px 0 0 var(--ink);border:2.5px solid var(--ink);}');
   }
-  else { /* doux */
+  else {
     out.push('.sv-card{background:var(--surf);border:none;box-shadow:0 10px 30px -14px rgba(0,0,0,.2);}');
     out.push('.sv-card:hover{box-shadow:0 24px 48px -20px rgba(0,0,0,.3);}');
   }
   out.push('.sv-card,.sv-card-img{border-radius:' + R + ';}');
   out.push('.sv-card-img{border-bottom-left-radius:0;border-bottom-right-radius:0;}');
 
-  /* ── Bannière ── */
   if(T.hero === 'scinde'){
     out.push('.sv-hero{text-align:left;padding-top:clamp(40px,6vw,80px);}');
     out.push('.sv-hero-in{display:grid;grid-template-columns:1.15fr .85fr;gap:38px;align-items:center;}');
@@ -3363,9 +3237,7 @@ function themeCSS(T){
            + 'background:radial-gradient(60% 70% at 50% 40%, color-mix(in srgb,var(--acc) 22%,transparent), transparent 70%);'
            + 'pointer-events:none;}');
   }
-  /* 'centre' est le comportement par défaut */
 
-  /* ── Décor ── */
   if(T.deco === 'trame'){
     out.push('.sv-hero{background-image:'
            + 'linear-gradient(color-mix(in srgb,var(--ink) 6%,transparent) 1px, transparent 1px),'
@@ -3398,13 +3270,10 @@ function themeCSS(T){
     out.push('.sv-sec-t{text-transform:uppercase;letter-spacing:.02em;}');
   }
 
-  /* ── Épaisseur des titres ── */
   if(T.weight){
     out.push('.sv-h1,.sv-sec-t,.sv-card-t{font-weight:' + T.weight + ';}');
   }
 
-  /* Les boutons suivent l'arrondi du thème, sauf les pastilles
-     qui restent volontairement circulaires. */
   if(T.radius === '0px' || T.radius === '2px' || T.radius === '4px'){
     out.push('.sv-cta,.sv-add,.sv-cart-btn{border-radius:' + R + ';}');
   }
@@ -3420,13 +3289,11 @@ function buildSiteHTML(forExport){
 
   const animCls = state.anim !== 'none' ? ' sv-anim sv-anim-' + state.anim : '';
 
-  /* ── Un produit ── */
   const card = (p, kind) => {
     const soldOut = !p.stock;
     const onPromo = promoActive(p);
     const shownPrice = onPromo ? p.promoPrice : p.price;
-    // La classe d'animation de description est portée par la
-    // carte : l'effet se déclenche au survol, côté CSS.
+
     const descCls = (state.descFx && state.descFx !== 'none')
       ? ' dfx-' + state.descFx : '';
     return '<article class="sv-card' + animCls + (soldOut ? ' sv-out' : '') + '"'
@@ -3463,8 +3330,6 @@ function buildSiteHTML(forExport){
       + '</div></article>';
   };
 
-  // On n'affiche que les rayons contenant au moins un article :
-  // un onglet vide déçoit le visiteur.
   const vid = youtubeId(state.videoUrl);
 
   const usedGroups = (state.groups || []).filter(function(g){
@@ -3474,23 +3339,19 @@ function buildSiteHTML(forExport){
   const prods = state.products.map(p => card(p,'product')).join('');
   const servs = state.services.map(p => card(p,'service')).join('');
 
-  /* ── Réseaux sociaux ── */
   const socials = [
     state.facebook  ? '<a href="' + esc(state.facebook)  + '" target="_blank" rel="noopener" aria-label="Facebook"><i class="ri-facebook-fill"></i></a>' : '',
     state.instagram ? '<a href="' + esc(state.instagram) + '" target="_blank" rel="noopener" aria-label="Instagram"><i class="ri-instagram-line"></i></a>' : '',
     state.tiktok    ? '<a href="' + esc(state.tiktok)    + '" target="_blank" rel="noopener" aria-label="TikTok"><i class="ri-tiktok-fill"></i></a>' : ''
   ].join('');
 
-  /* ── Styles du site ── */
   const css = `
     .sv{
       --bg:${T.bg};--surf:${T.surf};--ink:${T.ink};
       --mute:${T.mute};--acc:${T.accent};
       background-color:var(--bg);color:var(--ink);
       font-family:${T.body};line-height:1.6;
-      /* Le motif de fond du thème, ou celui choisi par
-         l'utilisateur. Il dérive des couleurs, donc il suit
-         automatiquement toute personnalisation. */
+
       ${(BACKDROPS[T.backdrop] || BACKDROPS.aucun).css}
       background-attachment:fixed;
     }
@@ -3683,7 +3544,6 @@ function buildSiteHTML(forExport){
       transition:background .2s,color .2s;white-space:nowrap;
     }
     .sv-add:hover{background:var(--acc);color:var(--bg);}
-
 
     .sv-about{
       background:var(--surf);border-radius:22px;
@@ -4047,7 +3907,6 @@ function buildSiteHTML(forExport){
     .sv-nav,.sv-hero,.sv-sec,.sv-foot{position:relative;z-index:2;}
   `;
 
-  /* ── Corps du site ── */
   const initial = (state.name || 'M').trim().charAt(0).toUpperCase();
   const html = `
   <div class="sv">
@@ -4254,8 +4113,6 @@ function buildSiteHTML(forExport){
     </footer>
 
     ${state.showWa && wa ? '<a class="sv-wa" href="https://wa.me/' + wa + '" target="_blank" rel="noopener" aria-label="WhatsApp"><i class="ri-whatsapp-line"></i></a>' : ''}
-
-    <!-- Fiche produit -->
     <div class="sv-modal" id="sv-detail" onclick="if(event.target===this)svCloseDetail()">
       <div class="sv-modal-box">
         <div class="sv-gal">
@@ -4267,15 +4124,12 @@ function buildSiteHTML(forExport){
     </div>
 
     ${vid ? `
-    <!-- Lecteur vidéo -->
     <div class="sv-vmodal" id="sv-video" onclick="if(event.target===this)svCloseVideo()">
       <div class="sv-vwrap">
         <button class="sv-vclose" onclick="svCloseVideo()">&times;</button>
         <div class="sv-vbox"><div class="sv-vframe" id="sv-vframe"></div></div>
       </div>
     </div>` : ''}
-
-    <!-- Confirmation d'ajout -->
     <div class="sv-pop" id="sv-pop">
       <span class="sv-pop-ico"><i class="ri-check-line"></i></span>
       <span class="sv-pop-txt"><b id="sv-pop-t">Ajouté au panier</b><em id="sv-pop-s"></em></span>
@@ -4289,15 +4143,12 @@ function render(){
   const { css, html } = buildSiteHTML(false);
   const view = $('site-view');
   if(!view) return;
-  // Le panier est inclus dans l'aperçu pour que l'utilisateur
-  // voie exactement ce que verront ses clients.
+
   view.innerHTML = '<style>' + css + cartCSS() + '</style>' + html + cartMarkup();
   observeAnims(view);
   if(state.orders) activatePreviewCart();
 }
 
-/* Rend le panier utilisable dans l'aperçu : les fonctions du
-   site publié sont injectées dans la page de l'éditeur. */
 let previewCartTag = null;
 function activatePreviewCart(){
   if(previewCartTag) previewCartTag.remove();
@@ -4306,18 +4157,6 @@ function activatePreviewCart(){
   document.body.appendChild(previewCartTag);
 }
 
-/* Les éléments apparaissent quand ils entrent dans l'écran. */
-/* Deux observateurs plutôt qu'un seul.
-   Avec un seul seuil, un élément posé pile sur la limite
-   entrait et sortait en boucle : l'animation tremblait à
-   l'écran, ce qui est très désagréable au défilement.
-
-   On sépare donc les deux décisions :
-   • l'élément APPARAÎT dès qu'il est franchement visible ;
-   • il ne se REMET à zéro qu'une fois nettement sorti.
-   Entre les deux, il existe une zone tampon où rien ne
-   change — l'animation reste donc stable, tout en se
-   rejouant à chaque nouveau passage. */
 function observeAnims(root){
   const els = root.querySelectorAll('.sv-anim');
   if(!els.length) return;
@@ -4327,15 +4166,12 @@ function observeAnims(root){
     return;
   }
 
-  // Apparition : l'élément doit être bien engagé dans l'écran.
   const appear = new IntersectionObserver(entries => {
     entries.forEach(en => {
       if(en.isIntersecting) en.target.classList.add('sv-in');
     });
   }, { threshold:0.18, rootMargin:'0px 0px -12% 0px' });
 
-  // Remise à zéro : seulement quand l'élément est nettement
-  // sorti du cadre, bien au-delà du seuil d'apparition.
   const reset = new IntersectionObserver(entries => {
     entries.forEach(en => {
       if(!en.isIntersecting) en.target.classList.remove('sv-in');
@@ -4345,11 +4181,6 @@ function observeAnims(root){
   els.forEach(e => { appear.observe(e); reset.observe(e); });
 }
 
-/* ══════════════════════════════════════════════════════
-   PANIER ET COMMANDE
-   Ces fonctions sont embarquées dans le site publié : elles
-   doivent fonctionner sans l'éditeur.
-   ══════════════════════════════════════════════════════ */
 function cartCSS(){
   if(!state.orders) return '';
   return [
@@ -4422,12 +4253,8 @@ function cartMarkup(){
   ].join('');
 }
 
-/* Le script du panier, construit avec les données du site.
-   Il est injecté tel quel dans le fichier exporté. */
 function cartScript(ownerId){
-  // Le panier reçoit le prix RÉELLEMENT affiché : si une
-  // promotion est active, c'est celui-là. Sans cela le client
-  // verrait un prix barré et paierait le prix fort.
+
   var catalogue = state.products.concat(state.services).map(function(p){
     const imgs = Array.isArray(p.imgs) && p.imgs.length ? p.imgs : (p.img ? [p.img] : []);
     const on = promoActive(p);
@@ -4478,8 +4305,6 @@ function cartScript(ownerId){
   '  if(btn) svSparks(btn);',
   '}',
   '',
-  '// Confirmation impossible a manquer : bulle, etincelles et',
-  '// panier qui tressaute.',
   'function svPop(name, qty){',
   '  var pop = document.getElementById("sv-pop");',
   '  if(!pop) return;',
@@ -4514,9 +4339,6 @@ function cartScript(ownerId){
   '  } catch(e){}',
   '}',
   '',
-  '// ── AVIS CLIENTS ──',
-  '// Les avis viennent du serveur : le proprietaire du site ne',
-  '// peut ni les ecrire ni les modifier.',
   'var SV_STAR = 5;',
   '',
   'function svPickStar(n){',
@@ -4527,8 +4349,6 @@ function cartScript(ownerId){
   '  }',
   '}',
   '',
-  '// Empreinte technique simple, sans donnee personnelle : elle',
-  '// sert seulement a eviter vingt avis de la meme personne.',
   'function svFingerprint(){',
   '  try{',
   '    var s = navigator.userAgent + "|" + screen.width + "x" + screen.height',
@@ -4595,9 +4415,6 @@ function cartScript(ownerId){
   '  return full + "<span>" + empty + "</span>";',
   '}',
   '',
-  '// Un avis est saisi par un inconnu : on echappe tout avant',
-  '// de l afficher, sinon un avis piege s executerait chez tous',
-  '// les visiteurs du site.',
   'function svEsc(s){',
   '  return String(s == null ? "" : s)',
   '    .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")',
@@ -4635,16 +4452,12 @@ function cartScript(ownerId){
   '  });',
   '}',
   '',
-  '// ── VIDEO ──',
   'var SV_VID = ' + JSON.stringify(youtubeId(state.videoUrl)) + ';',
   '',
   'function svOpenVideo(){',
   '  var m = document.getElementById("sv-video");',
   '  var f = document.getElementById("sv-vframe");',
   '  if(!m || !f || !SV_VID) return;',
-  '  // On ne cree le lecteur qu au moment de l ouverture : sans',
-  '  // cela YouTube se chargerait sur chaque visite, meme si',
-  '  // personne ne regarde la video.',
   '  f.innerHTML = "<iframe src=\\"https://www.youtube-nocookie.com/embed/" + SV_VID',
   '    + "?autoplay=1&rel=0&modestbranding=1\\" title=\\"Video\\" allow=\\"accelerometer; autoplay; encrypted-media; picture-in-picture\\" allowfullscreen></iframe>";',
   '  m.classList.add("open");',
@@ -4655,13 +4468,10 @@ function cartScript(ownerId){
   '  var m = document.getElementById("sv-video");',
   '  var f = document.getElementById("sv-vframe");',
   '  if(m) m.classList.remove("open");',
-  '  // On vide le lecteur : sinon la video continue de jouer en',
-  '  // fond apres la fermeture.',
   '  if(f) f.innerHTML = "";',
   '  document.body.style.overflow = "";',
   '}',
   '',
-  '// ── FICHE PRODUIT ──',
   'var SV_DET = null, SV_IMG = 0, SV_QTY = 1;',
   '',
   'function svOpenDetail(id){',
@@ -4836,8 +4646,6 @@ function cartScript(ownerId){
   '  svApply();',
   '}',
   '',
-  '// Le filtre par rayon et la recherche se combinent : on',
-  '// applique les deux ensemble plutôt que l un après l autre.',
   'var SV_QUERY = "";',
   'function svApply(){',
   '  var cards = document.querySelectorAll("#sv-grid .sv-card");',
@@ -4870,7 +4678,6 @@ function cartScript(ownerId){
   '  if(phone.replace(/[^0-9]/g,"").length < 8) return svOrderSay("Indiquez un numéro valide.", false);',
   '  var t = svTotal();',
   '',
-  '  // Par WhatsApp : le message part directement, sans serveur.',
   '  if(SV_WA_ORDER && SV_WA){',
   '    var lines = "";',
   '    for(var i=0;i<SV_CART.length;i++){',
@@ -4913,10 +4720,6 @@ function cartScript(ownerId){
   '  });',
   '}',
   '',
-  '// Apparition au defilement dans le site publie.',
-  '// Deux observateurs : un pour faire apparaitre, un pour',
-  '// remettre a zero, avec une zone tampon entre les deux.',
-  '// Sans cela l animation tremble en bordure d ecran.',
   '(function(){',
   '  function go(){',
   '    var els = document.querySelectorAll(".sv-anim");',
@@ -4937,7 +4740,6 @@ function cartScript(ownerId){
   '  else go();',
   '})();',
   '',
-  '// Chargement des avis au demarrage',
   '(function(){',
   '  function go(){ if(document.getElementById("sv-revs")){ svPickStar(5); svLoadReviews(); } }',
   '  if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", go);',
@@ -4946,17 +4748,264 @@ function cartScript(ownerId){
   ].join('\n');
 }
 
-/* ══════════════════════════════════════════════════════
-   EXPORT DU SITE
-   Produit un fichier HTML autonome : tout y est embarqué,
-   images comprises. Aucune dépendance à Mental Studio.
-   ══════════════════════════════════════════════════════ */
+const PRICE_MAX = 50000;
+const PRICE_CURVE = 0.65;
+const SITE_TOKEN_KEY = 'mental_studio_site_token_v1';
+
+function buildPriceFacts(){
+  const photos = state.products.concat(state.services)
+    .reduce(function(s, p){
+      return s + (Array.isArray(p.imgs) ? p.imgs.length : (p.img ? 1 : 0));
+    }, 0);
+  const specs = state.products.concat(state.services)
+    .reduce(function(s, p){ return s + (Array.isArray(p.specs) ? p.specs.length : 0); }, 0);
+  const promos = state.products.concat(state.services)
+    .filter(function(p){ return p.promo; }).length;
+  const socials = ['facebook','instagram','tiktok']
+    .filter(function(k){ return state[k]; }).length;
+
+  return {
+    products : state.products.length,
+    services : state.services.length,
+    groups   : (state.groups || []).length,
+    photos   : photos,
+    specs    : specs,
+    promos   : promos,
+    orders   : !!state.orders,
+    waOrder  : !!state.waOrder,
+    reviews  : !!state.showReviews,
+    booking  : false,
+    video    : !!youtubeId(state.videoUrl),
+    maps     : !!state.mapsUrl,
+    search   : !!state.showSearch,
+    logo     : !!state.logo,
+    hero     : !!state.hero,
+    bgImage  : !!state.bgImage,
+    about    : !!(state.showAbout && state.about),
+    stats    : state.showStats ? (state.stats || []).filter(function(s){ return s.value; }).length : 0,
+    perks    : state.showPerks ? (state.perks || []).filter(function(p){ return p.title; }).length : 0,
+    ctaImg   : !!state.ctaImg,
+    socials  : socials,
+    customTheme : !!(state.custom && Object.keys(state.custom).length),
+    liveBg   : !!(state.liveBg && state.liveBg !== 'aucun'),
+    anim     : !!(state.anim && state.anim !== 'none'),
+    textFx   : !!((state.nameFx && state.nameFx !== 'none') || (state.taglineFx && state.taglineFx !== 'none'))
+  };
+}
+
+function computePrice(){
+  const f = buildPriceFacts();
+  const n = function(v, cap){ return Math.max(0, Math.min(Math.floor(Number(v) || 0), cap)); };
+  const b = function(v){ return v ? 1 : 0; };
+
+  let pts = 0;
+  pts += n(f.products, 40) * 2.2;
+  pts += n(f.services, 15) * 2.0;
+  pts += n(f.groups, 8) * 3;
+  pts += n(f.photos, 60) * 0.7;
+  pts += n(f.specs, 40) * 0.6;
+  pts += b(f.orders) * 16;
+  pts += b(f.waOrder) * 4;
+  pts += b(f.reviews) * 9;
+  pts += b(f.booking) * 9;
+  pts += b(f.video) * 7;
+  pts += b(f.maps) * 4;
+  pts += b(f.search) * 3;
+  pts += b(f.logo) * 3;
+  pts += b(f.hero) * 4;
+  pts += b(f.bgImage) * 4;
+  pts += b(f.about) * 3;
+  pts += n(f.stats, 4) * 1.5;
+  pts += n(f.perks, 6) * 1.5;
+  pts += b(f.ctaImg) * 3;
+  pts += n(f.socials, 3) * 1.2;
+  pts += b(f.customTheme) * 4;
+  pts += b(f.liveBg) * 3;
+  pts += b(f.anim) * 2;
+  pts += b(f.textFx) * 2;
+  pts += n(f.promos, 10) * 1.2;
+
+  const ratio = Math.max(0, Math.min(pts / 220, 1));
+  const amount = Math.round((PRICE_MAX * Math.pow(ratio, PRICE_CURVE)) / 500) * 500;
+  return { amount: amount, ratio: Math.round(ratio * 100), points: Math.round(pts), facts: f };
+}
+
+function updatePriceTag(){
+  const el = $('price-tag');
+  if(!el) return;
+  const p = computePrice();
+  el.innerHTML = '<span class="pt-n">' + p.amount.toLocaleString('fr-FR') + '</span>'
+               + '<span class="pt-c">FCFA</span>';
+  const bar = $('price-bar');
+  if(bar) bar.style.width = p.ratio + '%';
+  const lvl = $('price-lvl');
+  if(lvl){
+    lvl.textContent = p.points < 6  ? 'À remplir'
+                    : p.ratio  < 20 ? 'Site simple'
+                    : p.ratio  < 45 ? 'Site complet'
+                    : p.ratio  < 75 ? 'Site avancé'
+                    : 'Site professionnel';
+  }
+}
+
+function hasPaidToken(){
+  try{ return !!localStorage.getItem(SITE_TOKEN_KEY); }catch(e){ return false; }
+}
+
+async function startSitePayment(){
+  if(!sb || !currentUser){
+    alert('Connectez-vous pour télécharger votre site.');
+    return;
+  }
+  if(accountSuspended){
+    alert('Ce compte est suspendu. Le téléchargement est bloqué.');
+    return;
+  }
+
+  const btn = $('pay-btn');
+  if(btn){ btn.disabled = true; btn.textContent = 'Vérification…'; }
+
+  try{
+    const { data:{ session } } = await sb.auth.getSession();
+    if(!session) throw new Error('Session expirée. Reconnectez-vous.');
+
+    const p = computePrice();
+    const res = await fetch(API_BASE + '/create-site-payment', {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json', 'apikey': ANON_KEY },
+      body: JSON.stringify({
+        accessToken: session.access_token,
+        amount: p.amount,
+        facts : p.facts,
+        name  : (currentUser.user_metadata || {}).full_name || '',
+        method: 'notchpay'
+      })
+    });
+    const d = await res.json();
+    if(!res.ok) throw new Error(d.error || 'Paiement indisponible.');
+
+    if(d.free){
+      try{ localStorage.setItem(SITE_TOKEN_KEY, d.token); }catch(e){}
+      const raison = d.reason === 'permanent' ? 'Accès administrateur'
+                   : d.reason === 'discount'  ? 'Réduction de ' + d.discount + ' %'
+                   : 'Téléchargement offert';
+      alert(raison + '.\n\nVotre site va être téléchargé.');
+      closePay();
+      doDownload();
+      return;
+    }
+
+    if(d.discount){
+      alert('Réduction de ' + d.discount + ' % appliquée.\n\n'
+          + d.basePrice.toLocaleString('fr-FR') + ' → '
+          + d.amount.toLocaleString('fr-FR') + ' FCFA');
+    }
+
+    try{ localStorage.setItem('mental_studio_site_ref', d.reference); }catch(e){}
+    window.location.href = d.authorization_url;
+
+  } catch(err){
+    alert(err.message || 'Le paiement n\'a pas pu démarrer.');
+  } finally {
+    if(btn){ btn.disabled = false; btn.textContent = 'Payer et télécharger'; }
+  }
+}
+
+async function checkSitePayment(){
+  let ref = null;
+  try{ ref = localStorage.getItem('mental_studio_site_ref'); }catch(e){}
+  if(!ref || !sb) return;
+  try{
+    const res = await fetch(API_BASE + '/check-payment?kind=site&reference=' + encodeURIComponent(ref), {
+      headers:{ 'apikey': ANON_KEY }
+    });
+    const d = await res.json();
+    if(d && d.status === 'complete' && d.token){
+      try{
+        localStorage.setItem(SITE_TOKEN_KEY, d.token);
+        localStorage.removeItem('mental_studio_site_ref');
+      }catch(e){}
+      alert('Paiement confirmé. Vous pouvez télécharger votre site.');
+      updatePayButton();
+    }
+  } catch(e){}
+}
+
+function openPay(){
+  const m = $('pay-modal');
+  if(!m) return;
+  const p = computePrice();
+  if(p.points < 6){
+    alert('Votre site est encore presque vide.\n\n'
+        + 'Ajoutez vos produits, votre logo et vos informations, '
+        + 'puis revenez le télécharger.');
+    return;
+  }
+  const box = $('pay-body');
+  if(box){
+    const f = p.facts;
+    const lines = [
+      ['Produits', f.products],
+      ['Services', f.services],
+      ['Rayons', f.groups],
+      ['Photos', f.photos],
+      ['Commandes en ligne', f.orders ? 'oui' : 'non'],
+      ['Avis clients', f.reviews ? 'oui' : 'non'],
+      ['Vidéo', f.video ? 'oui' : 'non'],
+      ['Carte Google Maps', f.maps ? 'oui' : 'non']
+    ].filter(function(l){ return l[1] && l[1] !== 'non' && l[1] !== 0; });
+
+    box.innerHTML =
+      '<div class="pay-price"><span>' + p.amount.toLocaleString('fr-FR') + '</span> FCFA</div>'
+      + '<p class="pay-sub">Paiement unique. Le fichier vous appartient définitivement.</p>'
+      + '<div class="pay-list">' + lines.map(function(l){
+          return '<div class="pay-li"><i class="ri-check-line"></i>' + esc(l[0])
+               + '<b>' + esc(String(l[1])) + '</b></div>';
+        }).join('') + '</div>'
+      + '<div class="pay-chips">'
+      +   '<span>MTN Mobile Money</span><span>Orange Money</span><span>Carte bancaire</span>'
+      + '</div>'
+      + '<button class="btn btn-primary" id="pay-btn" onclick="startSitePayment()">'
+      +   '<i class="ri-secure-payment-line"></i> Payer et télécharger</button>';
+  }
+  m.classList.add('on');
+}
+
+function closePay(){
+  const m = $('pay-modal');
+  if(m) m.classList.remove('on');
+}
+
+function updatePayButton(){
+  const b = $('dl-btn');
+  if(!b) return;
+  b.innerHTML = hasPaidToken()
+    ? '<i class="ri-download-2-line"></i> Télécharger mon site'
+    : '<i class="ri-secure-payment-line"></i> Obtenir mon site';
+}
+
 function exportSite(){
+  if(accountSuspended){
+    alert('Ce compte est suspendu. Le téléchargement est bloqué.');
+    return;
+  }
+  if(hasPaidToken()){ doDownload(); return; }
+  if(!currentUser){
+    alert('Connectez-vous pour obtenir votre site.\n\n'
+        + 'Votre travail est conservé, vous le retrouverez après connexion.');
+    return;
+  }
+  openPay();
+}
+
+function doDownload(){
+  if(accountSuspended){
+    alert('Ce compte est suspendu. Le téléchargement est bloqué.\n\n'
+        + 'Contactez-nous pour en connaître la raison.');
+    return;
+  }
   const owner = currentUser ? currentUser.id : '';
 
-  // Sans compte, le site publié n'a aucun identifiant : les avis
-  // et les commandes ne peuvent alors ni être reçus ni affichés.
-  // Mieux vaut le dire avant le téléchargement qu'après.
   if(!owner && (state.orders || state.showReviews)){
     const quoi = [];
     if(state.orders) quoi.push('les commandes');
@@ -5008,9 +5057,6 @@ cartScript(owner),
 '</html>'
   ].join('\n');
 
-  // Même contrôle que pour l'éditeur portfolio : on vérifie que
-  // le script embarqué est valide avant de livrer le fichier.
-  // Un script cassé donnerait un site sans panier ni filtres.
   const problems = [];
   try{
     const re = /<script[^>]*>([\s\S]*?)<\/script>/gi;
@@ -5031,6 +5077,8 @@ cartScript(owner),
     return;
   }
 
+  logActivity('export', { size: doc.length, theme: state.theme });
+
   const blob = new Blob([doc], { type:'text/html;charset=utf-8' });
   const url  = URL.createObjectURL(blob);
   const a    = document.createElement('a');
@@ -5044,9 +5092,6 @@ cartScript(owner),
   setTimeout(function(){ URL.revokeObjectURL(url); }, 1500);
 }
 
-/* ══════════════════════════════════════════════════════
-   COMPTE ET SAUVEGARDE EN LIGNE
-   ══════════════════════════════════════════════════════ */
 function setSync(kind){
   const dot = $('sync-dot'), txt = $('sync-txt');
   if(!dot || !txt) return;
@@ -5101,6 +5146,7 @@ function onSignedIn(u){
   const ord   = $('acct-orders');  if(ord)    ord.style.display    = 'flex';
   setSync('ok');
   loadFromCloud();
+  setTimeout(checkAccountStatus, 1500);
 }
 
 function onSignedOut(){
@@ -5156,8 +5202,7 @@ async function saveToCloud(){
 
 async function loadFromCloud(){
   if(!sb || !currentUser) return;
-  // Un brouillon local récent est prioritaire : il correspond au
-  // travail en cours sur cet appareil.
+
   let hasLocal = false;
   try{ hasLocal = !!localStorage.getItem(DRAFT_KEY); }catch(e){}
   if(hasLocal) return;
@@ -5172,12 +5217,9 @@ async function loadFromCloud(){
       state.siteId = data.id;
       syncPanel(); renderCats(); renderThemes(); renderLists(); render();
     }
-  } catch(e){ /* le travail local reste utilisable */ }
+  } catch(e){  }
 }
 
-/* ══════════════════════════════════════════════════════
-   COMMANDES REÇUES — côté commerçant
-   ══════════════════════════════════════════════════════ */
 function openOrders(){
   const m = $('orders-modal');
   if(!m) return;
@@ -5233,7 +5275,6 @@ function renderOrders(d){
 
   let html = '';
 
-  // Un résumé en tête : ce que le commerçant veut voir d'abord.
   html += '<div class="od-stats">'
        +   '<div class="od-stat"><div class="od-stat-n">' + list.length + '</div><div class="od-stat-l">Commandes</div></div>'
        +   '<div class="od-stat"><div class="od-stat-n" style="color:#fbbf24;">' + (d.pending||0) + '</div><div class="od-stat-l">À traiter</div></div>'
@@ -5301,15 +5342,12 @@ async function setOrderStatus(id, newStatus){
   }
 }
 
-
-/* Le service de connexion peut tarder à se charger. */
 (function waitAuth(n){
   if(initAuth()) return;
   if(n > 40) return;
   setTimeout(function(){ waitAuth(n + 1); }, 200);
 })(0);
 
-/* ── Démarrage ───────────────────────────────────── */
 restoreDraft();
 renderCats();
 renderThemes();
@@ -5319,6 +5357,9 @@ renderStats();
 renderPerks();
 renderLists();
 syncPanel();
+updatePriceTag();
+updatePayButton();
+setTimeout(checkSitePayment, 900);
 </script>
 </body>
 </html>
