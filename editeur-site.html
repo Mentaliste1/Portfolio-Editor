@@ -72,12 +72,15 @@ body{
 .panel-head{
   padding:12px 16px 11px;border-bottom:1px solid var(--ui-border);
   display:flex;flex-direction:column;gap:9px;
-  flex-shrink:0;position:relative;overflow:hidden;
-  isolation:isolate;
+  flex-shrink:0;position:relative;
+  z-index:60;
 }
 .panel-head::before,
 .panel-head::after{
   content:'';position:absolute;inset:0;z-index:0;pointer-events:none;
+  border-radius:inherit;
+  -webkit-mask-image:linear-gradient(#000 0 0);
+  mask-image:linear-gradient(#000 0 0);
 }
 .panel-head::before{
   background:
@@ -100,14 +103,16 @@ body{
   animation:headGrid 30s linear infinite;
 }
 @keyframes headGrid{to{background-position:34px 34px, 34px 34px;}}
-.panel-head > *{position:relative;z-index:1;}
-
+.panel-head > *{position:relative;}
 .ph-top{
   display:flex;align-items:center;justify-content:space-between;gap:10px;
+  z-index:3;
 }
 .ph-row{
   display:flex;align-items:center;justify-content:space-between;gap:10px;
+  z-index:1;
 }
+.acct{position:relative;z-index:5;}
 @media(prefers-reduced-motion:reduce){
   .panel-head::before,.panel-head::after{animation:none;}
 }
@@ -1856,26 +1861,16 @@ let state = {
   videoUrl  : '',
   videoTitle: 'Découvrir en vidéo',
 
-  stats     : [
-    { id:1, value:'500', suffix:'+', label:'Clients satisfaits' },
-    { id:2, value:'12',  suffix:'+', label:'Années d\'expérience' },
-    { id:3, value:'24',  suffix:'h', label:'Livraison rapide' },
-    { id:4, value:'4.8', suffix:'/5', label:'Note moyenne' }
-  ],
-  showStats : true,
+  stats     : [],
+  showStats : false,
 
   reviews   : [],
-  showReviews: true,
+  showReviews: false,
 
   footerNote: '',
 
-  perks     : [
-    { id:1, icon:'ri-truck-line',        title:'Livraison rapide',   desc:'Partout en ville sous 24 h.' },
-    { id:2, icon:'ri-shield-check-line', title:'Produits garantis',  desc:'Échange possible sous 7 jours.' },
-    { id:3, icon:'ri-customer-service-2-line', title:'Conseil personnalisé', desc:'Nous répondons à vos questions.' },
-    { id:4, icon:'ri-secure-payment-line', title:'Paiement à la livraison', desc:'Vous payez en recevant.' }
-  ],
-  showPerks : true,
+  perks     : [],
+  showPerks : false,
   perksTitle: 'Pourquoi acheter chez nous',
 
   ctaTitle  : 'Une question sur un produit ?',
@@ -1917,14 +1912,10 @@ let state = {
   showSearch: false,
   showWa    : true,
 
-  groups    : ['Téléphones', 'Ordinateurs', 'Accessoires'],
+  groups    : [],
   showGroups: true,
 
-  products  : [
-    { id:1, name:'Robe longue fleurie', price:15000, desc:'Coupe fluide, tissu léger. Tailles S à XL.', img:'', stock:true, group:'', specs:[] },
-    { id:2, name:'Ensemble deux pièces', price:32000, desc:'Coton premium, finitions soignées.', img:'', stock:true, group:'', specs:[] },
-    { id:3, name:'Foulard en soie',      price:8500,  desc:'Motifs exclusifs, fabriqué à la main.', img:'', stock:true, group:'' }
-  ],
+  products  : [],
   services  : [],
   siteId    : null
 };
@@ -5000,7 +4991,13 @@ function computePrice(){
   pts += n(f.promos, 10) * 1.2;
 
   const ratio = Math.max(0, Math.min(pts / 220, 1));
-  const amount = Math.round((PRICE_MAX * Math.pow(ratio, PRICE_CURVE)) / 500) * 500;
+  let amount = Math.round((PRICE_MAX * Math.pow(ratio, PRICE_CURVE)) / 500) * 500;
+
+  if(!f.products && !f.services){
+    pts = 0;
+    amount = 0;
+  }
+
   return { amount: amount, ratio: Math.round(ratio * 100), points: Math.round(pts), facts: f };
 }
 
@@ -5562,6 +5559,7 @@ renderStats();
 renderPerks();
 renderLists();
 syncPanel();
+render();
 updatePriceTag();
 updatePayButton();
 setTimeout(checkSitePayment, 900);

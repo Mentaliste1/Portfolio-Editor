@@ -9156,9 +9156,7 @@ function doExport(){
 <\/script>` : '';
 
     const antiSpamScript = `<script>
-// PROTECTION ANTI-SPAM & SÉCURITÉ
 (function(){
-    // 1. Obfuscation des liens de contact (anti-harvesting)
     document.querySelectorAll('a[href^="mailto:"],a[href^="https://wa.me"]').forEach(function(a){
         const href = a.getAttribute('href');
         a.removeAttribute('href');
@@ -9166,19 +9164,16 @@ function doExport(){
         a.addEventListener('click',function(){ window.open(href,'_blank'); });
     });
 
-    // 2. Désactiver clic droit (protection basique du contenu)
     document.addEventListener('contextmenu',function(e){
         e.preventDefault();
         return false;
     });
 
-    // 3. Désactiver sélection de texte sur les données sensibles
     document.querySelectorAll('.pf-role,.pf-contact-btn').forEach(function(el){
         el.style.userSelect='none';
         el.style.webkitUserSelect='none';
     });
 
-    // 4. Protection contre l'injection de scripts externes
     if(window.MutationObserver){
         const observer = new MutationObserver(function(mutations){
             mutations.forEach(function(m){
@@ -9192,7 +9187,6 @@ function doExport(){
         observer.observe(document.body,{childList:true,subtree:true});
     }
 
-    // 5. Honeypot anti-bot (détecte les crawlers automatiques)
     const trap = document.createElement('div');
     trap.style.cssText='position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;';
     trap.innerHTML='<a href="mailto:bot-trap@noreply.invalid">contact</a>';
