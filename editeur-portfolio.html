@@ -4262,6 +4262,8 @@ select.pf-book-in option:hover{
 .custom-bganim-gradient.has-custom-bg::before{animation:bgSlowZoom 10s ease-in-out infinite alternate,bgHueShift 8s linear infinite!important;}
 @keyframes bgHueShift{0%{filter:hue-rotate(0deg);}100%{filter:hue-rotate(360deg);}}
 
+#auth-screen.auth-gate .auth-close,
+#auth-screen.auth-gate #auth-skip{display:none!important;}
 #auth-screen {
   position        : fixed;
   inset           : 0;
@@ -4275,17 +4277,18 @@ select.pf-book-in option:hover{
   isolation       : isolate;
 }
 
+#auth-screen{background:#000!important;}
 #auth-screen::before{
   content:'';position:absolute;inset:0;z-index:0;pointer-events:none;
   background:
-    radial-gradient(46% 42% at 24% 20%, rgba(124,107,255,.34), transparent 68%),
-    radial-gradient(44% 40% at 78% 80%, rgba(201,165,255,.2), transparent 66%),
-    radial-gradient(36% 28% at 60% 106%, rgba(255,180,84,.13), transparent 70%);
-  animation:authAura 24s ease-in-out infinite;
+    radial-gradient(48% 40% at 18% 6%, rgba(124,107,255,.42), transparent 68%),
+    radial-gradient(42% 36% at 84% 34%, rgba(201,165,255,.24), transparent 66%),
+    radial-gradient(36% 24% at 50% 100%, rgba(255,180,84,.14), transparent 72%);
+  animation:authAura 30s ease-in-out infinite;
 }
 @keyframes authAura{
-  0%,100%{transform:none;opacity:.9;}
-  50%    {transform:translate3d(4vw,3vh,0) scale(1.12);opacity:1;}
+  0%,100%{transform:none;opacity:.92;}
+  50%    {transform:translate3d(5vw,4vh,0) scale(1.16);opacity:1;}
 }
 
 #auth-screen::after{
@@ -4302,17 +4305,17 @@ select.pf-book-in option:hover{
 #auth-card {
   position        : relative;
   z-index         : 2;
-  background      : rgba(20,18,38,.62);
-  border          : 1px solid rgba(201,165,255,.18);
+  background      : rgba(6,6,8,.88);
+  border          : 1px solid rgba(255,255,255,.09);
   border-radius   : 26px;
   padding         : 40px 36px;
   width           : 100%;
   max-width       : 420px;
   text-align      : center;
-  backdrop-filter : blur(28px) saturate(1.4);
-  -webkit-backdrop-filter : blur(28px) saturate(1.4);
-  box-shadow      : 0 40px 90px -32px rgba(0,0,0,.85),
-                    inset 0 1px 0 rgba(255,255,255,.07);
+  backdrop-filter : blur(22px) saturate(1.2);
+  -webkit-backdrop-filter : blur(22px) saturate(1.2);
+  box-shadow      : 0 44px 100px -34px rgba(0,0,0,.95),
+                    inset 0 1px 0 rgba(255,255,255,.05);
   animation       : authIn 0.45s cubic-bezier(.22,.68,0,1.2);
 }
 
@@ -11276,6 +11279,10 @@ initEditor();render();
         if(!(typeof maybeShowIntro === 'function' && maybeShowIntro())){
             maybeStartTutorial();
         }
+        if(typeof requireAuth === 'function') requireAuth();
+        setTimeout(function(){
+            if(!currentUser && typeof requireAuth === 'function') requireAuth();
+        }, 2600);
     }
     if(document.readyState === 'loading'){
         document.addEventListener('DOMContentLoaded', startExperience);
@@ -11353,10 +11360,30 @@ async function checkAuthOnLoad() {
   });
 }
 
+let authGateActive = false;
+
 function showAuthScreen() {
   const el = document.getElementById('auth-screen');
   if (el) el.style.display = 'flex';
   setAccountMenuGuestState();
+}
+
+function requireAuth() {
+  if (currentUser) return;
+  authGateActive = true;
+  const el = document.getElementById('auth-screen');
+  if (el) {
+    el.style.display = 'flex';
+    el.classList.add('auth-gate');
+  }
+  setAccountMenuGuestState();
+}
+
+function releaseAuthGate() {
+  authGateActive = false;
+  const el = document.getElementById('auth-screen');
+  if (el) el.classList.remove('auth-gate');
+  hideAuthScreen();
 }
 
 function hideAuthScreen() {
@@ -11365,6 +11392,7 @@ function hideAuthScreen() {
 }
 
 function closeAuthScreen() {
+  if (authGateActive) return;
   pendingDownloadAfterAuth = false;
   hideAuthScreen();
 }
@@ -11489,6 +11517,7 @@ function showAuthError(message) {
 async function loadUserProfile(user) {
   if (!user || !supabaseClient) return;
   currentUser = user;
+  releaseAuthGate();
 
   setTimeout(function(){
     if(typeof checkAccountStatus === 'function') checkAccountStatus();

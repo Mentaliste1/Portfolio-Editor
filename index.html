@@ -148,6 +148,30 @@ section{padding:clamp(56px,8vw,110px) 0;}
 .btn:hover i{transform:translateX(3px);}
 .hero-note{display:flex;align-items:center;gap:8px;margin-top:20px;font-size:13px;color:var(--dim);}
 .hero-note i{color:var(--mint);font-size:15px;}
+.signin-hint{
+  display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+  margin-top:18px;padding:13px 16px;border-radius:15px;
+  background:rgba(124,107,255,.1);
+  border:1px solid var(--line-2);
+  animation:softIn .9s .35s both;
+}
+.signin-hint > i{font-size:19px;color:var(--halo);flex-shrink:0;}
+.signin-hint span{
+  flex:1;min-width:180px;font-size:13px;color:var(--mute);
+  line-height:1.55;font-weight:300;
+}
+.signin-hint button{
+  flex-shrink:0;padding:9px 18px;border-radius:100px;cursor:pointer;
+  background:#fff;border:none;color:#18181b;
+  font-family:inherit;font-size:13px;font-weight:700;
+  transition:transform .2s;
+}
+.signin-hint button:hover{transform:translateY(-2px);}
+.signin-hint.signed{display:none;}
+@media(max-width:560px){
+  .signin-hint{flex-direction:column;align-items:flex-start;text-align:left;}
+  .signin-hint button{width:100%;}
+}
 
 .mock{
   border-radius:16px;overflow:hidden;background:#0A0813;border:1px solid var(--line-2);
@@ -442,6 +466,12 @@ footer{position:relative;z-index:2;border-top:1px solid var(--line);padding:46px
           <button class="btn btn-2" onclick="go('site')">Créer mon site <i class="ri-arrow-right-line"></i></button>
         </div>
         <div class="hero-note"><i class="ri-checkbox-circle-fill"></i> Gratuit pour créer et essayer · Vous ne payez qu'au téléchargement</div>
+        <div class="signin-hint" id="signin-hint">
+          <i class="ri-google-fill"></i>
+          <span>Connectez-vous avec Google pour commencer : votre travail est sauvegardé
+                et vous le retrouvez depuis n'importe quel appareil.</span>
+          <button onclick="handleAuth()">Se connecter</button>
+        </div>
       </div>
 
       <div class="mock">
@@ -1132,6 +1162,8 @@ const GOOGLE_SVG = '<svg width="16" height="16" viewBox="0 0 48 48">'
 
 function signedIn(u){
   user = u;
+  const hint = document.getElementById('signin-hint');
+  if(hint) hint.classList.add('signed');
   const meta = u.user_metadata || {};
   const name = meta.full_name || meta.name || (u.email || '').split('@')[0];
   const btn = document.getElementById('gbtn');
@@ -1146,6 +1178,8 @@ function signedIn(u){
 
 function signedOut(){
   user = null;
+  const hint = document.getElementById('signin-hint');
+  if(hint) hint.classList.remove('signed');
   const btn = document.getElementById('gbtn');
   const lab = document.getElementById('gbtn-label');
   const ico = document.getElementById('gbtn-icon');
