@@ -3211,10 +3211,12 @@ function detailCSS(){
 
   '.sv-gal{background:var(--surf);display:flex;flex-direction:column;min-width:0;}',
   '.sv-gal-main{',
-  '  flex:1;min-height:280px;position:relative;overflow:hidden;',
-  '  display:grid;place-items:center;',
+  '  flex:1;min-height:340px;position:relative;overflow:hidden;',
+  '  display:grid;place-items:center;padding:14px;',
+  '  background:color-mix(in srgb,var(--ink) 4%,var(--surf));',
   '}',
-  '.sv-gal-main img{width:100%;height:100%;object-fit:cover;display:block;',
+  '.sv-gal-main img{max-width:100%;max-height:100%;width:auto;height:auto;',
+  '  object-fit:contain;display:block;border-radius:10px;',
   '  animation:svFadeImg .3s ease;}',
   '@keyframes svFadeImg{from{opacity:0;}to{opacity:1;}}',
   '.sv-gal-empty{color:var(--mute);font-size:34px;opacity:.35;}',
@@ -3242,13 +3244,21 @@ function detailCSS(){
   '.sv-thumb:hover{opacity:1;}',
   '.sv-thumb.on{border-color:var(--acc);opacity:1;}',
 
-  '.sv-det{padding:26px;display:flex;flex-direction:column;overflow-y:auto;min-width:0;}',
+  '.sv-det{padding:0;display:flex;flex-direction:column;min-width:0;overflow:hidden;}',
+  '.sv-det-scroll{padding:22px 26px 0;overflow-y:auto;flex:1;min-height:0;}',
+  '.sv-det-fixed{padding:14px 26px 20px;flex-shrink:0;',
+  '  border-top:1px solid color-mix(in srgb,var(--ink) 9%,transparent);',
+  '  background:var(--bg);}',
   '.sv-det-close{',
-  '  align-self:flex-end;width:34px;height:34px;border-radius:11px;cursor:pointer;',
+  '  position:absolute;top:12px;right:14px;z-index:4;',
+  '  width:34px;height:34px;border-radius:11px;cursor:pointer;',
   '  background:var(--surf);border:none;color:var(--mute);font-size:20px;',
   '  display:grid;place-items:center;transition:.2s;margin-bottom:6px;',
   '}',
   '.sv-det-close:hover{color:var(--ink);}',
+  '.sv-modal-box{position:relative;}',
+  '.sv-det-scroll::-webkit-scrollbar{width:6px;}',
+  '.sv-det-scroll::-webkit-scrollbar-thumb{background:color-mix(in srgb,var(--ink) 18%,transparent);border-radius:100px;}',
   '.sv-det-group{font-size:11px;letter-spacing:.14em;text-transform:uppercase;',
   '  color:var(--acc);font-weight:700;margin-bottom:8px;}',
   '.sv-det-t{font-size:clamp(21px,3vw,29px);font-weight:800;line-height:1.12;',
@@ -3257,11 +3267,11 @@ function detailCSS(){
   '.sv-det-price{display:flex;align-items:baseline;gap:10px;margin-bottom:8px;}',
   '.sv-det-price b{font-size:26px;font-weight:800;color:var(--acc);}',
   '.sv-det-price s{font-size:16px;opacity:.45;font-weight:500;}',
-  '.sv-det-save{font-size:12px;color:#059669;font-weight:700;margin-bottom:18px;}',
+  '.sv-det-save{font-size:12px;color:#059669;font-weight:700;margin-bottom:12px;}',
   '.sv-det-out{padding:11px 14px;border-radius:11px;background:color-mix(in srgb,var(--ink) 8%,transparent);',
-  '  color:var(--mute);font-size:13.5px;font-weight:600;text-align:center;margin-top:auto;}',
+  '  color:var(--mute);font-size:13.5px;font-weight:600;text-align:center;}',
 
-  '.sv-qty-row{display:flex;align-items:center;gap:14px;margin:auto 0 14px;padding-top:14px;}',
+  '.sv-qty-row{display:flex;align-items:center;gap:14px;margin:0 0 12px;}',
   '.sv-qty-lbl{font-size:12.5px;color:var(--mute);font-weight:600;}',
   '.sv-qty-box{display:flex;align-items:center;gap:0;border-radius:100px;overflow:hidden;',
   '  border:1.5px solid color-mix(in srgb,var(--ink) 16%,transparent);}',
@@ -3283,10 +3293,17 @@ function detailCSS(){
   '.sv-card{cursor:pointer;}',
 
   '@media(max-width:760px){',
-  '  .sv-modal-box{grid-template-columns:1fr;max-height:92dvh;}',
-  '  .sv-gal-main{min-height:210px;max-height:38dvh;}',
-  '  .sv-det{padding:18px;}',
-  '  .sv-qty-row{margin-top:14px;}',
+  '  .sv-modal{padding:0;align-items:flex-end;}',
+  '  .sv-modal-box{grid-template-columns:1fr;grid-template-rows:auto 1fr;',
+  '    max-height:94dvh;height:94dvh;border-radius:20px 20px 0 0;}',
+  '  .sv-gal{min-height:0;}',
+  '  .sv-gal-main{min-height:0;height:34dvh;padding:10px;}',
+  '  .sv-thumbs{padding:7px 10px;}',
+  '  .sv-thumb{width:48px;height:48px;}',
+  '  .sv-det-scroll{padding:16px 18px 0;}',
+  '  .sv-det-fixed{padding:12px 18px 16px;}',
+  '  .sv-det-t{font-size:20px;}',
+  '  .sv-det-d{font-size:13.5px;margin-bottom:14px;}',
   '}'
   ].join('\n');
 }
@@ -3511,9 +3528,11 @@ function buildSiteHTML(forExport){
   ].join('');
 
   const css = `
-    .sv{
+    :root, .sv{
       --bg:${T.bg};--surf:${T.surf};--ink:${T.ink};
       --mute:${T.mute};--acc:${T.accent};
+    }
+    .sv{
       background-color:var(--bg);color:var(--ink);
       font-family:${T.body};line-height:1.6;
 
@@ -4703,10 +4722,13 @@ function cartScript(ownerId){
   '  if(!box || !SV_DET) return;',
   '  var p = SV_DET;',
   '  svRenderGal();',
-  '  var h = "<button class=\\"sv-det-close\\" onclick=\\"svCloseDetail()\\">&times;</button>";',
+  '  var h = "<div class=\\"sv-det-scroll\\">";',
+  '  h += "<button class=\\"sv-det-close\\" onclick=\\"svCloseDetail()\\">&times;</button>";',
   '  if(p.group) h += "<div class=\\"sv-det-group\\">" + p.group + "</div>";',
   '  h += "<h2 class=\\"sv-det-t\\">" + p.name + "</h2>";',
   '  if(p.desc) h += "<p class=\\"sv-det-d\\">" + p.desc + "</p>";',
+  '  h += "</div>";',
+  '  h += "<div class=\\"sv-det-fixed\\">";',
   '  h += "<div class=\\"sv-det-price\\"><b>" + svMoney(p.price) + " " + SV_CUR + "</b>";',
   '  if(p.promo) h += "<s>" + svMoney(p.full) + " " + SV_CUR + "</s>";',
   '  h += "</div>";',
@@ -4722,9 +4744,10 @@ function cartScript(ownerId){
   '    h += "<i class=\\"ri-shopping-bag-3-line\\"></i> Ajouter au panier</button>";',
   '  } else if(SV_WA){',
   '    var msg = "Bonjour, je suis interesse(e) par : " + p.name;',
-  '    h += "<a class=\\"sv-det-add\\" style=\\"margin-top:auto;text-decoration:none;\\" target=\\"_blank\\" rel=\\"noopener\\" href=\\"https://wa.me/" + SV_WA + "?text=" + encodeURIComponent(msg) + "\\">";',
+  '    h += "<a class=\\"sv-det-add\\" style=\\"text-decoration:none;\\" target=\\"_blank\\" rel=\\"noopener\\" href=\\"https://wa.me/" + SV_WA + "?text=" + encodeURIComponent(msg) + "\\">";',
   '    h += "<i class=\\"ri-whatsapp-line\\"></i> Commander sur WhatsApp</a>";',
   '  }',
+  '  h += "</div>";',
   '  box.innerHTML = h;',
   '}',
   '',
