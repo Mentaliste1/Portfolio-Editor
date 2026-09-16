@@ -3493,7 +3493,7 @@ function detailCSS(){
   '.sv-modal.open{display:flex;}',
   '.sv-modal-box{',
   '  background:var(--bg);color:var(--ink);width:100%;max-width:880px;',
-  '  max-height:90dvh;border-radius:22px;overflow:hidden;',
+  '  max-height:90vh;border-radius:22px;overflow:hidden;',
   '  display:grid;grid-template-columns:1.05fr .95fr;',
   '  box-shadow:0 40px 90px -30px rgba(0,0,0,.85);',
   '  animation:svModalIn .34s cubic-bezier(.2,.9,.25,1);',
@@ -3535,9 +3535,9 @@ function detailCSS(){
   '.sv-thumb:hover{opacity:1;}',
   '.sv-thumb.on{border-color:var(--acc);opacity:1;}',
 
-  '.sv-det{padding:0;display:flex;flex-direction:column;min-width:0;overflow:hidden;}',
-  '.sv-det-scroll{padding:22px 26px 0;overflow-y:auto;flex:1;min-height:0;}',
-  '.sv-det-fixed{padding:14px 26px 20px;flex-shrink:0;',
+  '.sv-det{padding:0;min-width:0;overflow-y:auto;-webkit-overflow-scrolling:touch;}',
+  '.sv-det-scroll{padding:22px 26px 0;}',
+  '.sv-det-fixed{padding:14px 26px 20px;position:sticky;bottom:0;z-index:2;',
   '  border-top:1px solid color-mix(in srgb,var(--ink) 9%,transparent);',
   '  background:var(--bg);}',
   '.sv-det-close{',
@@ -3654,10 +3654,10 @@ function detailCSS(){
 
   '@media(max-width:760px){',
   '  .sv-modal{padding:0;align-items:flex-end;}',
-  '  .sv-modal-box{grid-template-columns:1fr;grid-template-rows:auto 1fr;',
-  '    max-height:94dvh;height:94dvh;border-radius:20px 20px 0 0;}',
+  '  .sv-modal-box{grid-template-columns:1fr;grid-template-rows:auto minmax(0,1fr);',
+  '    max-height:92vh;height:92vh;border-radius:20px 20px 0 0;}',
   '  .sv-gal{min-height:0;}',
-  '  .sv-gal-main{min-height:0;height:34dvh;padding:10px;}',
+  '  .sv-gal-main{min-height:0;height:32vh;padding:10px;}',
   '  .sv-thumbs{padding:7px 10px;}',
   '  .sv-thumb{width:48px;height:48px;}',
   '  .sv-det-scroll{padding:16px 18px 0;}',
@@ -4836,7 +4836,7 @@ function buildSiteHTML(forExport){
           <div class="sv-gal-main" id="sv-gal-main"></div>
           <div class="sv-thumbs" id="sv-thumbs"></div>
         </div>
-        <div class="sv-det" id="sv-det"></div>
+        <div class="sv-det" id="sv-det" data-scrollable></div>
       </div>
     </div>
 
@@ -4926,15 +4926,15 @@ function cartCSS(){
   '  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);align-items:flex-end;justify-content:center;}',
   '.sv-cart.open{display:flex;}',
   '.sv-cart-box{background:var(--bg);color:var(--ink);width:100%;max-width:460px;',
-  '  max-height:88dvh;border-radius:22px 22px 0 0;overflow:hidden;',
-  '  display:flex;flex-direction:column;',
+  '  max-height:85vh;border-radius:22px 22px 0 0;overflow-y:auto;overflow-x:hidden;',
+  '  -webkit-overflow-scrolling:touch;',
   '  animation:svUp .32s cubic-bezier(.2,.9,.25,1);}',
   '@keyframes svUp{from{transform:translateY(40px);opacity:0;}to{transform:none;opacity:1;}}',
   '.sv-cart-head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;',
-  '  font-weight:800;font-size:17px;flex-shrink:0;background:var(--bg);',
+  '  font-weight:800;font-size:17px;position:sticky;top:0;z-index:2;background:var(--bg);',
   '  border-bottom:1px solid color-mix(in srgb,var(--ink) 9%,transparent);}',
   '.sv-cart-head button{background:transparent;border:none;color:var(--mute);font-size:22px;cursor:pointer;line-height:1;}',
-  '.sv-cart-lines{padding:14px 20px;overflow-y:auto;flex:1;min-height:0;}',
+  '.sv-cart-lines{padding:14px 20px;}',
   '.sv-cart-lines::-webkit-scrollbar{width:6px;}',
   '.sv-cart-lines::-webkit-scrollbar-thumb{background:color-mix(in srgb,var(--ink) 18%,transparent);border-radius:100px;}',
   '.sv-cart-empty{color:var(--mute);text-align:center;padding:26px 0;font-size:14px;}',
@@ -4946,8 +4946,8 @@ function cartCSS(){
   '.sv-qty button{width:28px;height:28px;border-radius:8px;cursor:pointer;background:transparent;',
   '  border:1px solid color-mix(in srgb,var(--ink) 16%,transparent);color:var(--ink);font-size:15px;font-weight:700;}',
   '.sv-qty span{min-width:20px;text-align:center;font-weight:700;font-size:14px;}',
-  '.sv-cart-foot{padding:14px 20px 20px;flex-shrink:0;overflow-y:auto;max-height:52dvh;',
-  '  border-top:1px solid color-mix(in srgb,var(--ink) 9%,transparent);background:var(--bg);}',
+  '.sv-cart-foot{padding:14px 20px 20px;',
+  '  border-top:1px solid color-mix(in srgb,var(--ink) 9%,transparent);}',
   '.sv-sum{display:flex;justify-content:space-between;padding:7px 0;font-size:13.5px;color:var(--mute);}',
   '.sv-sum b{color:var(--ink);font-weight:700;}',
   '.sv-sum-t{border-top:1px solid color-mix(in srgb,var(--ink) 12%,transparent);margin-top:6px;padding-top:12px;font-size:15.5px;}',
@@ -4969,8 +4969,7 @@ function cartCSS(){
   '  border-radius:100px;background:var(--ink);color:var(--bg);font-size:13.5px;font-weight:600;',
   '  z-index:300;opacity:0;transition:opacity .3s,transform .35s cubic-bezier(.34,1.5,.64,1);}',
   '.sv-toast.in{opacity:1;transform:translate(-50%,0);}',
-  '@media(min-width:600px){.sv-cart{align-items:center;}.sv-cart-box{border-radius:22px;max-height:84dvh;}}',
-  '@media(max-width:599px){.sv-cart-box{height:88dvh;}.sv-cart-foot{max-height:46dvh;}}'
+  '@media(min-width:600px){.sv-cart{align-items:center;}.sv-cart-box{border-radius:22px;max-height:84vh;}}'
   ].join('\n');
 }
 
@@ -4978,11 +4977,11 @@ function cartMarkup(){
   if(!state.orders) return '';
   return [
   '<div class="sv-cart" id="sv-cart" onclick="if(event.target===this)svCloseCart()">',
-  '<div class="sv-cart-box">',
+  '<div class="sv-cart-box" data-scrollable>',
   '<div class="sv-cart-head"><span>Votre panier</span>',
   '<button onclick="svCloseCart()" aria-label="Fermer">&times;</button></div>',
-  '<div class="sv-cart-lines" id="sv-cart-lines" data-scrollable></div>',
-  '<div class="sv-cart-foot" id="sv-cart-foot" style="display:none;" data-scrollable>',
+  '<div class="sv-cart-lines" id="sv-cart-lines"></div>',
+  '<div class="sv-cart-foot" id="sv-cart-foot" style="display:none;">',
   '<div class="sv-sum"><span>Sous-total</span><b id="sv-sub">0</b></div>',
   '<div class="sv-sum"><span>Livraison</span><b id="sv-deliv">Offerte</b></div>',
   '<div class="sv-sum sv-sum-t"><span>Total</span><b id="sv-tot">0</b></div>',
@@ -5361,7 +5360,7 @@ function cartScript(ownerId){
   '  if(!box || !SV_DET) return;',
   '  var p = SV_DET;',
   '  svRenderGal();',
-  '  var h = "<div class=\\"sv-det-scroll\\" data-scrollable>";',
+  '  var h = "<div class=\\"sv-det-scroll\\">";',
   '  h += "<button class=\\"sv-det-close\\" onclick=\\"svCloseDetail()\\">&times;</button>";',
   '  if(p.group) h += "<div class=\\"sv-det-group\\">" + p.group + "</div>";',
   '  h += "<h2 class=\\"sv-det-t\\">" + p.name + "</h2>";',
@@ -5480,6 +5479,7 @@ function cartScript(ownerId){
   '  document.body.style.left = "0";',
   '  document.body.style.right = "0";',
   '  document.body.style.width = "100%";',
+  '  document.body.style.height = "100%";',
   '  document.body.style.overflow = "hidden";',
   '  document.addEventListener("wheel", svBlockScroll, { passive:false });',
   '  document.addEventListener("touchmove", svBlockScroll, { passive:false });',
@@ -5496,6 +5496,7 @@ function cartScript(ownerId){
   '  document.body.style.left = "";',
   '  document.body.style.right = "";',
   '  document.body.style.width = "";',
+  '  document.body.style.height = "";',
   '  document.body.style.overflow = "";',
   '  window.scrollTo(0, SV_SCROLLY);',
   '}',
