@@ -444,6 +444,30 @@ body{
 .stat-row .st-s{width:44px;flex-shrink:0;text-align:center;color:var(--ui-accent);}
 .stat-row .st-l{flex:1;}
 
+.col-row{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:7px;}
+.col-chip{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:4px 6px 4px 5px;border-radius:100px;
+  background:var(--ui-surface);border:1px solid var(--ui-border);
+  font-size:11px;font-weight:600;color:var(--ui-text);
+}
+.col-chip i{
+  width:13px;height:13px;border-radius:50%;display:block;
+  box-shadow:0 0 0 1px rgba(255,255,255,.2);
+}
+.col-chip button{
+  width:15px;height:15px;border-radius:50%;cursor:pointer;
+  background:transparent;border:none;color:var(--ui-muted);
+  font-size:13px;line-height:1;padding:0;
+}
+.col-chip button:hover{color:#f87171;}
+.col-pick{
+  width:100%;padding:9px 11px;border-radius:10px;cursor:pointer;
+  background:var(--ui-surface);border:1px dashed var(--ui-border);
+  color:var(--ui-muted);font-family:inherit;font-size:12px;
+}
+.col-pick:hover{border-color:var(--ui-accent);color:var(--ui-accent);}
+
 .spec-row{display:flex;align-items:center;gap:5px;margin-bottom:6px;}
 .spec-row select{
   width:108px;flex-shrink:0;padding:8px 9px;border-radius:9px;
@@ -501,6 +525,15 @@ body{
   display:grid;place-items:center;transition:.16s;
 }
 .cust-x:hover{border-color:var(--ui-accent);color:var(--ui-accent);}
+
+.grp-img{
+  width:34px;height:34px;border-radius:9px;flex-shrink:0;cursor:pointer;
+  background:var(--ui-bg);border:1px dashed var(--ui-border);
+  display:grid;place-items:center;overflow:hidden;
+  color:var(--ui-muted);font-size:14px;transition:.18s;
+}
+.grp-img:hover{border-color:var(--ui-accent);color:var(--ui-accent);}
+.grp-img img{width:100%;height:100%;object-fit:cover;}
 
 .grp-row{
   display:flex;align-items:center;gap:9px;
@@ -922,9 +955,25 @@ body{
           <input type="file" id="up-logo" accept="image/*" style="display:none" onchange="uploadImg(event,'logo')">
         </div>
         <div class="fld">
-          <label>Image de bannière</label>
-          <label class="upload" for="up-hero"><i class="ri-gallery-line"></i> <span id="hero-lbl">Choisir une image</span></label>
-          <input type="file" id="up-hero" accept="image/*" style="display:none" onchange="uploadImg(event,'hero')">
+          <label>Images de bannière (5 maximum)</label>
+          <div id="hero-list"></div>
+          <label class="upload" for="up-hero"><i class="ri-gallery-line"></i> <span id="hero-lbl">Ajouter une image</span></label>
+          <input type="file" id="up-hero" accept="image/*" style="display:none" onchange="uploadHeroImg(event)">
+          <p class="hint">Plusieurs images défilent automatiquement derrière votre titre.</p>
+        </div>
+        <div class="fld">
+          <label>Durée d'affichage <span id="hero-delay-out" style="opacity:.6;">5 s</span></label>
+          <input type="range" min="2" max="12" step="1" id="f-heroDelay" style="width:100%;" oninput="setHeroDelay(this.value)">
+        </div>
+
+        <div class="sec-label" style="margin-top:16px;"><i class="ri-slideshow-line"></i> Bandeau défilant<div class="sec-line"></div></div>
+        <p class="hint" style="margin-bottom:9px;">Une frise d'images qui glisse en continu dans votre site. Idéale pour mettre en avant vos nouveautés.</p>
+        <div id="band-list"></div>
+        <label class="upload" for="up-band"><i class="ri-image-add-line"></i> Ajouter au bandeau</label>
+        <input type="file" id="up-band" accept="image/*" style="display:none" onchange="uploadBandImg(event)">
+        <div class="fld" style="margin-top:8px;">
+          <label>Texte du bandeau</label>
+          <input type="text" id="f-bandText" oninput="setF('bandText',this.value)" placeholder="Nouveautés · Livraison offerte · Promotions">
         </div>
       </div>
 
@@ -1032,6 +1081,15 @@ body{
         </div>
 
         <div class="sec-label"><i class="ri-sparkling-2-line"></i> Animations<div class="sec-line"></div></div>
+        <div class="tog">
+          <div><div class="tog-t">Formes arrondies</div><div class="tog-d">Bords courbes sur les bandeaux</div></div>
+          <button class="sw on" id="sw-curves" onclick="toggleF('curves',this)"></button>
+        </div>
+        <div class="tog">
+          <div><div class="tog-t">Rangée défilante</div><div class="tog-d">Les produits glissent latéralement</div></div>
+          <button class="sw" id="sw-scrollRow" onclick="toggleF('scrollRow',this)"></button>
+        </div>
+
         <div class="fld">
           <label>Animation du nom</label>
           <select id="f-nameFx" onchange="setF('nameFx',this.value)"></select>
@@ -1276,6 +1334,17 @@ body{
     <p class="ag-note" id="ag-note"></p>
   </div>
 </div>
+
+<datalist id="opt-names">
+  <option value="Taille"><option value="Capacité"><option value="Contenance">
+  <option value="Puissance"><option value="Poids"><option value="Format">
+  <option value="Longueur"><option value="Pointure"><option value="Durée">
+  <option value="Quantité"><option value="Version"><option value="Mémoire">
+</datalist>
+<datalist id="col-names">
+  <option value="Couleur"><option value="Finition"><option value="Modèle">
+  <option value="Coloris"><option value="Matière"><option value="Teinte">
+</datalist>
 
 <div id="pay-modal" onclick="if(event.target===this)closePay()">
   <div class="pay-card">
@@ -1877,6 +1946,13 @@ let state = {
   ctaText   : 'Écrivez-nous, nous répondons rapidement.',
   ctaImg    : '',
   showCta   : true,
+  curves    : true,
+  scrollRow : false,
+  groupImgs : {},
+  heroImgs  : [],
+  heroDelay : 5,
+  bandImgs  : [],
+  bandText  : '',
   descFx    : 'monte',
   nameFx    : 'none',
   taglineFx : 'reflet',
@@ -2046,6 +2122,80 @@ function uploadImg(e, key){
   });
 }
 
+function renderHeroList(){
+  const el = $('hero-list');
+  if(!el) return;
+  const list = state.heroImgs || [];
+  el.innerHTML = list.length
+    ? '<div class="pimg-row">' + list.map(function(src, i){
+        return '<div class="pimg">' + (i===0 ? '<span class="pimg-main">1re</span>' : '')
+             + '<img src="' + src + '" alt="">'
+             + '<button onclick="delHeroImg(' + i + ')"><i class="ri-close-line"></i></button></div>';
+      }).join('') + '</div>'
+    : '';
+}
+
+function uploadHeroImg(e){
+  const file = e.target.files && e.target.files[0];
+  if(!file) return;
+  if(!Array.isArray(state.heroImgs)) state.heroImgs = [];
+  if(state.heroImgs.length >= 5){ alert('Cinq images maximum pour la bannière.'); return; }
+  const lbl = $('hero-lbl');
+  if(lbl) lbl.textContent = 'Traitement…';
+  compressImage(file, 1600, 0.82).then(function(data){
+    state.heroImgs.push(data);
+    state.hero = state.heroImgs[0];
+    if(lbl) lbl.textContent = 'Ajouter une image';
+    renderHeroList(); render(); scheduleSave();
+  }).catch(function(err){
+    if(lbl) lbl.textContent = 'Ajouter une image';
+    alert(err.message || 'Image illisible.');
+  });
+}
+
+function delHeroImg(i){
+  if(!Array.isArray(state.heroImgs)) return;
+  state.heroImgs.splice(i, 1);
+  state.hero = state.heroImgs[0] || '';
+  renderHeroList(); render(); scheduleSave();
+}
+
+function setHeroDelay(v){
+  state.heroDelay = parseInt(v) || 5;
+  const o = $('hero-delay-out');
+  if(o) o.textContent = state.heroDelay + ' s';
+  render(); scheduleSave();
+}
+
+function renderBandList(){
+  const el = $('band-list');
+  if(!el) return;
+  const list = state.bandImgs || [];
+  el.innerHTML = list.length
+    ? '<div class="pimg-row">' + list.map(function(src, i){
+        return '<div class="pimg"><img src="' + src + '" alt="">'
+             + '<button onclick="delBandImg(' + i + ')"><i class="ri-close-line"></i></button></div>';
+      }).join('') + '</div>'
+    : '';
+}
+
+function uploadBandImg(e){
+  const file = e.target.files && e.target.files[0];
+  if(!file) return;
+  if(!Array.isArray(state.bandImgs)) state.bandImgs = [];
+  if(state.bandImgs.length >= 10){ alert('Dix images maximum pour le bandeau.'); return; }
+  compressImage(file, 700, 0.8).then(function(data){
+    state.bandImgs.push(data);
+    renderBandList(); render(); scheduleSave();
+  }).catch(function(err){ alert(err.message || 'Image illisible.'); });
+}
+
+function delBandImg(i){
+  if(!Array.isArray(state.bandImgs)) return;
+  state.bandImgs.splice(i, 1);
+  renderBandList(); render(); scheduleSave();
+}
+
 function uploadSiteBg(e){
   const file = e.target.files && e.target.files[0];
   if(!file) return;
@@ -2129,7 +2279,7 @@ function delProdImg(kind, id, idx){
 
 function addProduct(){
   const id = Date.now();
-  state.products.push({ id, name:'Nouveau produit', price:0, desc:'', img:'', stock:true, group:'', specs:[] });
+  state.products.push({ id, name:'Nouveau produit', price:0, desc:'', img:'', stock:true, group:'', specs:[], subtitle:'', badge:'', optName:'', colName:'', sizes:[], colors:[], rating:0 });
   renderLists(); render(); scheduleSave();
   setTimeout(() => {
     const el = document.querySelector('[data-item="' + id + '"]');
@@ -2139,7 +2289,7 @@ function addProduct(){
 
 function addService(){
   const id = Date.now();
-  state.services.push({ id, name:'Nouvelle prestation', price:0, desc:'', img:'', stock:true, group:'', specs:[] });
+  state.services.push({ id, name:'Nouvelle prestation', price:0, desc:'', img:'', stock:true, group:'', specs:[], subtitle:'', badge:'', optName:'', colName:'', sizes:[], colors:[], rating:0 });
   renderLists(); render(); scheduleSave();
 }
 
@@ -2542,6 +2692,81 @@ const SPEC_ICONS = [
   { v:'ri-home-4-line',          n:'Surface' }
 ];
 
+function setSizes(kind, id, val){
+  const p = findItem(kind, id);
+  if(!p) return;
+  p.sizes = String(val || '').split(',')
+    .map(function(s){ return s.trim(); })
+    .filter(function(s){ return s; })
+    .slice(0, 10);
+  render(); scheduleSave();
+}
+
+const COLOR_PRESETS = [
+  { n:'Noir', v:'#111111' }, { n:'Blanc', v:'#FFFFFF' },
+  { n:'Gris', v:'#9CA3AF' }, { n:'Bleu', v:'#2563EB' },
+  { n:'Bleu ciel', v:'#93C5FD' }, { n:'Marine', v:'#1E3A5F' },
+  { n:'Rouge', v:'#DC2626' }, { n:'Bordeaux', v:'#7F1D1D' },
+  { n:'Vert', v:'#16A34A' }, { n:'Kaki', v:'#4D5D3A' },
+  { n:'Jaune', v:'#EAB308' }, { n:'Orange', v:'#EA580C' },
+  { n:'Rose', v:'#EC4899' }, { n:'Violet', v:'#7C3AED' },
+  { n:'Beige', v:'#D6C7A8' }, { n:'Marron', v:'#78350F' },
+  { n:'Or', v:'#C9A227' }, { n:'Argent', v:'#C0C0C0' }
+];
+
+function colorRows(kind, p){
+  const list = Array.isArray(p.colors) ? p.colors : [];
+  let h = '<div class="fld"><label>Nom du second choix</label>'
+    + '<input type="text" list="col-names" value="' + esc(p.colName || '') + '" placeholder="Couleur, Finition, Modèle…" '
+    + 'oninput="updItem(\'' + kind + '\',' + p.id + ',\'colName\',this.value)" style="margin-bottom:8px;">';
+  if(list.length){
+    h += '<div class="col-row">';
+    list.forEach(function(cl, i){
+      h += '<span class="col-chip" title="' + esc(cl.n) + '">'
+        +   '<i style="background:' + esc(cl.v) + ';"></i>' + esc(cl.n)
+        +   '<button onclick="delColor(\'' + kind + '\',' + p.id + ',' + i + ')">&times;</button>'
+        + '</span>';
+    });
+    h += '</div>';
+  }
+  if(list.length < 8){
+    h += '<select class="col-pick" onchange="addColor(\'' + kind + '\',' + p.id + ',this.value);this.selectedIndex=0;">'
+      +  '<option value="">+ Ajouter une couleur</option>'
+      +  COLOR_PRESETS.map(function(o){
+           return '<option value="' + o.v + '|' + o.n + '">' + o.n + '</option>';
+         }).join('')
+      +  '</select>';
+  }
+  h += '</div>';
+  return h;
+}
+
+function addColor(kind, id, val){
+  if(!val) return;
+  const p = findItem(kind, id);
+  if(!p) return;
+  if(!Array.isArray(p.colors)) p.colors = [];
+  const parts = val.split('|');
+  if(p.colors.some(function(c){ return c.v === parts[0]; })) return;
+  p.colors.push({ v: parts[0], n: parts[1] || '' });
+  renderLists(); render(); scheduleSave();
+  setTimeout(function(){
+    const card = document.querySelector('[data-item="' + id + '"]');
+    if(card) card.classList.add('open');
+  }, 40);
+}
+
+function delColor(kind, id, i){
+  const p = findItem(kind, id);
+  if(!p || !Array.isArray(p.colors)) return;
+  p.colors.splice(i, 1);
+  renderLists(); render(); scheduleSave();
+  setTimeout(function(){
+    const card = document.querySelector('[data-item="' + id + '"]');
+    if(card) card.classList.add('open');
+  }, 40);
+}
+
 function specRows(kind, p){
   const list = Array.isArray(p.specs) ? p.specs : [];
   let h = '<div class="fld"><label>Caractéristiques (3 maximum)</label>';
@@ -2606,13 +2831,37 @@ function renderGroups(){
   }
   el.innerHTML = state.groups.map(function(g, i){
     const n = state.products.filter(function(p){ return p.group === g; }).length;
+    const im = (state.groupImgs || {})[g];
     return '<div class="grp-row">'
-      + '<i class="ri-folder-line"></i>'
+      + '<label class="grp-img" for="up-grp-' + i + '" title="Photo du rayon">'
+      +   (im ? '<img src="' + im + '" alt="">' : '<i class="ri-image-add-line"></i>')
+      + '</label>'
+      + '<input type="file" id="up-grp-' + i + '" accept="image/*" style="display:none" onchange="uploadGroupImg(event,' + i + ')">'
       + '<span class="grp-n">' + esc(g) + '</span>'
       + '<span class="grp-c">' + n + '</span>'
+      + (im ? '<button class="item-del" onclick="delGroupImg(' + i + ')" title="Retirer la photo"><i class="ri-image-off-line"></i></button>' : '')
       + '<button class="item-del" onclick="delGroup(' + i + ')"><i class="ri-close-line"></i></button>'
       + '</div>';
   }).join('');
+}
+
+function uploadGroupImg(e, i){
+  const file = e.target.files && e.target.files[0];
+  if(!file) return;
+  const name = state.groups[i];
+  if(!name) return;
+  compressImage(file, 400, 0.82).then(function(data){
+    if(!state.groupImgs) state.groupImgs = {};
+    state.groupImgs[name] = data;
+    renderGroups(); render(); scheduleSave();
+  }).catch(function(err){ alert(err.message || 'Image illisible.'); });
+}
+
+function delGroupImg(i){
+  const name = state.groups[i];
+  if(!name || !state.groupImgs) return;
+  delete state.groupImgs[name];
+  renderGroups(); render(); scheduleSave();
 }
 
 function addGroup(){
@@ -2677,6 +2926,21 @@ function renderLists(){
               + '<p class="hint" style="margin-top:6px;">Passé cette date, le prix normal revient automatiquement.</p>'
               : '')
       +   '</div>'
+      +   '<div class="fld"><label>Sous-titre</label><input type="text" value="' + esc(p.subtitle||'') + '" placeholder="Coupe ajustée · Coton" oninput="updItem(\'' + kind + '\',' + p.id + ',\'subtitle\',this.value)"></div>'
+      +   '<div class="fld-row">'
+      +     '<div class="fld"><label>Badge</label><input type="text" value="' + esc(p.badge||'') + '" placeholder="Nouveau" oninput="updItem(\'' + kind + '\',' + p.id + ',\'badge\',this.value)"></div>'
+      +     '<div class="fld"><label>Note sur 5</label><input type="number" min="0" max="5" step="0.1" value="' + (p.rating||0) + '" oninput="updItem(\'' + kind + '\',' + p.id + ',\'rating\',parseFloat(this.value)||0)"></div>'
+      +   '</div>'
+      +   '<div class="fld-row">'
+      +     '<div class="fld"><label>Nom de l\'option</label>'
+      +       '<input type="text" list="opt-names" value="' + esc(p.optName || '') + '" placeholder="Taille, Capacité, Parfum…" oninput="updItem(\'' + kind + '\',' + p.id + ',\'optName\',this.value)"></div>'
+      +     '<div class="fld"><label>Valeurs</label>'
+      +       '<input type="text" value="' + esc((p.sizes||[]).join(', ')) + '" placeholder="64 Go, 128 Go, 256 Go" oninput="setSizes(\'' + kind + '\',' + p.id + ',this.value)"></div>'
+      +   '</div>'
+      +   '<p class="hint" style="margin-top:-4px;">'
+      +     'Exemples : Capacité pour un téléphone, Contenance pour un parfum, '
+      +     'Puissance pour un appareil, Poids pour de l\'alimentation. Laissez vide si sans objet.</p>'
+      +   colorRows(kind, p)
       +   '<div class="fld"><label>Rayon</label><select onchange="updItem(\'' + kind + '\',' + p.id + ',\'group\',this.value)">'
       +     '<option value=""' + (!p.group ? ' selected' : '') + '>Sans rayon</option>'
       +     (state.groups||[]).map(function(g){
@@ -2802,14 +3066,14 @@ function syncPanel(){
   fillFxSelects();
   const map = ['name','tagline','about','prodTitle','phone','whatsapp','email',
                'address','hours','facebook','instagram','tiktok','zones','mapsUrl',
-               'bgImage','videoUrl','videoTitle','perksTitle','ctaTitle','ctaText'];
+               'bgImage','videoUrl','videoTitle','perksTitle','ctaTitle','ctaText','bandText'];
   map.forEach(k => { const el = $('f-' + k); if(el) el.value = state[k] || ''; });
   ['layout','currency','anim','hover','liveBg','descFx','nameFx','taglineFx',
    'bgFit','bgPos'].forEach(k => {
     const el = $('f-' + k); if(el) el.value = state[k];
   });
   const d = $('f-delivery'); if(d) d.value = state.delivery || 0;
-  ['orders','waOrder','showHero','showAbout','showSearch','showWa','showGroups','showMap','showStats','showReviews','showPerks','showCta'].forEach(k => {
+  ['orders','waOrder','showHero','showAbout','showSearch','showWa','showGroups','showMap','showStats','showReviews','showPerks','showCta','curves','scrollRow'].forEach(k => {
     const el = $('sw-' + k); if(el) el.classList.toggle('on', !!state[k]);
   });
   if(state.logo){ const l = $('logo-lbl'); if(l) l.textContent = 'Image chargée ✓'; }
@@ -3292,6 +3556,75 @@ function detailCSS(){
 
   '.sv-card{cursor:pointer;}',
 
+  '.sv-tag-b{',
+  '  position:absolute;top:10px;left:10px;z-index:2;',
+  '  padding:4px 11px;border-radius:100px;',
+  '  background:var(--ink);color:var(--bg);',
+  '  font-size:10.5px;font-weight:800;letter-spacing:.02em;',
+  '}',
+  '.sv-card-sub{font-size:11.5px;color:var(--mute);margin:-2px 0 8px;font-weight:400;}',
+  '.sv-swatches{display:flex;align-items:center;gap:5px;margin-bottom:10px;}',
+  '.sv-sw{width:14px;height:14px;border-radius:50%;display:block;',
+  '  box-shadow:0 0 0 1px color-mix(in srgb,var(--ink) 20%,transparent);}',
+  '.sv-sw-more{font-size:10.5px;color:var(--mute);font-weight:700;}',
+  '.sv-rate{font-style:normal;font-size:11px;color:var(--mute);font-weight:600;margin-left:7px;}',
+
+  '.sv-det-sub{font-size:13px;color:var(--mute);margin:-6px 0 10px;font-weight:400;}',
+  '.sv-det-rate{font-size:13px;color:var(--acc);font-weight:700;margin-bottom:12px;}',
+  '.sv-det-specs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;}',
+  '.sv-det-specs span{display:inline-flex;align-items:center;gap:5px;',
+  '  padding:5px 11px;border-radius:100px;font-size:11.5px;font-weight:600;color:var(--mute);',
+  '  background:color-mix(in srgb,var(--ink) 6%,transparent);}',
+  '.sv-det-specs i{color:var(--acc);font-size:13px;}',
+
+  '.sv-var{margin-bottom:16px;}',
+  '.sv-var-l{font-size:12px;font-weight:700;margin-bottom:8px;color:var(--ink);}',
+  '.sv-var-l em{font-style:normal;font-weight:400;color:var(--mute);}',
+  '.sv-var-o{display:flex;flex-wrap:wrap;gap:7px;}',
+  '.sv-size{',
+  '  min-width:46px;padding:9px 13px;border-radius:10px;cursor:pointer;',
+  '  border:1.5px solid color-mix(in srgb,var(--ink) 16%,transparent);',
+  '  background:transparent;color:var(--ink);',
+  '  font-family:inherit;font-size:13px;font-weight:700;transition:.18s;',
+  '}',
+  '.sv-size:hover{border-color:var(--acc);}',
+  '.sv-size.on{background:var(--ink);color:var(--bg);border-color:var(--ink);}',
+  '.sv-col{',
+  '  width:30px;height:30px;border-radius:50%;cursor:pointer;padding:0;',
+  '  border:2px solid transparent;',
+  '  box-shadow:0 0 0 1px color-mix(in srgb,var(--ink) 22%,transparent);',
+  '  transition:transform .18s, box-shadow .18s;',
+  '}',
+  '.sv-col:hover{transform:scale(1.1);}',
+  '.sv-col.on{box-shadow:0 0 0 2px var(--bg), 0 0 0 4px var(--acc);}',
+
+  '.sv-det-btns{display:grid;grid-template-columns:1fr 1fr;gap:9px;}',
+  '.sv-det-add.ghost{background:transparent;color:var(--ink);',
+  '  border:1.5px solid color-mix(in srgb,var(--ink) 20%,transparent);}',
+  '.sv-det-add.ghost:hover{border-color:var(--acc);color:var(--acc);box-shadow:none;}',
+
+  '.sv-zoom-b{',
+  '  position:absolute;bottom:12px;left:12px;z-index:3;',
+  '  width:36px;height:36px;border-radius:50%;cursor:pointer;border:none;',
+  '  background:rgba(0,0,0,.5);color:#fff;font-size:17px;',
+  '  display:grid;place-items:center;transition:background .2s;',
+  '}',
+  '.sv-zoom-b:hover{background:rgba(0,0,0,.75);}',
+  '.sv-zoom{',
+  '  display:none;position:fixed;inset:0;z-index:260;',
+  '  background:rgba(0,0,0,.94);',
+  '  align-items:center;justify-content:center;padding:20px;',
+  '}',
+  '.sv-zoom.open{display:flex;}',
+  '.sv-zoom img{max-width:100%;max-height:100%;object-fit:contain;',
+  '  animation:svFadeImg .25s ease;border-radius:8px;}',
+  '.sv-zoom-x{',
+  '  position:absolute;top:18px;right:20px;',
+  '  width:42px;height:42px;border-radius:50%;cursor:pointer;border:none;',
+  '  background:rgba(255,255,255,.16);color:#fff;font-size:24px;',
+  '  display:grid;place-items:center;',
+  '}',
+
   '@media(max-width:760px){',
   '  .sv-modal{padding:0;align-items:flex-end;}',
   '  .sv-modal-box{grid-template-columns:1fr;grid-template-rows:auto 1fr;',
@@ -3487,9 +3820,11 @@ function buildSiteHTML(forExport){
                  : '<div class="sv-noimg"><i class="ri-image-line"></i></div>')
       +   (soldOut ? '<span class="sv-badge">Épuisé</span>' : '')
       +   (onPromo && !soldOut ? '<span class="sv-promo">-' + (p.promoPct||0) + '%</span>' : '')
+      +   (p.badge && !soldOut ? '<span class="sv-tag-b">' + esc(p.badge) + '</span>' : '')
       + '</div>'
       + '<div class="sv-card-body">'
       +   '<h3 class="sv-card-t">' + esc(p.name) + '</h3>'
+      +   (p.subtitle ? '<div class="sv-card-sub">' + esc(p.subtitle) + '</div>' : '')
       +   (p.desc
             ? '<div class="sv-card-dwrap' + descCls + '"><p class="sv-card-d" data-full="' + esc(p.desc) + '">'
               + esc(p.desc) + '</p></div>'
@@ -3499,10 +3834,20 @@ function buildSiteHTML(forExport){
                 return '<span class="sv-spec"><i class="' + esc(s.icon) + '"></i>' + esc(s.text) + '</span>';
               }).join('') + '</div>'
             : '')
+      +   ((Array.isArray(p.colors) && p.colors.length)
+            ? '<div class="sv-swatches">'
+              + p.colors.slice(0,4).map(function(cl){
+                  return '<span class="sv-sw" style="background:' + esc(cl.v) + ';" title="' + esc(cl.n) + '"></span>';
+                }).join('')
+              + (p.colors.length > 4 ? '<span class="sv-sw-more">+' + (p.colors.length - 4) + '</span>' : '')
+              + '</div>'
+            : '')
       +   '<div class="sv-card-foot">'
       +     '<span class="sv-price">'
       +       (onPromo ? '<s class="sv-old">' + money(p.price) + '</s> ' : '')
-      +       money(shownPrice) + ' ' + cur + '</span>'
+      +       money(shownPrice) + ' ' + cur
+      +       (p.rating ? '<em class="sv-rate">' + Number(p.rating).toFixed(1) + ' ★</em>' : '')
+      +     '</span>'
       +     (!soldOut && state.orders
                 ? '<button class="sv-add" onclick="event.stopPropagation();svAdd(' + p.id + ',1,this)"><i class="ri-add-line"></i> Ajouter</button>'
                 : (!soldOut && wa
@@ -3513,6 +3858,10 @@ function buildSiteHTML(forExport){
   };
 
   const vid = youtubeId(state.videoUrl);
+  const heroList = (Array.isArray(state.heroImgs) && state.heroImgs.length)
+    ? state.heroImgs
+    : (state.hero ? [state.hero] : []);
+  const bandList = Array.isArray(state.bandImgs) ? state.bandImgs : [];
 
   const usedGroups = (state.groups || []).filter(function(g){
     return state.products.some(function(p){ return p.group === g; });
@@ -3822,6 +4171,118 @@ function buildSiteHTML(forExport){
     /* ── Vos atouts ──
        Bandeau sombre qui tranche avec le reste : la section
        doit se remarquer sans crier. */
+    ${state.curves ? `
+    .sv-hero{border-bottom-left-radius:0;border-bottom-right-radius:0;}
+    .sv-hero::after{
+      content:'';position:absolute;left:-2%;right:-2%;bottom:-1px;height:52px;
+      background:var(--bg);
+      border-radius:52% 52% 0 0 / 100% 100% 0 0;
+      z-index:4;pointer-events:none;
+    }
+    .sv-perks{overflow:hidden;}
+    .sv-perks::before{
+      content:'';position:absolute;left:-2%;right:-2%;top:-1px;height:46px;
+      background:var(--bg);
+      border-radius:0 0 52% 52% / 0 0 100% 100%;
+      z-index:1;pointer-events:none;
+    }
+    .sv-perks .sv-wrap{position:relative;z-index:2;padding-top:16px;}
+    .sv-ctaband{overflow:hidden;}
+    .sv-ctaband::before{
+      content:'';position:absolute;left:-2%;right:-2%;top:-1px;height:44px;
+      background:var(--bg);
+      border-radius:0 0 52% 52% / 0 0 100% 100%;
+      z-index:4;pointer-events:none;
+    }
+    .sv-stats{border-radius:0 0 30px 30px;}
+    ` : ''}
+
+    ${state.scrollRow ? `
+    .sv-grid{
+      display:flex;overflow-x:auto;scroll-snap-type:x mandatory;
+      padding-bottom:10px;gap:15px;
+      scrollbar-width:thin;
+    }
+    .sv-grid .sv-card{
+      flex:0 0 clamp(210px,44vw,260px);scroll-snap-align:start;
+    }
+    .sv-grid::-webkit-scrollbar{height:6px;}
+    .sv-grid::-webkit-scrollbar-thumb{
+      background:color-mix(in srgb,var(--ink) 18%,transparent);border-radius:100px;
+    }
+    ` : ''}
+
+    .sv-hero-slides{position:absolute;inset:0;}
+    .sv-slide{
+      position:absolute;inset:0;opacity:0;
+      transition:opacity 1.1s ease, transform 6s ease;
+      transform:scale(1.06);
+    }
+    .sv-slide.on{opacity:.34;transform:scale(1);}
+    .sv-dots{
+      position:absolute;bottom:18px;left:50%;transform:translateX(-50%);
+      display:flex;gap:7px;z-index:5;
+    }
+    .sv-dot{
+      width:8px;height:8px;border-radius:50%;cursor:pointer;border:none;padding:0;
+      background:color-mix(in srgb,var(--ink) 26%,transparent);
+      transition:width .3s, background .3s;
+    }
+    .sv-dot.on{width:22px;border-radius:100px;background:var(--acc);}
+
+    .sv-band{
+      position:relative;z-index:2;overflow:hidden;
+      background:color-mix(in srgb,var(--acc) 10%,var(--surf));
+      border-top:1px solid color-mix(in srgb,var(--ink) 8%,transparent);
+      border-bottom:1px solid color-mix(in srgb,var(--ink) 8%,transparent);
+    }
+    .sv-band-t{
+      display:flex;white-space:nowrap;padding:11px 0;
+      font-size:12.5px;font-weight:700;letter-spacing:.06em;
+      text-transform:uppercase;color:var(--acc);
+      animation:bandRun 22s linear infinite;
+    }
+    .sv-band-t span{padding:0 18px;}
+    .sv-band-sep{opacity:.5;}
+    @keyframes bandRun{from{transform:translateX(0);}to{transform:translateX(-33.33%);}}
+    .sv-band-imgs{overflow:hidden;padding:12px 0;}
+    .sv-band-run{display:flex;gap:12px;width:max-content;animation:bandImg 34s linear infinite;}
+    .sv-band-i{
+      width:132px;height:88px;flex-shrink:0;border-radius:12px;
+      background-size:cover;background-position:center;
+      box-shadow:0 6px 18px -8px rgba(0,0,0,.4);
+    }
+    @keyframes bandImg{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+    .sv-band:hover .sv-band-t,
+    .sv-band:hover .sv-band-run{animation-play-state:paused;}
+    @media(max-width:520px){
+      .sv-band-i{width:104px;height:70px;}
+      .sv-band-t{font-size:11px;}
+    }
+    @media(prefers-reduced-motion:reduce){
+      .sv-band-t,.sv-band-run{animation:none;}
+      .sv-slide{transition:opacity .2s;}
+    }
+
+    .sv-cats{display:flex;gap:12px;overflow-x:auto;padding-bottom:8px;margin-bottom:22px;
+      scrollbar-width:none;}
+    .sv-cats::-webkit-scrollbar{display:none;}
+    .sv-cat{
+      flex:0 0 auto;width:92px;cursor:pointer;text-align:center;
+      background:none;border:none;padding:0;font-family:inherit;
+    }
+    .sv-cat-i{
+      width:92px;height:92px;border-radius:18px;overflow:hidden;
+      background:var(--surf);display:grid;place-items:center;
+      border:2px solid transparent;transition:.22s;
+      color:var(--mute);font-size:26px;
+    }
+    .sv-cat-i img{width:100%;height:100%;object-fit:cover;display:block;}
+    .sv-cat:hover .sv-cat-i{transform:translateY(-3px);border-color:var(--acc);}
+    .sv-cat.on .sv-cat-i{border-color:var(--acc);}
+    .sv-cat-n{font-size:12px;font-weight:600;margin-top:7px;color:var(--ink);
+      overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+
     .sv-perks{
       position:relative;z-index:2;
       padding:clamp(38px,5.5vw,62px) 0;
@@ -4112,7 +4573,17 @@ function buildSiteHTML(forExport){
 
     ${state.showHero ? `
     <header class="sv-hero">
-      ${state.hero ? '<div class="sv-hero-img" style="background-image:url(' + state.hero + ')"></div>' : ''}
+      ${(heroList.length > 1)
+        ? '<div class="sv-hero-slides">' + heroList.map(function(src, i){
+            return '<div class="sv-hero-img sv-slide' + (i===0 ? ' on' : '') + '" style="background-image:url(' + src + ')"></div>';
+          }).join('')
+          + '<div class="sv-dots">' + heroList.map(function(_, i){
+              return '<button class="sv-dot' + (i===0 ? ' on' : '') + '" onclick="svSlide(' + i + ')"></button>';
+            }).join('') + '</div>'
+          + '</div>'
+        : (heroList.length === 1
+            ? '<div class="sv-hero-img" style="background-image:url(' + heroList[0] + ')"></div>'
+            : '')}
       <div class="sv-wrap sv-hero-in">
         <div>
             <h1 class="sv-h1${state.nameFx && state.nameFx !== 'none' ? ' tx-' + state.nameFx : ''}">${esc(state.name)}</h1>
@@ -4139,15 +4610,34 @@ function buildSiteHTML(forExport){
       }).join('')}
     </div></div>` : ''}
 
+    ${(bandList.length || state.bandText) ? `
+    <div class="sv-band">
+      ${state.bandText ? '<div class="sv-band-t"><span>'
+        + [0,1,2].map(function(){ return esc(state.bandText); }).join('</span><span class="sv-band-sep">◆</span><span>')
+        + '</span></div>' : ''}
+      ${bandList.length ? '<div class="sv-band-imgs"><div class="sv-band-run">'
+        + bandList.concat(bandList).map(function(src){
+            return '<span class="sv-band-i" style="background-image:url(' + src + ')"></span>';
+          }).join('')
+        + '</div></div>' : ''}
+    </div>` : ''}
+
     ${state.products.length ? `
     <section class="sv-sec" id="sv-prod"><div class="sv-wrap">
       <h2 class="sv-sec-t${animCls}">${esc(state.prodTitle)}</h2>
       <p class="sv-sec-s">${state.products.length} ${state.products.length > 1 ? 'articles disponibles' : 'article disponible'}</p>
       ${state.showSearch ? '<div class="sv-search"><i class="ri-search-line"></i><input type="text" placeholder="Rechercher…" oninput="svSearch(this.value)"></div>' : ''}
       ${(state.showGroups && usedGroups.length)
-        ? '<div class="sv-tabs"><button class="sv-tab on" onclick="svFilter(this,\'\')">Tout voir</button>'
+        ? '<div class="sv-cats">'
+          + '<button class="sv-cat on" onclick="svFilter(this,\'\')">'
+          +   '<span class="sv-cat-i"><i class="ri-apps-2-line"></i></span>'
+          +   '<span class="sv-cat-n">Tout voir</span></button>'
           + usedGroups.map(function(g){
-              return '<button class="sv-tab" onclick="svFilter(this,\'' + esc(g) + '\')">' + esc(g) + '</button>';
+              const im = (state.groupImgs || {})[g];
+              return '<button class="sv-cat" onclick="svFilter(this,\'' + esc(g) + '\')">'
+                + '<span class="sv-cat-i">'
+                + (im ? '<img src="' + im + '" alt="">' : '<i class="ri-price-tag-3-line"></i>')
+                + '</span><span class="sv-cat-n">' + esc(g) + '</span></button>';
             }).join('')
           + '</div>'
         : ''}
@@ -4314,6 +4804,8 @@ function buildSiteHTML(forExport){
         <div class="sv-vbox"><div class="sv-vframe" id="sv-vframe"></div></div>
       </div>
     </div>` : ''}
+    <div class="sv-zoom" id="sv-zoom" onclick="if(event.target===this)svCloseZoom()"></div>
+
     <div class="sv-pop" id="sv-pop">
       <span class="sv-pop-ico"><i class="ri-check-line"></i></span>
       <span class="sv-pop-txt"><b id="sv-pop-t">Ajouté au panier</b><em id="sv-pop-s"></em></span>
@@ -4331,6 +4823,25 @@ function render(){
   view.innerHTML = '<style>' + css + cartCSS() + '</style>' + html + cartMarkup();
   observeAnims(view);
   if(state.orders) activatePreviewCart();
+  startPreviewSlides();
+}
+
+let previewSlideTimer = null;
+function startPreviewSlides(){
+  clearTimeout(previewSlideTimer);
+  const view = $('site-view');
+  if(!view) return;
+  const slides = view.querySelectorAll('.sv-slide');
+  if(slides.length < 2) return;
+  let i = 0;
+  const dots = view.querySelectorAll('.sv-dot');
+  const step = function(){
+    i = (i + 1) % slides.length;
+    slides.forEach(function(s, k){ s.classList.toggle('on', k === i); });
+    dots.forEach(function(d, k){ d.classList.toggle('on', k === i); });
+    previewSlideTimer = setTimeout(step, (state.heroDelay || 5) * 1000);
+  };
+  previewSlideTimer = setTimeout(step, (state.heroDelay || 5) * 1000);
 }
 
 let previewCartTag = null;
@@ -4371,14 +4882,18 @@ function cartCSS(){
   '.sv-cart{display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.6);',
   '  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);align-items:flex-end;justify-content:center;}',
   '.sv-cart.open{display:flex;}',
-  '.sv-cart-box{background:var(--bg);color:var(--ink);width:100%;max-width:460px;max-height:88vh;',
-  '  border-radius:22px 22px 0 0;overflow-y:auto;animation:svUp .32s cubic-bezier(.2,.9,.25,1);}',
+  '.sv-cart-box{background:var(--bg);color:var(--ink);width:100%;max-width:460px;',
+  '  max-height:88dvh;border-radius:22px 22px 0 0;overflow:hidden;',
+  '  display:flex;flex-direction:column;',
+  '  animation:svUp .32s cubic-bezier(.2,.9,.25,1);}',
   '@keyframes svUp{from{transform:translateY(40px);opacity:0;}to{transform:none;opacity:1;}}',
-  '.sv-cart-head{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;',
-  '  font-weight:800;font-size:17px;position:sticky;top:0;background:var(--bg);',
+  '.sv-cart-head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;',
+  '  font-weight:800;font-size:17px;flex-shrink:0;background:var(--bg);',
   '  border-bottom:1px solid color-mix(in srgb,var(--ink) 9%,transparent);}',
   '.sv-cart-head button{background:transparent;border:none;color:var(--mute);font-size:22px;cursor:pointer;line-height:1;}',
-  '.sv-cart-lines{padding:14px 20px;}',
+  '.sv-cart-lines{padding:14px 20px;overflow-y:auto;flex:1;min-height:0;}',
+  '.sv-cart-lines::-webkit-scrollbar{width:6px;}',
+  '.sv-cart-lines::-webkit-scrollbar-thumb{background:color-mix(in srgb,var(--ink) 18%,transparent);border-radius:100px;}',
   '.sv-cart-empty{color:var(--mute);text-align:center;padding:26px 0;font-size:14px;}',
   '.sv-line{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 0;',
   '  border-bottom:1px solid color-mix(in srgb,var(--ink) 7%,transparent);}',
@@ -4388,7 +4903,8 @@ function cartCSS(){
   '.sv-qty button{width:28px;height:28px;border-radius:8px;cursor:pointer;background:transparent;',
   '  border:1px solid color-mix(in srgb,var(--ink) 16%,transparent);color:var(--ink);font-size:15px;font-weight:700;}',
   '.sv-qty span{min-width:20px;text-align:center;font-weight:700;font-size:14px;}',
-  '.sv-cart-foot{padding:0 20px 22px;}',
+  '.sv-cart-foot{padding:14px 20px 20px;flex-shrink:0;overflow-y:auto;max-height:52dvh;',
+  '  border-top:1px solid color-mix(in srgb,var(--ink) 9%,transparent);background:var(--bg);}',
   '.sv-sum{display:flex;justify-content:space-between;padding:7px 0;font-size:13.5px;color:var(--mute);}',
   '.sv-sum b{color:var(--ink);font-weight:700;}',
   '.sv-sum-t{border-top:1px solid color-mix(in srgb,var(--ink) 12%,transparent);margin-top:6px;padding-top:12px;font-size:15.5px;}',
@@ -4410,7 +4926,8 @@ function cartCSS(){
   '  border-radius:100px;background:var(--ink);color:var(--bg);font-size:13.5px;font-weight:600;',
   '  z-index:300;opacity:0;transition:opacity .3s,transform .35s cubic-bezier(.34,1.5,.64,1);}',
   '.sv-toast.in{opacity:1;transform:translate(-50%,0);}',
-  '@media(min-width:600px){.sv-cart{align-items:center;}.sv-cart-box{border-radius:22px;max-height:84vh;}}'
+  '@media(min-width:600px){.sv-cart{align-items:center;}.sv-cart-box{border-radius:22px;max-height:84dvh;}}',
+  '@media(max-width:599px){.sv-cart-box{height:88dvh;}.sv-cart-foot{max-height:46dvh;}}'
   ].join('\n');
 }
 
@@ -4449,9 +4966,16 @@ function cartScript(ownerId){
       promo: on,
       pct: on ? (p.promoPct||0) : 0,
       desc: p.desc || '',
+      sub: p.subtitle || '',
       group: p.group || '',
       stock: p.stock !== false,
-      imgs: imgs
+      imgs: imgs,
+      sizes: Array.isArray(p.sizes) ? p.sizes : [],
+      optName: p.optName || 'Option',
+      colors: Array.isArray(p.colors) ? p.colors : [],
+      colName: p.colName || 'Couleur',
+      rating: Number(p.rating) || 0,
+      specs: (Array.isArray(p.specs) ? p.specs : []).filter(function(s){ return s.text; })
     };
   });
   var waNum = String(state.whatsapp || state.phone || '').replace(/[^0-9]/g,'');
@@ -4476,14 +5000,16 @@ function cartScript(ownerId){
   '  return null;',
   '}',
   '',
-  'function svAdd(id, qty, btn){',
+  'function svAdd(id, qty, btn, variant){',
   '  var p = svFind(id);',
   '  if(!p || !p.stock) return;',
   '  qty = Math.max(1, parseInt(qty) || 1);',
+  '  var vlabel = variant || "";',
+  '  var key = id + "|" + vlabel;',
   '  var line = null;',
-  '  for(var j=0;j<SV_CART.length;j++){ if(SV_CART[j].id === id) line = SV_CART[j]; }',
+  '  for(var j=0;j<SV_CART.length;j++){ if(SV_CART[j].key === key) line = SV_CART[j]; }',
   '  if(line) line.qty += qty;',
-  '  else SV_CART.push({ id:p.id, name:p.name, price:p.price, qty:qty });',
+  '  else SV_CART.push({ key:key, id:p.id, name:p.name + vlabel, price:p.price, qty:qty });',
   '  svUpdateCount(true);',
   '  svPop(p.name, qty);',
   '  if(btn) svSparks(btn);',
@@ -4636,6 +5162,30 @@ function cartScript(ownerId){
   '  });',
   '}',
   '',
+  'var SV_SLIDE = 0, SV_SLIDE_T = null;',
+  'var SV_SLIDE_MS = ' + ((Number(state.heroDelay) || 5) * 1000) + ';',
+  '',
+  'function svSlide(i){',
+  '  var s = document.querySelectorAll(".sv-slide");',
+  '  var d = document.querySelectorAll(".sv-dot");',
+  '  if(!s.length) return;',
+  '  SV_SLIDE = ((i % s.length) + s.length) % s.length;',
+  '  for(var k=0;k<s.length;k++){',
+  '    if(k === SV_SLIDE) s[k].classList.add("on"); else s[k].classList.remove("on");',
+  '    if(d[k]){ if(k === SV_SLIDE) d[k].classList.add("on"); else d[k].classList.remove("on"); }',
+  '  }',
+  '  clearTimeout(SV_SLIDE_T);',
+  '  SV_SLIDE_T = setTimeout(function(){ svSlide(SV_SLIDE + 1); }, SV_SLIDE_MS);',
+  '}',
+  '',
+  '(function(){',
+  '  function go(){',
+  '    if(document.querySelectorAll(".sv-slide").length > 1) svSlide(0);',
+  '  }',
+  '  if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", go);',
+  '  else go();',
+  '})();',
+  '',
   'var SV_VID = ' + JSON.stringify(youtubeId(state.videoUrl)) + ';',
   '',
   'function svOpenVideo(){',
@@ -4645,7 +5195,7 @@ function cartScript(ownerId){
   '  f.innerHTML = "<iframe src=\\"https://www.youtube-nocookie.com/embed/" + SV_VID',
   '    + "?autoplay=1&rel=0&modestbranding=1\\" title=\\"Video\\" allow=\\"accelerometer; autoplay; encrypted-media; picture-in-picture\\" allowfullscreen></iframe>";',
   '  m.classList.add("open");',
-  '  document.body.style.overflow = "hidden";',
+  '  svLock();',
   '}',
   '',
   'function svCloseVideo(){',
@@ -4653,10 +5203,51 @@ function cartScript(ownerId){
   '  var f = document.getElementById("sv-vframe");',
   '  if(m) m.classList.remove("open");',
   '  if(f) f.innerHTML = "";',
-  '  document.body.style.overflow = "";',
+  '  svUnlock();',
   '}',
   '',
-  'var SV_DET = null, SV_IMG = 0, SV_QTY = 1;',
+  'var SV_DET = null, SV_IMG = 0, SV_QTY = 1, SV_SIZE = "", SV_COLOR = "";',
+  '',
+  'function svPickSize(btn, val){',
+  '  SV_SIZE = val;',
+  '  var b = btn.parentNode.querySelectorAll(".sv-size");',
+  '  for(var i=0;i<b.length;i++) b[i].classList.remove("on");',
+  '  btn.classList.add("on");',
+  '}',
+  'function svPickColor(btn, name){',
+  '  SV_COLOR = name;',
+  '  var b = btn.parentNode.querySelectorAll(".sv-col");',
+  '  for(var i=0;i<b.length;i++) b[i].classList.remove("on");',
+  '  btn.classList.add("on");',
+  '  var lbl = document.getElementById("sv-col-n");',
+  '  if(lbl) lbl.textContent = name;',
+  '}',
+  'function svZoom(){',
+  '  if(!SV_DET || !SV_DET.imgs.length) return;',
+  '  var z = document.getElementById("sv-zoom");',
+  '  if(!z) return;',
+  '  z.innerHTML = "<img src=\\"" + SV_DET.imgs[SV_IMG] + "\\" alt=\\"\\">"',
+  '    + "<button class=\\"sv-zoom-x\\" onclick=\\"svCloseZoom()\\">&times;</button>";',
+  '  z.classList.add("open");',
+  '  svLock();',
+  '}',
+  'function svCloseZoom(){',
+  '  var z = document.getElementById("sv-zoom");',
+  '  if(!z || !z.classList.contains("open")) return;',
+  '  z.classList.remove("open"); z.innerHTML = "";',
+  '  svUnlock();',
+  '}',
+  'function svVariantLabel(){',
+  '  var v = [];',
+  '  if(SV_SIZE) v.push(SV_SIZE);',
+  '  if(SV_COLOR) v.push(SV_COLOR);',
+  '  return v.length ? " (" + v.join(", ") + ")" : "";',
+  '}',
+  'function svBuyNow(id){',
+  '  svAdd(id, SV_QTY, null, svVariantLabel());',
+  '  svCloseDetail();',
+  '  setTimeout(svOpenCart, 260);',
+  '}',
   '',
   'function svOpenDetail(id){',
   '  var p = svFind(id);',
@@ -4664,13 +5255,17 @@ function cartScript(ownerId){
   '  SV_DET = p; SV_IMG = 0; SV_QTY = 1;',
   '  svRenderDetail();',
   '  var m = document.getElementById("sv-detail");',
-  '  if(m) m.classList.add("open");',
-  '  document.body.style.overflow = "hidden";',
+  '  if(!m) return;',
+  '  m.classList.add("open");',
+  '  svLock();',
+  '  var sc = m.querySelector(".sv-det-scroll");',
+  '  if(sc) sc.scrollTop = 0;',
   '}',
   'function svCloseDetail(){',
   '  var m = document.getElementById("sv-detail");',
-  '  if(m) m.classList.remove("open");',
-  '  document.body.style.overflow = "";',
+  '  if(!m || !m.classList.contains("open")) return;',
+  '  m.classList.remove("open");',
+  '  svUnlock();',
   '}',
   'document.addEventListener("keydown", function(e){',
   '  if(e.key === "Escape"){ svCloseDetail(); svCloseVideo(); }',
@@ -4697,7 +5292,8 @@ function cartScript(ownerId){
   '    if(th) th.innerHTML = "";',
   '    return;',
   '  }',
-  '  var html = "<img src=\\"" + imgs[SV_IMG] + "\\" alt=\\"\\">";',
+  '  var html = "<img src=\\"" + imgs[SV_IMG] + "\\" alt=\\"\\" onclick=\\"svZoom()\\" style=\\"cursor:zoom-in\\">";',
+  '  html += "<button class=\\"sv-zoom-b\\" onclick=\\"svZoom()\\"><i class=\\"ri-zoom-in-line\\"></i></button>";',
   '  if(imgs.length > 1){',
   '    html += "<button class=\\"sv-gal-nav sv-gal-prev\\" onclick=\\"svGal(-1)\\">&#8249;</button>";',
   '    html += "<button class=\\"sv-gal-nav sv-gal-next\\" onclick=\\"svGal(1)\\">&#8250;</button>";',
@@ -4726,7 +5322,36 @@ function cartScript(ownerId){
   '  h += "<button class=\\"sv-det-close\\" onclick=\\"svCloseDetail()\\">&times;</button>";',
   '  if(p.group) h += "<div class=\\"sv-det-group\\">" + p.group + "</div>";',
   '  h += "<h2 class=\\"sv-det-t\\">" + p.name + "</h2>";',
+  '  if(p.sub) h += "<div class=\\"sv-det-sub\\">" + p.sub + "</div>";',
+  '  if(p.rating) h += "<div class=\\"sv-det-rate\\">" + p.rating.toFixed(1) + " \\u2605</div>";',
   '  if(p.desc) h += "<p class=\\"sv-det-d\\">" + p.desc + "</p>";',
+  '  if(p.specs && p.specs.length){',
+  '    h += "<div class=\\"sv-det-specs\\">";',
+  '    for(var si=0;si<p.specs.length;si++){',
+  '      h += "<span><i class=\\"" + p.specs[si].icon + "\\"></i>" + svEsc(p.specs[si].text) + "</span>";',
+  '    }',
+  '    h += "</div>";',
+  '  }',
+  '  if(p.sizes && p.sizes.length){',
+  '    h += "<div class=\\"sv-var\\"><div class=\\"sv-var-l\\">" + svEsc(p.optName) + "</div><div class=\\"sv-var-o\\">";',
+  '    for(var zi=0;zi<p.sizes.length;zi++){',
+  '      h += "<button class=\\"sv-size" + (zi===0 ? " on" : "") + "\\" onclick=\\"svPickSize(this,\\u0027"',
+  '        + svEsc(p.sizes[zi]).replace(/\u0027/g,"") + "\\u0027)\\">" + svEsc(p.sizes[zi]) + "</button>";',
+  '    }',
+  '    h += "</div></div>";',
+  '    SV_SIZE = p.sizes[0];',
+  '  } else { SV_SIZE = ""; }',
+  '  if(p.colors && p.colors.length){',
+  '    h += "<div class=\\"sv-var\\"><div class=\\"sv-var-l\\">" + svEsc(p.colName) + " <em id=\\"sv-col-n\\">"',
+  '      + svEsc(p.colors[0].n) + "</em></div><div class=\\"sv-var-o\\">";',
+  '    for(var ci=0;ci<p.colors.length;ci++){',
+  '      h += "<button class=\\"sv-col" + (ci===0 ? " on" : "") + "\\" style=\\"background:"',
+  '        + p.colors[ci].v + "\\" title=\\"" + svEsc(p.colors[ci].n) + "\\" onclick=\\"svPickColor(this,\\u0027"',
+  '        + svEsc(p.colors[ci].n).replace(/\u0027/g,"") + "\\u0027)\\"></button>";',
+  '    }',
+  '    h += "</div></div>";',
+  '    SV_COLOR = p.colors[0].n;',
+  '  } else { SV_COLOR = ""; }',
   '  h += "</div>";',
   '  h += "<div class=\\"sv-det-fixed\\">";',
   '  h += "<div class=\\"sv-det-price\\"><b>" + svMoney(p.price) + " " + SV_CUR + "</b>";',
@@ -4740,8 +5365,12 @@ function cartScript(ownerId){
   '    h += "<span class=\\"sv-qty-box\\"><button onclick=\\"svQty(-1)\\">-</button>";',
   '    h += "<span id=\\"sv-qty-val\\">1</span>";',
   '    h += "<button onclick=\\"svQty(1)\\">+</button></span></div>";',
-  '    h += "<button class=\\"sv-det-add\\" onclick=\\"svAdd(" + p.id + ", SV_QTY, this); svCloseDetail();\\">";',
-  '    h += "<i class=\\"ri-shopping-bag-3-line\\"></i> Ajouter au panier</button>";',
+  '    h += "<div class=\\"sv-det-btns\\">";',
+  '    h += "<button class=\\"sv-det-add ghost\\" onclick=\\"svAdd(" + p.id + ", SV_QTY, this, svVariantLabel()); svCloseDetail();\\">";',
+  '    h += "<i class=\\"ri-shopping-bag-3-line\\"></i> Ajouter</button>";',
+  '    h += "<button class=\\"sv-det-add\\" onclick=\\"svBuyNow(" + p.id + ")\\">";',
+  '    h += "<i class=\\"ri-flashlight-line\\"></i> Acheter</button>";',
+  '    h += "</div>";',
   '  } else if(SV_WA){',
   '    var msg = "Bonjour, je suis interesse(e) par : " + p.name;',
   '    h += "<a class=\\"sv-det-add\\" style=\\"text-decoration:none;\\" target=\\"_blank\\" rel=\\"noopener\\" href=\\"https://wa.me/" + SV_WA + "?text=" + encodeURIComponent(msg) + "\\">";',
@@ -4769,7 +5398,7 @@ function cartScript(ownerId){
   '  var out = [];',
   '  for(var i=0;i<SV_CART.length;i++){',
   '    var l = SV_CART[i];',
-  '    if(l.id === id) l.qty += d;',
+  '    if(l.key === id) l.qty += d;',
   '    if(l.qty > 0) out.push(l);',
   '  }',
   '  SV_CART = out;',
@@ -4782,8 +5411,46 @@ function cartScript(ownerId){
   '  return { sub: sub, total: sub + (sub > 0 ? SV_DELIV : 0) };',
   '}',
   '',
-  'function svOpenCart(){ var m = document.getElementById("sv-cart"); if(m){ m.classList.add("open"); svRenderCart(); } }',
-  'function svCloseCart(){ var m = document.getElementById("sv-cart"); if(m) m.classList.remove("open"); }',
+  'var SV_LOCK = 0, SV_SCROLLY = 0;',
+  '',
+  'function svLock(){',
+  '  if(SV_LOCK++ > 0) return;',
+  '  SV_SCROLLY = window.pageYOffset || document.documentElement.scrollTop || 0;',
+  '  document.body.style.position = "fixed";',
+  '  document.body.style.top = (-SV_SCROLLY) + "px";',
+  '  document.body.style.left = "0";',
+  '  document.body.style.right = "0";',
+  '  document.body.style.width = "100%";',
+  '  document.body.style.overflow = "hidden";',
+  '}',
+  '',
+  'function svUnlock(){',
+  '  if(SV_LOCK > 0) SV_LOCK--;',
+  '  if(SV_LOCK > 0) return;',
+  '  document.body.style.position = "";',
+  '  document.body.style.top = "";',
+  '  document.body.style.left = "";',
+  '  document.body.style.right = "";',
+  '  document.body.style.width = "";',
+  '  document.body.style.overflow = "";',
+  '  window.scrollTo(0, SV_SCROLLY);',
+  '}',
+  '',
+  'function svOpenCart(){',
+  '  var m = document.getElementById("sv-cart");',
+  '  if(!m) return;',
+  '  m.classList.add("open");',
+  '  svRenderCart();',
+  '  svLock();',
+  '  var box = m.querySelector(".sv-cart-box");',
+  '  if(box) box.scrollTop = 0;',
+  '}',
+  'function svCloseCart(){',
+  '  var m = document.getElementById("sv-cart");',
+  '  if(!m || !m.classList.contains("open")) return;',
+  '  m.classList.remove("open");',
+  '  svUnlock();',
+  '}',
   '',
   'function svRenderCart(){',
   '  var box = document.getElementById("sv-cart-lines");',
@@ -4801,9 +5468,9 @@ function cartScript(ownerId){
   '        +  "<div class=\\"sv-line-n\\">" + l.name + "</div>"',
   '        +  "<div class=\\"sv-line-p\\">" + svMoney(l.price) + " " + SV_CUR + "</div></div>"',
   '        +  "<div class=\\"sv-qty\\">"',
-  '        +  "<button onclick=\\"svChangeQty(" + l.id + ",-1)\\">-</button>"',
+  '        +  "<button onclick=\\"svChangeQty(\\u0027" + l.key + "\\u0027,-1)\\">-</button>"',
   '        +  "<span>" + l.qty + "</span>"',
-  '        +  "<button onclick=\\"svChangeQty(" + l.id + ",1)\\">+</button>"',
+  '        +  "<button onclick=\\"svChangeQty(\\u0027" + l.key + "\\u0027,1)\\">+</button>"',
   '        +  "</div></div>";',
   '  }',
   '  box.innerHTML = out;',
@@ -4828,7 +5495,7 @@ function cartScript(ownerId){
   '',
   'function svFilter(btn, g){',
   '  SV_GROUP = g || "";',
-  '  var tabs = document.querySelectorAll(".sv-tab");',
+  '  var tabs = document.querySelectorAll(".sv-cat");',
   '  for(var i=0;i<tabs.length;i++) tabs[i].classList.remove("on");',
   '  if(btn) btn.classList.add("on");',
   '  svApply();',
@@ -5580,6 +6247,8 @@ renderCustomPanel();
 renderGroups();
 renderStats();
 renderPerks();
+renderHeroList();
+renderBandList();
 renderLists();
 syncPanel();
 render();
