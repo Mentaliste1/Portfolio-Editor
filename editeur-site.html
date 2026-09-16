@@ -344,6 +344,12 @@ body{
   #auth-gate .ag-bg,.ag-card,.ag-card::before{animation:none;}
 }
 
+.ver-tag{
+  font-size:9px;color:var(--ui-muted);font-weight:600;
+  letter-spacing:.04em;flex-shrink:0;opacity:.75;
+  padding:3px 7px;border-radius:6px;background:var(--ui-surface);
+}
+
 .price-pill{
   display:flex;flex-direction:column;align-items:flex-start;gap:2px;
   padding:6px 12px;border-radius:11px;cursor:pointer;
@@ -926,6 +932,7 @@ body{
           <span class="price-track"><span class="price-fill" id="price-bar"></span></span>
           <span class="price-lvl" id="price-lvl">À remplir</span>
         </button>
+        <span class="ver-tag" id="ver-tag" title="Version de l'éditeur"></span>
         <div class="sync"><span class="sync-dot" id="sync-dot"></span><span id="sync-txt">Local</span></div>
       </div>
     </div>
@@ -5705,6 +5712,7 @@ function cartScript(ownerId){
   ].join('\n');
 }
 
+const EDITOR_VERSION = "2026.09.16-b";
 const PRICE_MAX = 50000;
 const PRICE_CURVE = 0.65;
 const SITE_TOKEN_KEY = 'mental_studio_site_token_v1';
@@ -5992,7 +6000,8 @@ function doDownload(){
 '<meta charset="UTF-8">',
 '<meta name="viewport" content="width=device-width, initial-scale=1.0">',
 '<title>' + esc(title) + '</title>',
-'<meta name="description" content="' + esc(desc) + '">',
+'<meta name="generator" content="Mental Studio ' + EDITOR_VERSION + '">',
+  '<meta name="description" content="' + esc(desc) + '">',
 '<meta property="og:title" content="' + esc(title) + '">',
 '<meta property="og:description" content="' + esc(desc) + '">',
 '<meta property="og:type" content="website">',
@@ -6357,6 +6366,7 @@ syncPanel();
 render();
 updatePriceTag();
 updatePayButton();
+(function(){ const v = $('ver-tag'); if(v) v.textContent = 'v' + EDITOR_VERSION; })();
 setTimeout(checkSitePayment, 900);
 maybeRequireAuth();
 setTimeout(function(){ if(!currentUser) maybeRequireAuth(); }, 2600);
