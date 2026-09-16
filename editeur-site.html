@@ -598,60 +598,18 @@ body{
 .pv-dev.on{background:var(--ui-accent);color:#fff;}
 
 .pv-stage{
-  flex:1;overflow:auto;display:flex;justify-content:center;
+  flex:1;min-height:0;overflow:hidden;
+  display:flex;justify-content:center;
   padding:18px;
   position:relative;
-  transform:translateZ(0);
-  isolation:isolate;
-}
-.pv-stage.pv-locked{overflow:hidden;}
-
-#pv-overlays{position:static;}
-#pv-overlays > *{pointer-events:auto;}
-
-#pv-overlays .sv-modal,
-#pv-overlays .sv-cart,
-#pv-overlays .sv-zoom,
-#pv-overlays .sv-vmodal{z-index:400;}
-
-#pv-overlays .sv-modal-box{
-  max-height:92%!important;
-  height:auto!important;
-  max-width:88%!important;
-}
-#pv-overlays .sv-gal-main{
-  min-height:110px!important;
-  height:auto!important;
-}
-#pv-overlays .sv-gal-main img{max-height:190px;}
-#pv-overlays .sv-thumbs{padding:6px 8px;}
-#pv-overlays .sv-thumb{width:40px;height:40px;}
-#pv-overlays .sv-det-scroll{padding:14px 16px 0;}
-#pv-overlays .sv-det-fixed{padding:10px 16px 14px;}
-#pv-overlays .sv-det-t{font-size:17px;}
-#pv-overlays .sv-det-d{font-size:12.5px;margin-bottom:10px;}
-
-#pv-overlays .sv-cart-box{
-  max-height:92%!important;
-  height:auto!important;
-  max-width:88%!important;
 }
 
-#pv-overlays .sv-pop{
-  bottom:14px!important;
-  z-index:500!important;
-}
-#pv-overlays .sv-zoom img{max-height:88%;}
-#pv-overlays .sv-vbox{max-width:80%;}
-
-.pv-stage{min-height:340px;}
 #site-view{
-  width:100%;max-width:1100px;
-  background:#fff;border-radius:14px;overflow:hidden;
+  width:100%;max-width:1100px;height:100%;
+  background:#fff;border-radius:14px;
+  border:none;display:block;
   box-shadow:0 30px 70px -28px rgba(0,0,0,.8);
   transition:max-width .35s ease;
-  align-self:flex-start;
-  position:relative;
 }
 #site-view.dev-tablet{max-width:760px;}
 #site-view.dev-mobile{max-width:390px;}
@@ -1367,7 +1325,7 @@ body{
       </div>
     </div>
     <div class="pv-stage" id="pv-stage">
-      <div id="site-view"></div>
+      <iframe id="site-view" title="Aperçu du site"></iframe>
     </div>
   </main>
 
@@ -4033,7 +3991,19 @@ function buildSiteHTML(forExport){
       backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
       border-bottom:1px solid color-mix(in srgb,var(--ink) 8%,transparent);
     }
-    .sv-nav-in{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 0;}
+    .sv-nav-in{
+      display:flex;align-items:center;justify-content:space-between;
+      gap:14px;padding:13px 0;min-width:0;
+    }
+    .sv-brand{flex:1 1 auto;min-width:0;overflow:hidden;}
+    .sv-bname{
+      overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+      display:block;min-width:0;
+    }
+    .sv-nav-links{flex:0 1 auto;min-width:0;}
+    .sv-nav-links a{white-space:nowrap;}
+    .sv-cart-btn{flex:0 0 auto;}
+    .sv-cart-l{margin-left:6px;}
     .sv-brand{display:flex;align-items:center;gap:11px;min-width:0;}
     .sv-logo{width:40px;height:40px;border-radius:11px;object-fit:cover;flex-shrink:0;}
     .sv-logo-txt{
@@ -4585,6 +4555,17 @@ function buildSiteHTML(forExport){
     }
 
     /* Grand téléphone et petite tablette */
+    @media(max-width:1024px){
+      .sv-nav-links{gap:13px;}
+      .sv-nav-links a{font-size:13px;}
+      .sv-nav-in{gap:10px;}
+    }
+    @media(max-width:880px){
+      .sv-nav-links{gap:10px;}
+      .sv-nav-links a{font-size:12.5px;}
+      .sv-bname{font-size:16px;}
+    }
+
     @media(max-width:760px){
       .sv-nav-links{display:none;}
       .sv-hero-in{grid-template-columns:1fr!important;}
@@ -4625,10 +4606,12 @@ function buildSiteHTML(forExport){
       .sv-card-foot{flex-direction:column;align-items:flex-start;gap:7px;}
       .sv-add{width:100%;justify-content:center;padding:9px;}
       .sv-price{font-size:14px;}
-      .sv-nav-in{padding:11px 0;}
-      .sv-bname{font-size:16px;}
+      .sv-nav-in{padding:10px 0;gap:9px;}
+      .sv-bname{font-size:15px;}
+      .sv-brand{gap:8px;}
       .sv-logo,.sv-logo-txt{width:34px;height:34px;}
-      .sv-cart-btn{padding:8px 13px;font-size:12px;}
+      .sv-cart-btn{padding:8px 12px;font-size:11.5px;}
+      .sv-cart-l{display:none;}
       .sv-h1{font-size:clamp(25px,7vw,34px);}
       .sv-tag{font-size:14.5px;}
       .sv-cta{padding:12px 24px;font-size:13.5px;}
@@ -4662,7 +4645,8 @@ function buildSiteHTML(forExport){
     ${descFxCSS()}
     ${promoCSS()}
     /* Le contenu passe au-dessus du fond animé */
-    .sv-nav,.sv-hero,.sv-sec,.sv-foot{position:relative;z-index:2;}
+    .sv-hero,.sv-sec,.sv-foot{position:relative;z-index:2;}
+    .sv-nav{position:sticky;top:0;z-index:60;}
   `;
 
   const initial = (state.name || 'M').trim().charAt(0).toUpperCase();
@@ -4681,7 +4665,7 @@ function buildSiteHTML(forExport){
         ${state.showAbout ? '<a href="#sv-about">À propos</a>' : ''}
         <a href="#sv-contact">Contact</a>
       </div>
-      ${state.orders ? '<button class="sv-cart-btn" onclick="svOpenCart()"><i class="ri-shopping-bag-3-line"></i> Panier<span class="sv-cart-n" id="sv-cart-n">0</span></button>' : ''}
+      ${state.orders ? '<button class="sv-cart-btn" onclick="svOpenCart()"><i class="ri-shopping-bag-3-line"></i><span class="sv-cart-l">Panier</span><span class="sv-cart-n" id="sv-cart-n">0</span></button>' : ''}
     </div></nav>
 
     ${state.showHero ? `
@@ -4909,50 +4893,10 @@ function buildSiteHTML(forExport){
 }
 
 function render(){
-  const { css, html } = buildSiteHTML(false);
   const view = $('site-view');
   if(!view) return;
 
-  view.innerHTML = '<style>' + css + cartCSS() + '</style>' + html;
-
-  let layer = $('pv-overlays');
-  if(!layer){
-    layer = document.createElement('div');
-    layer.id = 'pv-overlays';
-    const stage = $('pv-stage');
-    if(stage) stage.appendChild(layer);
-  }
-  layer.innerHTML = overlayMarkup() + cartMarkup();
-
-  observeAnims(view);
-  if(state.orders) activatePreviewCart();
-  startPreviewSlides();
-}
-
-let previewSlideTimer = null;
-function startPreviewSlides(){
-  clearTimeout(previewSlideTimer);
-  const view = $('site-view');
-  if(!view) return;
-  const slides = view.querySelectorAll('.sv-slide');
-  if(slides.length < 2) return;
-  let i = 0;
-  const dots = view.querySelectorAll('.sv-dot');
-  const step = function(){
-    i = (i + 1) % slides.length;
-    slides.forEach(function(s, k){ s.classList.toggle('on', k === i); });
-    dots.forEach(function(d, k){ d.classList.toggle('on', k === i); });
-    previewSlideTimer = setTimeout(step, (state.heroDelay || 5) * 1000);
-  };
-  previewSlideTimer = setTimeout(step, (state.heroDelay || 5) * 1000);
-}
-
-let previewCartTag = null;
-function activatePreviewCart(){
-  if(previewCartTag) previewCartTag.remove();
-  previewCartTag = document.createElement('script');
-  previewCartTag.textContent = cartScript(currentUser ? currentUser.id : '');
-  document.body.appendChild(previewCartTag);
+  view.srcdoc = buildDocument(currentUser ? currentUser.id : '');
 }
 
 function observeAnims(root){
@@ -5569,14 +5513,8 @@ function cartScript(ownerId){
   '  if(e.cancelable) e.preventDefault();',
   '}',
   '',
-  'function svPreviewStage(){',
-  '  return document.getElementById("pv-stage");',
-  '}',
-  '',
   'function svLock(){',
   '  if(SV_LOCK++ > 0) return;',
-  '  var stage = svPreviewStage();',
-  '  if(stage){ stage.classList.add("pv-locked"); return; }',
   '  SV_SCROLLY = window.pageYOffset || document.documentElement.scrollTop || 0;',
   '  document.documentElement.classList.add("sv-locked");',
   '  document.addEventListener("wheel", svBlockScroll, { passive:false });',
@@ -5601,8 +5539,6 @@ function cartScript(ownerId){
   'function svUnlock(){',
   '  if(SV_LOCK > 0) SV_LOCK--;',
   '  if(SV_LOCK > 0) return;',
-  '  var stage = svPreviewStage();',
-  '  if(stage){ stage.classList.remove("pv-locked"); return; }',
   '  document.removeEventListener("wheel", svBlockScroll, { passive:false });',
   '  document.removeEventListener("touchmove", svBlockScroll, { passive:false });',
   '  document.removeEventListener("keydown", svBlockKeys, true);',
@@ -6033,31 +5969,12 @@ function exportSite(){
   openPay();
 }
 
-function doDownload(){
-  if(accountSuspended){
-    alert('Ce compte est suspendu. Le téléchargement est bloqué.\n\n'
-        + 'Contactez-nous pour en connaître la raison.');
-    return;
-  }
-  const owner = currentUser ? currentUser.id : '';
-
-  if(!owner && (state.orders || state.showReviews)){
-    const quoi = [];
-    if(state.orders) quoi.push('les commandes');
-    if(state.showReviews) quoi.push('les avis clients');
-    const ok = confirm(
-      'Vous n\'êtes pas connecté.\n\n'
-      + 'Sans compte, ' + quoi.join(' et ') + ' ne fonctionneront pas sur '
-      + 'votre site : vous ne recevrez rien.\n\n'
-      + 'Connectez-vous d\'abord, puis retéléchargez.\n\n'
-      + 'Télécharger quand même ?');
-    if(!ok) return;
-  }
+function buildDocument(owner){
   const { css, html } = buildSiteHTML(true);
   const title = state.name || 'Mon site';
   const desc  = state.tagline || '';
 
-  const doc = [
+  return [
 '<!DOCTYPE html>',
 '<html lang="fr">',
 '<head>',
@@ -6065,14 +5982,14 @@ function doDownload(){
 '<meta name="viewport" content="width=device-width, initial-scale=1.0">',
 '<title>' + esc(title) + '</title>',
 '<meta name="generator" content="Mental Studio ' + EDITOR_VERSION + '">',
-  '<meta name="description" content="' + esc(desc) + '">',
+'<meta name="description" content="' + esc(desc) + '">',
 '<meta property="og:title" content="' + esc(title) + '">',
 '<meta property="og:description" content="' + esc(desc) + '">',
 '<meta property="og:type" content="website">',
 (state.logo ? '<link rel="icon" href="' + state.logo + '">' : ''),
-'<link rel="stylesheet" media="print" onload="this.media=\'all\'"',
+'<link rel="stylesheet"',
 '      href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,700&family=Playfair+Display:wght@700&family=Space+Grotesk:wght@400;700&family=Bebas+Neue&family=Plus+Jakarta+Sans:wght@400;600;800&family=Cinzel:wght@600;800&family=Cormorant+Garamond:wght@300;600&family=Josefin+Sans:wght@300;400;600;700&display=swap">',
-'<link rel="stylesheet" media="print" onload="this.media=\'all\'"',
+'<link rel="stylesheet"',
 '      href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css"',
 '      onerror="var a=document.createElement(\'link\');a.rel=\'stylesheet\';a.href=\'https://unpkg.com/remixicon@3.5.0/fonts/remixicon.css\';document.head.appendChild(a);">',
 '<style>',
@@ -6093,6 +6010,30 @@ cartScript(owner),
 '</body>',
 '</html>'
   ].join('\n');
+}
+
+function doDownload(){
+  if(accountSuspended){
+    alert('Ce compte est suspendu. Le téléchargement est bloqué.\n\n'
+        + 'Contactez-nous pour en connaître la raison.');
+    return;
+  }
+  const owner = currentUser ? currentUser.id : '';
+
+  if(!owner && (state.orders || state.showReviews)){
+    const quoi = [];
+    if(state.orders) quoi.push('les commandes');
+    if(state.showReviews) quoi.push('les avis clients');
+    const ok = confirm(
+      'Vous n\'êtes pas connecté.\n\n'
+      + 'Sans compte, ' + quoi.join(' et ') + ' ne fonctionneront pas sur '
+      + 'votre site : vous ne recevrez rien.\n\n'
+      + 'Connectez-vous d\'abord, puis retéléchargez.\n\n'
+      + 'Télécharger quand même ?');
+    if(!ok) return;
+  }
+  const doc = buildDocument(owner);
+
 
   const problems = [];
   try{
