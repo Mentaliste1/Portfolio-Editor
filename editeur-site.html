@@ -1081,6 +1081,31 @@ body{
         </div>
 
         <div class="sec-label"><i class="ri-sparkling-2-line"></i> Animations<div class="sec-line"></div></div>
+        <div class="fld">
+          <label>Forme des images produit</label>
+          <select id="f-imgShape" onchange="setF('imgShape',this.value)">
+            <option value="carre">Carrée</option>
+            <option value="arrondi">Coins arrondis</option>
+            <option value="doux">Très arrondie</option>
+            <option value="cercle">Cercle</option>
+            <option value="arche">Arche</option>
+            <option value="goutte">Goutte</option>
+            <option value="feuille">Feuille</option>
+            <option value="biseau">Coin biseauté</option>
+            <option value="vague">Bord ondulé</option>
+          </select>
+        </div>
+        <div class="fld">
+          <label>Proportion des images</label>
+          <select id="f-imgRatio" onchange="setF('imgRatio',this.value)">
+            <option value="4/3">Paysage (4:3)</option>
+            <option value="1/1">Carré (1:1)</option>
+            <option value="3/4">Portrait (3:4)</option>
+            <option value="16/9">Panoramique (16:9)</option>
+            <option value="2/3">Vertical (2:3)</option>
+          </select>
+        </div>
+
         <div class="tog">
           <div><div class="tog-t">Formes arrondies</div><div class="tog-d">Bords courbes sur les bandeaux</div></div>
           <button class="sw on" id="sw-curves" onclick="toggleF('curves',this)"></button>
@@ -1953,6 +1978,8 @@ let state = {
   heroDelay : 5,
   bandImgs  : [],
   bandText  : '',
+  imgShape  : 'carre',
+  imgRatio  : '4/3',
   descFx    : 'monte',
   nameFx    : 'none',
   taglineFx : 'reflet',
@@ -3069,7 +3096,7 @@ function syncPanel(){
                'bgImage','videoUrl','videoTitle','perksTitle','ctaTitle','ctaText','bandText'];
   map.forEach(k => { const el = $('f-' + k); if(el) el.value = state[k] || ''; });
   ['layout','currency','anim','hover','liveBg','descFx','nameFx','taglineFx',
-   'bgFit','bgPos'].forEach(k => {
+   'bgFit','bgPos','imgShape','imgRatio'].forEach(k => {
     const el = $('f-' + k); if(el) el.value = state[k];
   });
   const d = $('f-delivery'); if(d) d.value = state.delivery || 0;
@@ -4212,6 +4239,22 @@ function buildSiteHTML(forExport){
     }
     ` : ''}
 
+    .sv-card-img{aspect-ratio:${state.imgRatio || '4/3'};}
+    ${(function(){
+      const s = state.imgShape || 'carre';
+      if(s === 'arrondi')  return '.sv-card-img{border-radius:16px;}.sv-card{overflow:visible;}.sv-card-img{overflow:hidden;}';
+      if(s === 'doux')     return '.sv-card-img{border-radius:28px;}.sv-card{overflow:visible;}.sv-card-img{overflow:hidden;}';
+      if(s === 'cercle')   return '.sv-card-img{border-radius:50%;margin:14px auto 0;width:calc(100% - 28px);aspect-ratio:1/1;}.sv-card{overflow:visible;}';
+      if(s === 'arche')    return '.sv-card-img{border-radius:999px 999px 14px 14px;}.sv-card{overflow:visible;}.sv-card-img{overflow:hidden;}';
+      if(s === 'goutte')   return '.sv-card-img{border-radius:36px 4px 36px 4px;}.sv-card{overflow:visible;}.sv-card-img{overflow:hidden;}';
+      if(s === 'feuille')  return '.sv-card-img{border-radius:50% 4px 50% 4px;}.sv-card{overflow:visible;}.sv-card-img{overflow:hidden;}';
+      if(s === 'biseau')   return '.sv-card-img{clip-path:polygon(0 0, 100% 0, 100% 84%, 84% 100%, 0 100%);}';
+      if(s === 'vague')    return '.sv-card-img{-webkit-mask-image:radial-gradient(18px at 18px 100%, transparent 98%, #000 100%),'
+                                + 'linear-gradient(#000 0 0);-webkit-mask-composite:source-in;'
+                                + 'border-radius:14px 14px 0 26px;}.sv-card{overflow:visible;}.sv-card-img{overflow:hidden;}';
+      return '';
+    })()}
+
     .sv-hero-slides{position:absolute;inset:0;}
     .sv-slide{
       position:absolute;inset:0;opacity:0;
@@ -4938,8 +4981,8 @@ function cartMarkup(){
   '<div class="sv-cart-box">',
   '<div class="sv-cart-head"><span>Votre panier</span>',
   '<button onclick="svCloseCart()" aria-label="Fermer">&times;</button></div>',
-  '<div class="sv-cart-lines" id="sv-cart-lines"></div>',
-  '<div class="sv-cart-foot" id="sv-cart-foot" style="display:none;">',
+  '<div class="sv-cart-lines" id="sv-cart-lines" data-scrollable></div>',
+  '<div class="sv-cart-foot" id="sv-cart-foot" style="display:none;" data-scrollable>',
   '<div class="sv-sum"><span>Sous-total</span><b id="sv-sub">0</b></div>',
   '<div class="sv-sum"><span>Livraison</span><b id="sv-deliv">Offerte</b></div>',
   '<div class="sv-sum sv-sum-t"><span>Total</span><b id="sv-tot">0</b></div>',
@@ -5318,7 +5361,7 @@ function cartScript(ownerId){
   '  if(!box || !SV_DET) return;',
   '  var p = SV_DET;',
   '  svRenderGal();',
-  '  var h = "<div class=\\"sv-det-scroll\\">";',
+  '  var h = "<div class=\\"sv-det-scroll\\" data-scrollable>";',
   '  h += "<button class=\\"sv-det-close\\" onclick=\\"svCloseDetail()\\">&times;</button>";',
   '  if(p.group) h += "<div class=\\"sv-det-group\\">" + p.group + "</div>";',
   '  h += "<h2 class=\\"sv-det-t\\">" + p.name + "</h2>";',
@@ -5413,20 +5456,41 @@ function cartScript(ownerId){
   '',
   'var SV_LOCK = 0, SV_SCROLLY = 0;',
   '',
+  'function svBlockScroll(e){',
+  '  var el = e.target;',
+  '  while(el && el !== document.body){',
+  '    if(el.getAttribute && el.getAttribute("data-scrollable") !== null){',
+  '      var up = e.deltaY < 0;',
+  '      var atTop = el.scrollTop <= 0;',
+  '      var atEnd = el.scrollTop + el.clientHeight >= el.scrollHeight - 1;',
+  '      if((up && !atTop) || (!up && !atEnd)) return;',
+  '      break;',
+  '    }',
+  '    el = el.parentNode;',
+  '  }',
+  '  if(e.cancelable) e.preventDefault();',
+  '}',
+  '',
   'function svLock(){',
   '  if(SV_LOCK++ > 0) return;',
   '  SV_SCROLLY = window.pageYOffset || document.documentElement.scrollTop || 0;',
+  '  document.documentElement.style.overflow = "hidden";',
   '  document.body.style.position = "fixed";',
   '  document.body.style.top = (-SV_SCROLLY) + "px";',
   '  document.body.style.left = "0";',
   '  document.body.style.right = "0";',
   '  document.body.style.width = "100%";',
   '  document.body.style.overflow = "hidden";',
+  '  document.addEventListener("wheel", svBlockScroll, { passive:false });',
+  '  document.addEventListener("touchmove", svBlockScroll, { passive:false });',
   '}',
   '',
   'function svUnlock(){',
   '  if(SV_LOCK > 0) SV_LOCK--;',
   '  if(SV_LOCK > 0) return;',
+  '  document.removeEventListener("wheel", svBlockScroll, { passive:false });',
+  '  document.removeEventListener("touchmove", svBlockScroll, { passive:false });',
+  '  document.documentElement.style.overflow = "";',
   '  document.body.style.position = "";',
   '  document.body.style.top = "";',
   '  document.body.style.left = "";',
