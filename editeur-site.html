@@ -344,12 +344,6 @@ body{
   #auth-gate .ag-bg,.ag-card,.ag-card::before{animation:none;}
 }
 
-.ver-tag{
-  font-size:9px;color:var(--ui-muted);font-weight:600;
-  letter-spacing:.04em;flex-shrink:0;opacity:.75;
-  padding:3px 7px;border-radius:6px;background:var(--ui-surface);
-}
-
 .price-pill{
   display:flex;flex-direction:column;align-items:flex-start;gap:2px;
   padding:6px 12px;border-radius:11px;cursor:pointer;
@@ -606,17 +600,18 @@ body{
 .pv-stage{
   flex:1;overflow:auto;display:flex;justify-content:center;
   padding:18px;
+  position:relative;
+  transform:translateZ(0);
+  isolation:isolate;
 }
+.pv-stage.pv-locked{overflow:hidden;}
 #site-view{
   width:100%;max-width:1100px;
   background:#fff;border-radius:14px;overflow:hidden;
   box-shadow:0 30px 70px -28px rgba(0,0,0,.8);
   transition:max-width .35s ease;
   align-self:flex-start;
-
-  transform:translateZ(0);
   position:relative;
-  isolation:isolate;
 }
 #site-view.dev-tablet{max-width:760px;}
 #site-view.dev-mobile{max-width:390px;}
@@ -932,7 +927,7 @@ body{
           <span class="price-track"><span class="price-fill" id="price-bar"></span></span>
           <span class="price-lvl" id="price-lvl">À remplir</span>
         </button>
-        <span class="ver-tag" id="ver-tag" title="Version de l'éditeur"></span>
+
         <div class="sync"><span class="sync-dot" id="sync-dot"></span><span id="sync-txt">Local</span></div>
       </div>
     </div>
@@ -1331,7 +1326,7 @@ body{
         <button class="pv-dev" onclick="setDevice('dev-mobile',this)" title="Mobile"><i class="ri-smartphone-line"></i></button>
       </div>
     </div>
-    <div class="pv-stage">
+    <div class="pv-stage" id="pv-stage">
       <div id="site-view"></div>
     </div>
   </main>
@@ -4505,6 +4500,14 @@ function buildSiteHTML(forExport){
       padding-top:20px;border-top:1px solid color-mix(in srgb,var(--ink) 8%,transparent);
     }
     .sv-foot-c{font-size:12.5px;color:var(--mute);font-weight:300;}
+    .sv-sign{
+      color:var(--mute);text-decoration:none;
+      transition:color .2s;
+      border-bottom:1px solid transparent;
+    }
+    .sv-sign b{font-weight:700;color:var(--ink);opacity:.8;transition:color .2s,opacity .2s;}
+    .sv-sign:hover{color:var(--acc);}
+    .sv-sign:hover b{color:var(--acc);opacity:1;}
     .sv-socials{display:flex;gap:9px;}
     .sv-socials a{
       width:36px;height:36px;border-radius:50%;
@@ -4851,7 +4854,10 @@ function buildSiteHTML(forExport){
 
         <div class="sv-foot-in">
           <span class="sv-foot-c">© ${new Date().getFullYear()} ${esc(state.name)} — Tous droits réservés</span>
-          <span class="sv-foot-c">${state.footerNote ? esc(state.footerNote) : 'Site créé avec Mental Studio'}</span>
+          <span class="sv-foot-c">${state.footerNote
+            ? esc(state.footerNote)
+            : '<a class="sv-sign" href="https://mental-studio.com/editeur-site.html" target="_blank" rel="noopener">'
+              + 'Site créé avec <b>Mental Studio</b></a>'}</span>
         </div>
       </div>
     </footer>
@@ -5513,8 +5519,14 @@ function cartScript(ownerId){
   '  if(e.cancelable) e.preventDefault();',
   '}',
   '',
+  'function svPreviewStage(){',
+  '  return document.getElementById("pv-stage");',
+  '}',
+  '',
   'function svLock(){',
   '  if(SV_LOCK++ > 0) return;',
+  '  var stage = svPreviewStage();',
+  '  if(stage){ stage.classList.add("pv-locked"); return; }',
   '  SV_SCROLLY = window.pageYOffset || document.documentElement.scrollTop || 0;',
   '  document.documentElement.classList.add("sv-locked");',
   '  document.addEventListener("wheel", svBlockScroll, { passive:false });',
@@ -5539,6 +5551,8 @@ function cartScript(ownerId){
   'function svUnlock(){',
   '  if(SV_LOCK > 0) SV_LOCK--;',
   '  if(SV_LOCK > 0) return;',
+  '  var stage = svPreviewStage();',
+  '  if(stage){ stage.classList.remove("pv-locked"); return; }',
   '  document.removeEventListener("wheel", svBlockScroll, { passive:false });',
   '  document.removeEventListener("touchmove", svBlockScroll, { passive:false });',
   '  document.removeEventListener("keydown", svBlockKeys, true);',
@@ -6366,7 +6380,6 @@ syncPanel();
 render();
 updatePriceTag();
 updatePayButton();
-(function(){ const v = $('ver-tag'); if(v) v.textContent = 'v' + EDITOR_VERSION; })();
 setTimeout(checkSitePayment, 900);
 maybeRequireAuth();
 setTimeout(function(){ if(!currentUser) maybeRequireAuth(); }, 2600);
