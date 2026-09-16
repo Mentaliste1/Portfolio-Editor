@@ -3876,7 +3876,7 @@ function buildSiteHTML(forExport){
       +       (p.rating ? '<em class="sv-rate">' + Number(p.rating).toFixed(1) + ' ★</em>' : '')
       +     '</span>'
       +     (!soldOut && state.orders
-                ? '<button class="sv-add" onclick="event.stopPropagation();svAdd(' + p.id + ',1,this)"><i class="ri-add-line"></i> Ajouter</button>'
+                ? '<button class="sv-add" onclick="event.stopPropagation();svAddDefault(' + p.id + ',this)"><i class="ri-add-line"></i> Ajouter</button>'
                 : (!soldOut && wa
                     ? '<a class="sv-add" onclick="event.stopPropagation();" href="https://wa.me/' + wa + '?text=' + encodeURIComponent('Bonjour, je suis intéressé(e) par : ' + p.name) + '" target="_blank" rel="noopener"><i class="ri-whatsapp-line"></i> Commander</a>'
                     : ''))
@@ -4846,29 +4846,6 @@ function buildSiteHTML(forExport){
     </footer>
 
     ${state.showWa && wa ? '<a class="sv-wa" href="https://wa.me/' + wa + '" target="_blank" rel="noopener" aria-label="WhatsApp"><i class="ri-whatsapp-line"></i></a>' : ''}
-    <div class="sv-modal" id="sv-detail" onclick="if(event.target===this)svCloseDetail()">
-      <div class="sv-modal-box">
-        <div class="sv-gal">
-          <div class="sv-gal-main" id="sv-gal-main"></div>
-          <div class="sv-thumbs" id="sv-thumbs"></div>
-        </div>
-        <div class="sv-det" id="sv-det" data-scrollable></div>
-      </div>
-    </div>
-
-    ${vid ? `
-    <div class="sv-vmodal" id="sv-video" onclick="if(event.target===this)svCloseVideo()">
-      <div class="sv-vwrap">
-        <button class="sv-vclose" onclick="svCloseVideo()">&times;</button>
-        <div class="sv-vbox"><div class="sv-vframe" id="sv-vframe"></div></div>
-      </div>
-    </div>` : ''}
-    <div class="sv-zoom" id="sv-zoom" onclick="if(event.target===this)svCloseZoom()"></div>
-
-    <div class="sv-pop" id="sv-pop">
-      <span class="sv-pop-ico"><i class="ri-check-line"></i></span>
-      <span class="sv-pop-txt"><b id="sv-pop-t">Ajouté au panier</b><em id="sv-pop-s"></em></span>
-    </div>
   </div>`;
 
   return { css, html };
@@ -4879,7 +4856,7 @@ function render(){
   const view = $('site-view');
   if(!view) return;
 
-  view.innerHTML = '<style>' + css + cartCSS() + '</style>' + html + cartMarkup();
+  view.innerHTML = '<style>' + css + cartCSS() + '</style>' + html + overlayMarkup() + cartMarkup();
   observeAnims(view);
   if(state.orders) activatePreviewCart();
   startPreviewSlides();
@@ -4987,6 +4964,36 @@ function cartCSS(){
   '.sv-toast.in{opacity:1;transform:translate(-50%,0);}',
   '@media(min-width:600px){.sv-cart{align-items:center;}.sv-cart-box{border-radius:22px;max-height:84vh;}}'
   ].join('\n');
+}
+
+function overlayMarkup(){
+  const vid = youtubeId(state.videoUrl);
+  return `
+    <div class="sv-zoom" id="sv-zoom" onclick="if(event.target===this)svCloseZoom()"></div>
+
+    <div class="sv-modal" id="sv-detail" onclick="if(event.target===this)svCloseDetail()">
+      <div class="sv-modal-box">
+        <div class="sv-gal">
+          <div class="sv-gal-main" id="sv-gal-main"></div>
+          <div class="sv-thumbs" id="sv-thumbs"></div>
+        </div>
+        <div class="sv-det" id="sv-det" data-scrollable></div>
+      </div>
+    </div>
+
+    ${vid ? `
+    <div class="sv-vmodal" id="sv-video" onclick="if(event.target===this)svCloseVideo()">
+      <div class="sv-vwrap">
+        <button class="sv-vclose" onclick="svCloseVideo()">&times;</button>
+        <div class="sv-vbox"><div class="sv-vframe" id="sv-vframe"></div></div>
+      </div>
+    </div>` : ''}
+
+    <div class="sv-pop" id="sv-pop">
+      <span class="sv-pop-ico"><i class="ri-check-line"></i></span>
+      <span class="sv-pop-txt"><b id="sv-pop-t">Ajouté au panier</b><em id="sv-pop-s"></em></span>
+    </div>
+`;
 }
 
 function cartMarkup(){
@@ -5301,6 +5308,15 @@ function cartScript(ownerId){
   '  if(SV_COLOR) v.push(SV_COLOR);',
   '  return v.length ? " (" + v.join(", ") + ")" : "";',
   '}',
+  'function svAddDefault(id, btn){',
+  '  var p = svFind(id);',
+  '  if(!p) return;',
+  '  var v = [];',
+  '  if(p.sizes && p.sizes.length) v.push(p.sizes[0]);',
+  '  if(p.colors && p.colors.length) v.push(p.colors[0].n);',
+  '  svAdd(id, 1, btn, v.length ? " (" + v.join(", ") + ")" : "");',
+  '}',
+  '',
   'function svBuyNow(id){',
   '  svAdd(id, SV_QTY, null, svVariantLabel());',
   '  svCloseDetail();',
@@ -5978,6 +5994,7 @@ cartCSS(),
 '</head>',
 '<body>',
 html,
+overlayMarkup(),
 cartMarkup(),
 '<script>',
 cartScript(owner),
