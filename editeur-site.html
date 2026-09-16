@@ -605,6 +605,8 @@ body{
   isolation:isolate;
 }
 .pv-stage.pv-locked{overflow:hidden;}
+#pv-overlays{position:static;}
+#pv-overlays > *{pointer-events:auto;}
 #site-view{
   width:100%;max-width:1100px;
   background:#fff;border-radius:14px;overflow:hidden;
@@ -4873,7 +4875,17 @@ function render(){
   const view = $('site-view');
   if(!view) return;
 
-  view.innerHTML = '<style>' + css + cartCSS() + '</style>' + html + overlayMarkup() + cartMarkup();
+  view.innerHTML = '<style>' + css + cartCSS() + '</style>' + html;
+
+  let layer = $('pv-overlays');
+  if(!layer){
+    layer = document.createElement('div');
+    layer.id = 'pv-overlays';
+    const stage = $('pv-stage');
+    if(stage) stage.appendChild(layer);
+  }
+  layer.innerHTML = overlayMarkup() + cartMarkup();
+
   observeAnims(view);
   if(state.orders) activatePreviewCart();
   startPreviewSlides();
